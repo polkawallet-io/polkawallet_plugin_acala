@@ -51,7 +51,11 @@ class AcalaService {
         'api.query.tokens.accounts',
         [address, e],
         channel,
-        (Map data) => callback({'symbol': e['Token'], 'balance': data}),
+        (Map data) {
+          if (BigInt.parse(data['free'].toString()) > BigInt.zero) {
+            callback({'symbol': e['Token'], 'balance': data});
+          }
+        },
       );
     });
     final dexPairs = List.of(plugin.networkConst['dex']['enabledTradingPairs']);
@@ -65,7 +69,11 @@ class AcalaService {
           {'DEXShare': LPToken}
         ],
         channel,
-        (Map data) => callback({'symbol': LPToken.join('-'), 'balance': data}),
+        (Map data) {
+          if (BigInt.parse(data['free'].toString()) > BigInt.zero) {
+            callback({'symbol': LPToken.join('-'), 'balance': data});
+          }
+        },
       );
     });
   }
