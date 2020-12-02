@@ -1,16 +1,32 @@
 library polkawallet_plugin_acala;
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:polkawallet_plugin_acala/api/acalaApi.dart';
+import 'package:polkawallet_plugin_acala/api/acalaService.dart';
 import 'package:polkawallet_plugin_acala/common/constants.dart';
+import 'package:polkawallet_plugin_acala/service/index.dart';
+import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
+import 'package:polkawallet_plugin_acala/store/index.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
+import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 
 class PluginAcala extends PolkawalletPlugin {
   @override
-  final basic = PluginBasicData();
+  final basic = PluginBasicData(
+    name: 'acala',
+    ss58: 42,
+    primaryColor: Colors.indigo,
+    icon: Image.asset(
+        'packages/polkawallet_plugin_acala/assets/images/public/acala.png'),
+    iconDisabled: Image.asset(
+        'packages/polkawallet_plugin_acala/assets/images/public/acala_gray.png'),
+  );
 
   @override
   List<NetworkParams> get nodeList {
@@ -20,9 +36,15 @@ class PluginAcala extends PolkawalletPlugin {
   @override
   Map<String, Widget> tokenIcons = {
     'ACA': Image.asset(
-        'packages/polkawallet_plugin_acala/assets/images/tokens/KSM.png'),
-    'KAR': Image.asset(
-        'packages/polkawallet_plugin_kusama/assets/images/tokens/DOT.png'),
+        'packages/polkawallet_plugin_acala/assets/images/tokens/ACA.png'),
+    'AUSD': Image.asset(
+        'packages/polkawallet_plugin_kusama/assets/images/tokens/AUSD.png'),
+    'LDOT': Image.asset(
+        'packages/polkawallet_plugin_kusama/assets/images/tokens/LDOT.png'),
+    'RENBTC': Image.asset(
+        'packages/polkawallet_plugin_kusama/assets/images/tokens/RENBTC.png'),
+    'XBTC': Image.asset(
+        'packages/polkawallet_plugin_kusama/assets/images/tokens/XBTC.png'),
   };
 
   @override
@@ -31,11 +53,11 @@ class PluginAcala extends PolkawalletPlugin {
       HomeNavItem(
         text: 'Acala',
         icon: Image(
-            image: AssetImage('assets/images/public/Acala_dark.png',
-                package: 'polkawallet_plugin_kusama')),
+            image: AssetImage('assets/images/Acala_dark.png',
+                package: 'polkawallet_plugin_acala')),
         iconActive: Image(
-            image: AssetImage('assets/images/public/Acala_indigo.png',
-                package: 'polkawallet_plugin_kusama')),
+            image: AssetImage('assets/images/Acala_indigo.png',
+                package: 'polkawallet_plugin_acala')),
         content: Container(),
       )
     ];
@@ -51,21 +73,44 @@ class PluginAcala extends PolkawalletPlugin {
     };
   }
 
-  // PluginStore _store;
-  // PluginApi _service;
-  // PluginStore get store => _store;
-  // PluginApi get service => _service;
-  //
-  // final StoreCache _cache;
-  //
-  // @override
-  // Future<void> beforeStart(Keyring keyring) async {
-  //   _store = PluginStore(_cache);
-  //   _service = PluginApi(this, keyring);
-  // }
-  //
-  // @override
-  // Future<void> onStarted(Keyring keyring) async {
-  //   _service.staking.fetchStakingOverview();
-  // }
+  final balances = BalancesStore();
+
+  AcalaApi _api;
+  AcalaApi get api => _api;
+
+  final StoreCache _cache = StoreCache();
+  PluginStore _store;
+  PluginService _service;
+  PluginStore get store => _store;
+  PluginService get service => _service;
+
+  @override
+  Future<void> beforeStart(Keyring keyring) async {
+    _api = AcalaApi(AcalaService(this));
+
+    _store = PluginStore(_cache);
+    _service = PluginService(this, keyring);
+  }
+
+  @override
+  Future<void> onStarted(Keyring keyring) async {
+    if (keyring.current.address != null) {
+      _api.subscribeTokenBalances(keyring.current.address, (data) {
+        balances.setTokens(data);
+      });
+
+      final airdrops = await _api.queryAirdropTokens(keyring.current.address);
+      balances
+          .setExtraTokens([ExtraTokenData(title: 'Airdrop', tokens: airdrops)]);
+    }
+  }
+
+  @override
+  Future<void> onAccountChanged(KeyPairData acc) async {
+    _api.unsubscribeTokenBalances(acc.address);
+    balances.setTokens([]);
+    _api.subscribeTokenBalances(acc.address, (data) {
+      balances.setTokens(data);
+    });
+  }
 }

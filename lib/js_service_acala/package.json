@@ -1,0 +1,70 @@
+{
+  "name": "polkadot-js-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "Apache-2.0",
+  "keywords": [
+    "Acala",
+    "Polkadot",
+    "Polkawallet"
+  ],
+  "author": "Shawn yang <dhryxy@gmail.com>",
+  "maintainers": [
+    "Shawn Yang <dhryxy@gmail.com>"
+  ],
+  "scripts": {
+    "clean": "rm -rf dist/*",
+    "build": "webpack -p --mode production",
+    "build-dev": "webpack -d --mode development"
+  },
+  "resolutions": {
+    "@acala-network/api": "0.4.0-beta.33",
+    "@acala-network/app-util": "0.4.0-beta.33",
+    "@acala-network/api-derive": "0.4.0-beta.33",
+    "@acala-network/sdk-core": "0.4.0-beta.33",
+    "@acala-network/sdk-swap": "0.4.0-beta.33",
+    "@acala-network/sdk-homa": "0.4.0-beta.33",
+    "@acala-network/types": "0.4.0-beta.33",
+    "@acala-network/type-definitions": "0.4.0-beta.33",
+    "@polkadot/api": "2.3.1",
+    "@polkadot/api-derive": "2.3.1",
+    "@polkadot/rpc-core": "2.3.1",
+    "@polkadot/rpc-provider": "2.3.1",
+    "@polkadot/types": "2.3.1",
+    "@polkadot/types-known": "2.3.1",
+    "@polkadot/typegen": "2.3.1",
+    "@polkadot/metadata": "2.3.1"
+  },
+  "dependencies": {
+    "@acala-network/api": "^0.4.0-beta.33",
+    "@acala-network/app-util": "^0.4.0-beta.33",
+    "@acala-network/api-derive": "^0.4.0-beta.33",
+    "@acala-network/sdk-core": "^0.4.0-beta.33",
+    "@acala-network/sdk-swap": "^0.4.0-beta.33",
+    "@acala-network/sdk-homa": "^0.4.0-beta.33",
+    "@acala-network/types": "^0.4.0-beta.33",
+    "@acala-network/type-definitions": "^0.4.0-beta.33",
+    "@babel/polyfill": "^7.8.3",
+    "@polkadot/api": "^2.3.1",
+    "@polkadot/keyring": "^3.5.1",
+    "@polkadot/ui-shared": "^0.57.3",
+    "bn.js": "^5.1.1",
+    "oo7-substrate": "^0.8.0",
+    "typescript": "^4.0.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.3",
+    "@babel/polyfill": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "@babel/preset-typescript": "^7.10.4",
+    "@webpack-cli/info": "^0.2.0",
+    "@webpack-cli/init": "^0.3.0",
+    "babel-loader": "^8.0.6",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "prettier": "^1.19.1",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
+  }
+}
