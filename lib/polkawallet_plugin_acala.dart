@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:polkawallet_plugin_acala/api/acalaApi.dart';
 import 'package:polkawallet_plugin_acala/api/acalaService.dart';
 import 'package:polkawallet_plugin_acala/common/constants.dart';
+import 'package:polkawallet_plugin_acala/pages/acalaEntry.dart';
 import 'package:polkawallet_plugin_acala/service/index.dart';
 import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
 import 'package:polkawallet_plugin_acala/store/index.dart';
@@ -58,7 +59,7 @@ class PluginAcala extends PolkawalletPlugin {
         iconActive: Image(
             image: AssetImage('assets/images/Acala_indigo.png',
                 package: 'polkawallet_plugin_acala')),
-        content: Container(),
+        content: AcalaEntry(this, keyring),
       )
     ];
   }
