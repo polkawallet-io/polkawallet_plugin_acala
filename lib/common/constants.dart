@@ -18,3 +18,6 @@ const node_list = [
     'endpoint': 'wss://node-6714447553211260928.rz.onfinality.io/ws',
   },
 ];
+
+const acala_token_decimals = 18;
+const acala_stable_coin = 'AUSD';

@@ -29,7 +29,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-
 dependency_overrides:
   analyzer: 0.39.15
 
@@ -50,6 +49,12 @@ flutter:
     - assets/images/loan-start.svg
     - assets/images/deposit.svg
     - assets/images/nft.svg
+    - assets/images/tokens/ACA.png
+    - assets/images/tokens/AUSD.png
+    - assets/images/tokens/DOT.png
+    - assets/images/tokens/LDOT.png
+    - assets/images/tokens/RENBTC.png
+    - assets/images/tokens/XBTC.png
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages
   #

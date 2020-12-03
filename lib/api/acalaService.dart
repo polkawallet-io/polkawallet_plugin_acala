@@ -1,12 +1,16 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_ui/utils/format.dart';
 
 class AcalaService {
   AcalaService(this.plugin);
 
   final PluginAcala plugin;
+
+  Timer tokenPricesSubscribeTimer;
 
   final String tokenPricesSubscribeChannel = 'TokenPrices';
 
@@ -26,6 +30,7 @@ class AcalaService {
   //   String res = await FaucetApi.getAcalaTokensV2(address, deviceId);
   //   return res;
   // }
+
   void unsubscribeTokenBalances(String address) async {
     final tokens =
         List.of(plugin.networkConst['accounts']['allNonNativeCurrencyIds']);
@@ -100,18 +105,41 @@ class AcalaService {
     return {};
   }
 
-  // Future<void> fetchAccountLoans() async {
-  //   String address = store.account.currentAddress;
-  //   List res =
-  //       await apiRoot.evalJavascript('api.derive.loan.allLoans("$address")');
-  //   store.acala.setAccountLoans(res);
-  // }
-  //
-  // Future<void> fetchLoanTypes() async {
-  //   List res = await apiRoot.evalJavascript('api.derive.loan.allLoanTypes()');
-  //   store.acala.setLoanTypes(res);
-  // }
-  //
+  Future<void> subscribeTokenPrices(
+      Function(Map<String, BigInt>) callback) async {
+    final List res = await plugin.sdk.webView
+        .evalJavascript('api.rpc.oracle.getAllValues("Aggregated")');
+    if (res != null) {
+      final prices = Map<String, BigInt>();
+      res.forEach((e) {
+        prices[e[0]['Token']] = Fmt.balanceInt(e[1]['value'].toString());
+      });
+      callback(prices);
+    }
+
+    tokenPricesSubscribeTimer =
+        Timer(Duration(seconds: 10), () => subscribeTokenPrices(callback));
+  }
+
+  void unsubscribeTokenPrices() {
+    if (tokenPricesSubscribeTimer != null) {
+      tokenPricesSubscribeTimer.cancel();
+      tokenPricesSubscribeTimer = null;
+    }
+  }
+
+  Future<List> queryAccountLoans(String address) async {
+    final List res = await plugin.sdk.webView
+        .evalJavascript('api.derive.loan.allLoans("$address")');
+    return res;
+  }
+
+  Future<List> queryLoanTypes() async {
+    final List res = await plugin.sdk.webView
+        .evalJavascript('api.derive.loan.allLoanTypes()');
+    return res;
+  }
+
   // Future<SwapOutputData> fetchTokenSwapAmount(
   //   String supplyAmount,
   //   String targetAmount,
@@ -168,12 +196,13 @@ class AcalaService {
   //   );
   //   store.acala.setDexPoolInfo(pool, info);
   // }
-  //
-  // Future<void> fetchHomaStakingPool() async {
-  //   Map res = await apiRoot.evalJavascript('acala.fetchHomaStakingPool(api)');
-  //   store.acala.setHomaStakingPool(res);
-  // }
-  //
+
+  Future<Map> queryHomaStakingPool() async {
+    final Map res = await plugin.sdk.webView
+        .evalJavascript('acala.fetchHomaStakingPool(api)');
+    return res;
+  }
+
   // Future<void> fetchHomaUserInfo() async {
   //   String address = store.account.currentAddress;
   //   Map res = await apiRoot

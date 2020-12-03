@@ -1,29 +1,17 @@
-import { formatBalance } from "@polkadot/util";
 import { StakingPool } from "@acala-network/sdk-homa";
-import { FixedPointNumber, getPresetToken } from "@acala-network/sdk-core";
+import { FixedPointNumber, getPresetToken, PresetToken } from "@acala-network/sdk-core";
 import { SwapTrade } from "@acala-network/sdk-swap";
-
-/**
- * get token balances of an address
- * @param {String} address
- * @param {String} currencyId
- * @returns {String} balance
- */
-async function getTokens(address, currencyId) {
-  const res = await api.query.tokens.accounts(address, currencyId);
-  return formatBalance(res.free, { forceUnit: "-", withSi: false });
-}
+import { ApiPromise } from "@polkadot/api";
 
 /**
  * calc token swap amount
- * @param {Api} api
+ * @param {ApiPromise} api
  * @param {Number} input
  * @param {Number} output
  * @param {List<String>} swapPair
  * @param {Number} slippage
- * @returns {String} output
  */
-async function calcTokenSwapAmount(api, input, output, swapPair, slippage) {
+async function calcTokenSwapAmount(api: ApiPromise, input: number, output: number, swapPair: PresetToken[], slippage: number) {
   const i = getPresetToken(swapPair[0]).clone({
     amount: new FixedPointNumber(input || 0),
   });
@@ -32,7 +20,7 @@ async function calcTokenSwapAmount(api, input, output, swapPair, slippage) {
   });
   const mode = output === null ? "EXACT_INPUT" : "EXACT_OUTPUT";
   const availableTokenPairs = SwapTrade.getAvailableTokenPairs(api);
-  const maxTradePathLength = new FixedPointNumber(api.consts.dex.tradingPathLimit.toString());
+  const maxTradePathLength = new FixedPointNumber(api.consts.dex.tradingPathLimit.toString()).toNumber();
   const fee = {
     numerator: new FixedPointNumber(api.consts.dex.getExchangeFee[0].toString()),
     denominator: new FixedPointNumber(api.consts.dex.getExchangeFee[1].toString()),
@@ -49,7 +37,7 @@ async function calcTokenSwapAmount(api, input, output, swapPair, slippage) {
 
   const paths = swapTrader.getTradeTokenPairsByPaths();
   const res = await api.queryMulti(paths.map((e) => [api.query.dex.liquidityPool, e.toChainData()]));
-  const pools = SwapTrade.convertLiquidityPoolsToTokenPairs(paths, res);
+  const pools = SwapTrade.convertLiquidityPoolsToTokenPairs(paths, res as any);
   const data = swapTrader.getTradeParameters(pools);
   const params = data.toChainData(mode);
   return {
@@ -60,42 +48,42 @@ async function calcTokenSwapAmount(api, input, output, swapPair, slippage) {
   };
 }
 
-async function queryLPTokens(address) {
-  const allTokens = api.consts.dex.enabledTradingPairs.map((item) =>
-    api.createType("CurrencyId", {
+async function queryLPTokens(api: ApiPromise, address: string) {
+  const allTokens = (api.consts.dex.enabledTradingPairs as any).map((item: any) =>
+    api.createType("CurrencyId" as any, {
       DEXShare: [item[0].asToken.toString(), item[1].asToken.toString()],
     })
   );
 
   const res = await api.queryMulti(allTokens.map((e) => [api.query.tokens.accounts, [address, e]]));
-  return res.map((e, i) => ({ free: e.free.toString(), currencyId: allTokens[i].asDexShare })).filter((e) => e.free > 0);
+  return (res as any)
+    .map((e: any, i: number) => ({ free: e.free.toString(), currencyId: allTokens[i].asDexShare }))
+    .filter((e: any) => e.free > 0);
 }
 
 /**
  * getTokenPairs
  * @param {String} currencyId
  * @param {String} address
- * @returns {Map} dexPoolInfo
  */
-async function getTokenPairs() {
-  return SwapTrade.getAvailableTokenPairs(api).map((e) => e.origin);
+async function getTokenPairs(api: ApiPromise) {
+  return SwapTrade.getAvailableTokenPairs(api).map((e: any) => e.origin);
 }
 
 /**
  * fetchDexPoolInfo
  * @param {String} poolId
  * @param {String} address
- * @returns {Map} dexPoolInfo
  */
-async function fetchDexPoolInfo(pool, address) {
-  const res = await Promise.all([
-    api.query.dex.liquidityPool(pool.DEXShare.map((e) => ({ Token: e }))),
+async function fetchDexPoolInfo(api: ApiPromise, pool: any, address: string) {
+  const res = (await Promise.all([
+    api.query.dex.liquidityPool(pool.DEXShare.map((e: any) => ({ Token: e }))),
     api.query.rewards.pools({ DexIncentive: pool }),
     api.query.rewards.pools({ DexSaving: pool }),
     api.query.rewards.shareAndWithdrawnReward({ DexIncentive: pool }, address),
     api.query.rewards.shareAndWithdrawnReward({ DexSaving: pool }, address),
     api.query.tokens.totalIssuance(pool),
-  ]);
+  ])) as any;
   let proportion = 0;
   if (res[2]) {
     proportion = FixedPointNumber.fromInner(res[3][0].toString())
@@ -116,7 +104,7 @@ async function fetchDexPoolInfo(pool, address) {
   };
 }
 
-async function _calacFreeList(start, duration) {
+async function _calacFreeList(api: ApiPromise, start: number, duration: number) {
   const list = [];
   for (let i = start; i < start + duration; i++) {
     const result = await api.query.stakingPool.unbonding(i);
@@ -131,8 +119,11 @@ async function _calacFreeList(start, duration) {
 
 let homaStakingPool;
 
-async function fetchHomaStakingPool(api) {
-  const [stakingPool, { mockRewardRate }] = await Promise.all([api.derive.homa.stakingPool(), api.query.polkadotBridge.subAccounts(0)]);
+async function fetchHomaStakingPool(api: ApiPromise) {
+  const [stakingPool, { mockRewardRate }] = (await Promise.all([
+    (api.derive as any).homa.stakingPool(),
+    api.query.polkadotBridge.subAccounts(0),
+  ])) as any;
 
   const poolInfo = new StakingPool({
     stakingPoolParams: {
@@ -152,8 +143,8 @@ async function fetchHomaStakingPool(api) {
   });
   homaStakingPool = poolInfo;
 
-  const freeList = await _calacFreeList(stakingPool.currentEra.toNumber() + 1, stakingPool.bondingDuration.toNumber());
-  const eraLength = api.consts.polkadotBridge.eraLength;
+  const freeList = await _calacFreeList(api, stakingPool.currentEra.toNumber() + 1, stakingPool.bondingDuration.toNumber());
+  const eraLength = api.consts.polkadotBridge.eraLength as any;
   const expectedBlockTime = api.consts.babe.expectedBlockTime;
   const unbondingDuration = expectedBlockTime.toNumber() * eraLength.toNumber() * stakingPool.bondingDuration.toNumber();
   return {
@@ -174,13 +165,13 @@ async function fetchHomaStakingPool(api) {
   };
 }
 
-async function fetchHomaUserInfo(api, address) {
-  const stakingPool = await api.derive.homa.stakingPool();
+async function fetchHomaUserInfo(api: ApiPromise, address: string) {
+  const stakingPool = await (api.derive as any).homa.stakingPool();
   const start = stakingPool.currentEra.toNumber() + 1;
   const duration = stakingPool.bondingDuration.toNumber();
   const claims = [];
   for (let i = start; i < start + duration + 2; i++) {
-    const claimed = await api.query.stakingPool.claimedUnbond(address, i);
+    const claimed = (await api.query.stakingPool.claimedUnbond(address, i)) as any;
     if (claimed.gtn(0)) {
       claims[claims.length] = {
         era: i,
@@ -188,14 +179,14 @@ async function fetchHomaUserInfo(api, address) {
       };
     }
   }
-  const unbonded = await api.rpc.stakingPool.getAvailableUnbonded(address);
+  const unbonded = await (api.rpc as any).stakingPool.getAvailableUnbonded(address);
   return {
     unbonded: unbonded.amount || 0,
     claims,
   };
 }
 
-async function queryHomaRedeemAmount(amount, redeemType, targetEra) {
+async function queryHomaRedeemAmount(api: ApiPromise, amount: number, redeemType: number, targetEra: number) {
   if (redeemType == 0) {
     const res = await homaStakingPool.getStakingAmountInRedeemByFreeUnbonded(new FixedPointNumber(amount));
     return {
@@ -226,7 +217,6 @@ async function queryHomaRedeemAmount(amount, redeemType, targetEra) {
 }
 
 export default {
-  getTokens,
   calcTokenSwapAmount,
   queryLPTokens,
   getTokenPairs,

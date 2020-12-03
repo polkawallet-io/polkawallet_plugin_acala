@@ -5,7 +5,7 @@ import keyring from "./service/keyring";
 import { options } from "@acala-network/api";
 import account from "./service/account";
 import gov from "./service/gov";
-// import acala from "./service/acala";
+import acala from "./service/acala";
 import { genLinks } from "./utils/config/config";
 
 // send message to JSChannel: PolkaWallet
@@ -51,4 +51,4 @@ async function connect(nodes: string[]) {
 (<any>window).keyring = keyring;
 (<any>window).account = account;
 (<any>window).gov = gov;
-// window.acala = acala;
+(<any>window).acala = acala;

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/service/walletApi.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
@@ -83,8 +84,8 @@ class AcalaEntry extends StatelessWidget {
                               height: 56,
                             ),
                           ),
-                          // onTap: () =>
-                          //     Navigator.of(context).pushNamed(LoanPage.route),
+                          onTap: () =>
+                              Navigator.of(context).pushNamed(LoanPage.route),
                         ),
                       ),
                       Padding(

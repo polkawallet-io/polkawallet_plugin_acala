@@ -6,6 +6,7 @@ import 'package:polkawallet_plugin_acala/api/acalaApi.dart';
 import 'package:polkawallet_plugin_acala/api/acalaService.dart';
 import 'package:polkawallet_plugin_acala/common/constants.dart';
 import 'package:polkawallet_plugin_acala/pages/acalaEntry.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
 import 'package:polkawallet_plugin_acala/service/index.dart';
 import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
 import 'package:polkawallet_plugin_acala/store/index.dart';
@@ -24,9 +25,9 @@ class PluginAcala extends PolkawalletPlugin {
     ss58: 42,
     primaryColor: Colors.indigo,
     icon: Image.asset(
-        'packages/polkawallet_plugin_acala/assets/images/public/acala.png'),
+        'packages/polkawallet_plugin_acala/assets/images/acala.png'),
     iconDisabled: Image.asset(
-        'packages/polkawallet_plugin_acala/assets/images/public/acala_gray.png'),
+        'packages/polkawallet_plugin_acala/assets/images/acala_gray.png'),
   );
 
   @override
@@ -39,13 +40,15 @@ class PluginAcala extends PolkawalletPlugin {
     'ACA': Image.asset(
         'packages/polkawallet_plugin_acala/assets/images/tokens/ACA.png'),
     'AUSD': Image.asset(
-        'packages/polkawallet_plugin_kusama/assets/images/tokens/AUSD.png'),
+        'packages/polkawallet_plugin_acala/assets/images/tokens/AUSD.png'),
+    'DOT': Image.asset(
+        'packages/polkawallet_plugin_acala/assets/images/tokens/DOT.png'),
     'LDOT': Image.asset(
-        'packages/polkawallet_plugin_kusama/assets/images/tokens/LDOT.png'),
+        'packages/polkawallet_plugin_acala/assets/images/tokens/LDOT.png'),
     'RENBTC': Image.asset(
-        'packages/polkawallet_plugin_kusama/assets/images/tokens/RENBTC.png'),
+        'packages/polkawallet_plugin_acala/assets/images/tokens/RENBTC.png'),
     'XBTC': Image.asset(
-        'packages/polkawallet_plugin_kusama/assets/images/tokens/XBTC.png'),
+        'packages/polkawallet_plugin_acala/assets/images/tokens/XBTC.png'),
   };
 
   @override
@@ -71,6 +74,7 @@ class PluginAcala extends PolkawalletPlugin {
       //     TxConfirmPage(this, keyring, _service.getPassword),
 
       // staking pages
+      LoanPage.route: (_) => LoanPage(this, keyring),
     };
   }
 

@@ -1,4 +1,6 @@
 import 'package:polkawallet_plugin_acala/api/acalaService.dart';
+import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
+import 'package:polkawallet_plugin_acala/api/types/stakingPoolInfoData.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 
 class AcalaApi {
@@ -52,18 +54,27 @@ class AcalaApi {
     return res;
   }
 
-  // Future<void> fetchAccountLoans() async {
-  //   String address = store.account.currentAddress;
-  //   List res =
-  //       await apiRoot.evalJavascript('api.derive.loan.allLoans("$address")');
-  //   store.acala.setAccountLoans(res);
-  // }
-  //
-  // Future<void> fetchLoanTypes() async {
-  //   List res = await apiRoot.evalJavascript('api.derive.loan.allLoanTypes()');
-  //   store.acala.setLoanTypes(res);
-  // }
-  //
+  Future<void> subscribeTokenPrices(
+      Function(Map<String, BigInt>) callback) async {
+    service.subscribeTokenPrices(callback);
+  }
+
+  void unsubscribeTokenPrices() {
+    service.unsubscribeTokenPrices();
+  }
+
+  Future<List> queryAccountLoans(String address) async {
+    final List res = await service.queryAccountLoans(address);
+    return res;
+  }
+
+  Future<List<LoanType>> queryLoanTypes() async {
+    final List res = await service.queryLoanTypes();
+    return res
+        .map((e) => LoanType.fromJson(Map<String, dynamic>.of(e)))
+        .toList();
+  }
+
   // Future<SwapOutputData> fetchTokenSwapAmount(
   //   String supplyAmount,
   //   String targetAmount,
@@ -120,12 +131,12 @@ class AcalaApi {
   //   );
   //   store.acala.setDexPoolInfo(pool, info);
   // }
-  //
-  // Future<void> fetchHomaStakingPool() async {
-  //   Map res = await apiRoot.evalJavascript('acala.fetchHomaStakingPool(api)');
-  //   store.acala.setHomaStakingPool(res);
-  // }
-  //
+
+  Future<StakingPoolInfoData> queryHomaStakingPool() async {
+    final Map res = await service.queryHomaStakingPool();
+    return StakingPoolInfoData.fromJson(Map<String, dynamic>.of(res));
+  }
+
   // Future<void> fetchHomaUserInfo() async {
   //   String address = store.account.currentAddress;
   //   Map res = await apiRoot
