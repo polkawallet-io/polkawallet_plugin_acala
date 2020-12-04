@@ -4,12 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:polkawallet_plugin_acala/common/constants.dart';
+import 'package:polkawallet_plugin_acala/pages/currencySelectPage.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanAdjustPage.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanCard.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanChart.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanCreatePage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
-import 'package:polkawallet_ui/components/currencyWithIcon.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
 class LoanPage extends StatefulWidget {
@@ -73,7 +77,7 @@ class _LoanPageState extends State<LoanPage> {
             centerTitle: true,
             actions: <Widget>[
               IconButton(
-                icon: Icon(Icons.history),
+                icon: Icon(Icons.history, color: cardColor),
                 // onPressed: () => Navigator.of(context)
                 //     .pushNamed(LoanHistoryPage.route, arguments: loan.type),
               )
@@ -98,27 +102,30 @@ class _LoanPageState extends State<LoanPage> {
                     }
                   },
                 ),
-//                 Expanded(
-//                   child: loan != null
-//                       ? ListView(
-//                     children: <Widget>[
-//                       loan.collaterals > BigInt.zero
-//                           ? LoanCard(loan, balance, decimals)
-//                           : RoundedCard(
-//                         margin: EdgeInsets.all(16),
-//                         padding:
-//                         EdgeInsets.fromLTRB(48, 24, 48, 24),
-//                         child: SvgPicture.asset(
-//                             'packages/polkawallet_plugin_acala/assets/images/acala/loan-start.svg'),
-//                       ),
-//                       loan.debitInUSD > BigInt.zero
-//                           ? LoanChart(loan, decimals)
-// //                                    ? LoanDonutChart(loan)
-//                           : Container()
-//                     ],
-//                   )
-//                       : Container(),
-//                 ),
+                Expanded(
+                  child: loan != null
+                      ? ListView(
+                          children: <Widget>[
+                            loan.collaterals > BigInt.zero
+                                ? LoanCard(
+                                    loan,
+                                    Fmt.priceFloorBigInt(aUSDBalance, decimals),
+                                    decimals)
+                                : RoundedCard(
+                                    margin: EdgeInsets.all(16),
+                                    padding:
+                                        EdgeInsets.fromLTRB(48, 24, 48, 24),
+                                    child: SvgPicture.asset(
+                                        'packages/polkawallet_plugin_acala/assets/images/loan-start.svg'),
+                                  ),
+                            loan.debitInUSD > BigInt.zero
+                                ? LoanChart(loan, decimals)
+//                                    ? LoanDonutChart(loan)
+                                : Container()
+                          ],
+                        )
+                      : Container(),
+                ),
                 widget.plugin.store.loan.loanTypes.length > 0
                     ? Row(
                         children: <Widget>[
@@ -132,21 +139,21 @@ class _LoanPageState extends State<LoanPage> {
                                     style: TextStyle(color: cardColor),
                                   ),
                                   onPressed: () {
-                                    // if (loan != null &&
-                                    //     loan.collaterals > BigInt.zero) {
-                                    //   Navigator.of(context).pushNamed(
-                                    //     LoanAdjustPage.route,
-                                    //     arguments: LoanAdjustPageParams(
-                                    //         LoanAdjustPage.actionTypeBorrow,
-                                    //         _tab),
-                                    //   );
-                                    // } else {
-                                    //   Navigator.of(context).pushNamed(
-                                    //     LoanCreatePage.route,
-                                    //     arguments:
-                                    //     LoanAdjustPageParams('', _tab),
-                                    //   );
-                                    // }
+                                    if (loan != null &&
+                                        loan.collaterals > BigInt.zero) {
+                                      Navigator.of(context).pushNamed(
+                                        LoanAdjustPage.route,
+                                        arguments: LoanAdjustPageParams(
+                                            LoanAdjustPage.actionTypeBorrow,
+                                            _tab),
+                                      );
+                                    } else {
+                                      Navigator.of(context).pushNamed(
+                                        LoanCreatePage.route,
+                                        arguments:
+                                            LoanAdjustPageParams('', _tab),
+                                      );
+                                    }
                                   }),
                             ),
                           ),
@@ -237,13 +244,13 @@ class CurrencySelector extends StatelessWidget {
             : null,
         trailing: Icon(Icons.arrow_forward_ios, size: 18),
         onTap: () async {
-          // final res = await Navigator.of(context).pushNamed(
-          //   CurrencySelectPage.route,
-          //   arguments: tokenOptions,
-          // );
-          // if (res != null) {
-          //   onSelect(res);
-          // }
+          final res = await Navigator.of(context).pushNamed(
+            CurrencySelectPage.route,
+            arguments: tokenOptions,
+          );
+          if (res != null) {
+            onSelect(res);
+          }
         },
       ),
     );

@@ -6,6 +6,9 @@ import 'package:polkawallet_plugin_acala/api/acalaApi.dart';
 import 'package:polkawallet_plugin_acala/api/acalaService.dart';
 import 'package:polkawallet_plugin_acala/common/constants.dart';
 import 'package:polkawallet_plugin_acala/pages/acalaEntry.dart';
+import 'package:polkawallet_plugin_acala/pages/currencySelectPage.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanAdjustPage.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanCreatePage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
 import 'package:polkawallet_plugin_acala/service/index.dart';
 import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
@@ -73,8 +76,12 @@ class PluginAcala extends PolkawalletPlugin {
       // TxConfirmPage.route: (_) =>
       //     TxConfirmPage(this, keyring, _service.getPassword),
 
+      CurrencySelectPage.route: (_) => CurrencySelectPage(this),
+
       // staking pages
       LoanPage.route: (_) => LoanPage(this, keyring),
+      LoanCreatePage.route: (_) => LoanCreatePage(this, keyring),
+      LoanAdjustPage.route: (_) => LoanAdjustPage(this, keyring),
     };
   }
 
@@ -102,6 +109,7 @@ class PluginAcala extends PolkawalletPlugin {
     if (keyring.current.address != null) {
       _api.subscribeTokenBalances(keyring.current.address, (data) {
         balances.setTokens(data);
+        _store.loan.setTokenBalanceMap(data);
       });
 
       final airdrops = await _api.queryAirdropTokens(keyring.current.address);
