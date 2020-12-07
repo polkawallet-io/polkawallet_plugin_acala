@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -25,7 +26,7 @@ class CurrencySelectPage extends StatelessWidget {
             return ListTile(
               title: CurrencyWithIcon(
                 i,
-                plugin.tokenIcons[i],
+                TokenIcon(i, plugin.tokenIcons),
                 textStyle: Theme.of(context).textTheme.headline4,
               ),
               trailing: Icon(

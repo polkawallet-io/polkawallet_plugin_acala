@@ -227,7 +227,7 @@ class CurrencySelector extends StatelessWidget {
         ],
       ),
       child: ListTile(
-        leading: SizedBox(child: tokenIcons[token], width: 32),
+        leading: TokenIcon(token, tokenIcons),
         title: Text(
           token,
           style: TextStyle(
@@ -257,5 +257,33 @@ class CurrencySelector extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+class TokenIcon extends StatelessWidget {
+  TokenIcon(this.symbol, this.tokenIcons);
+  final String symbol;
+  final Map<String, Widget> tokenIcons;
+  @override
+  Widget build(BuildContext context) {
+    if (symbol.contains('-')) {
+      final pair = symbol.toUpperCase().split('-');
+      return SizedBox(
+        child: Stack(
+          children: [
+            Container(
+              margin: EdgeInsets.only(left: 16),
+              child: tokenIcons[pair[1]],
+            ),
+            SizedBox(
+              width: 29,
+              child: tokenIcons[pair[0]],
+            )
+          ],
+        ),
+        width: 45,
+      );
+    }
+    return SizedBox(child: tokenIcons[symbol], width: 32);
   }
 }

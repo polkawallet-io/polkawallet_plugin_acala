@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:polkawallet_plugin_acala/api/types/swapOutputData.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
@@ -50,7 +51,6 @@ class AcalaService {
       String address, Function(Map) callback) async {
     final tokens =
         List.of(plugin.networkConst['accounts']['allNonNativeCurrencyIds']);
-    print(tokens);
     tokens.forEach((e) {
       final channel = '$tokenBalanceChannel${e['Token']}';
       plugin.sdk.api.subscribeMessage(
@@ -151,50 +151,48 @@ class AcalaService {
     return output;
   }
 
-  // Future<void> fetchDexPools() async {
-  //   final res = await apiRoot.evalJavascript('acala.getTokenPairs()');
-  //   store.acala.setDexPools(res);
-  // }
-  //
-  // Future<void> fetchDexLiquidityPoolRewards() async {
-  //   await webApi.acala.fetchDexPools();
-  //   final pools = store.acala.dexPools
-  //       .map((pool) =>
-  //           jsonEncode({'DEXShare': pool.map((e) => e.name).toList()}))
-  //       .toList();
-  //   final incentiveQuery = pools
-  //       .map((i) => 'api.query.incentives.dEXIncentiveRewards($i)')
-  //       .join(',');
-  //   final savingRateQuery =
-  //       pools.map((i) => 'api.query.incentives.dEXSavingRates($i)').join(',');
-  //   final res = await Future.wait([
-  //     apiRoot.evalJavascript('Promise.all([$incentiveQuery])',
-  //         allowRepeat: true),
-  //     apiRoot.evalJavascript('Promise.all([$savingRateQuery])',
-  //         allowRepeat: true)
-  //   ]);
-  //   final incentives = Map<String, dynamic>();
-  //   final savingRates = Map<String, dynamic>();
-  //   final tokenPairs = store.acala.dexPools
-  //       .map((e) => e.map((i) => i.symbol).join('-'))
-  //       .toList();
-  //   tokenPairs.asMap().forEach((k, v) {
-  //     incentives[v] = res[0][k];
-  //     savingRates[v] = res[1][k];
-  //   });
-  //   store.acala.setSwapPoolRewards(incentives);
-  //   store.acala.setSwapSavingRates(savingRates);
-  // }
-  //
-  // Future<void> fetchDexPoolInfo(String pool) async {
-  //   Map info = await apiRoot.evalJavascript(
-  //     'acala.fetchDexPoolInfo(${jsonEncode({
-  //       'DEXShare': pool.split('-').map((e) => e.toUpperCase()).toList()
-  //     })}, "${store.account.currentAddress}")',
-  //     allowRepeat: true,
-  //   );
-  //   store.acala.setDexPoolInfo(pool, info);
-  // }
+  Future<List> getDexPools() async {
+    final List res =
+        await plugin.sdk.webView.evalJavascript('acala.getTokenPairs(api)');
+    return res;
+  }
+
+  Future<Map> queryDexLiquidityPoolRewards(
+      List<List<AcalaTokenData>> dexPools) async {
+    final pools = dexPools
+        .map((pool) =>
+            jsonEncode({'DEXShare': pool.map((e) => e.symbol).toList()}))
+        .toList();
+    final incentiveQuery = pools
+        .map((i) => 'api.query.incentives.dEXIncentiveRewards($i)')
+        .join(',');
+    final savingRateQuery =
+        pools.map((i) => 'api.query.incentives.dEXSavingRates($i)').join(',');
+    final res = await Future.wait([
+      plugin.sdk.webView.evalJavascript('Promise.all([$incentiveQuery])'),
+      plugin.sdk.webView.evalJavascript('Promise.all([$savingRateQuery])')
+    ]);
+    final incentives = Map<String, dynamic>();
+    final savingRates = Map<String, dynamic>();
+    final tokenPairs =
+        dexPools.map((e) => e.map((i) => i.symbol).join('-')).toList();
+    tokenPairs.asMap().forEach((k, v) {
+      incentives[v] = res[0][k];
+      savingRates[v] = res[1][k];
+    });
+    return {
+      'incentives': incentives,
+      'savingRates': savingRates,
+    };
+  }
+
+  Future<Map> queryDexPoolInfo(String pool, address) async {
+    final Map info = await plugin.sdk.webView.evalJavascript(
+        'acala.fetchDexPoolInfo(api, ${jsonEncode({
+      'DEXShare': pool.split('-').map((e) => e.toUpperCase()).toList()
+    })}, "$address")');
+    return info;
+  }
 
   Future<Map> queryHomaStakingPool() async {
     final Map res = await plugin.sdk.webView

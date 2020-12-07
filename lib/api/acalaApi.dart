@@ -1,4 +1,5 @@
 import 'package:polkawallet_plugin_acala/api/acalaService.dart';
+import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
 import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
 import 'package:polkawallet_plugin_acala/api/types/stakingPoolInfoData.dart';
 import 'package:polkawallet_plugin_acala/api/types/swapOutputData.dart';
@@ -87,11 +88,20 @@ class AcalaApi {
     return SwapOutputData.fromJson(output);
   }
 
-  // Future<void> fetchDexPools() async {
-  //   final res = await apiRoot.evalJavascript('acala.getTokenPairs()');
-  //   store.acala.setDexPools(res);
-  // }
-  //
+  Future<List<List<AcalaTokenData>>> getDexPools() async {
+    final pools = await service.getDexPools();
+    return pools
+        .map((pool) =>
+            (pool as List).map((e) => AcalaTokenData.fromJson(e)).toList())
+        .toList();
+  }
+
+  Future<Map> queryDexLiquidityPoolRewards(
+      List<List<AcalaTokenData>> dexPools) async {
+    final res = await service.queryDexLiquidityPoolRewards(dexPools);
+    return res;
+  }
+
   // Future<void> fetchDexLiquidityPoolRewards() async {
   //   await webApi.acala.fetchDexPools();
   //   final pools = store.acala.dexPools
@@ -121,16 +131,12 @@ class AcalaApi {
   //   store.acala.setSwapPoolRewards(incentives);
   //   store.acala.setSwapSavingRates(savingRates);
   // }
-  //
-  // Future<void> fetchDexPoolInfo(String pool) async {
-  //   Map info = await apiRoot.evalJavascript(
-  //     'acala.fetchDexPoolInfo(${jsonEncode({
-  //       'DEXShare': pool.split('-').map((e) => e.toUpperCase()).toList()
-  //     })}, "${store.account.currentAddress}")',
-  //     allowRepeat: true,
-  //   );
-  //   store.acala.setDexPoolInfo(pool, info);
-  // }
+
+  Future<Map<String, DexPoolInfoData>> queryDexPoolInfo(
+      String pool, address) async {
+    final Map info = await service.queryDexPoolInfo(pool, address);
+    return {pool: DexPoolInfoData.fromJson(Map<String, dynamic>.of(info))};
+  }
 
   Future<StakingPoolInfoData> queryHomaStakingPool() async {
     final Map res = await service.queryHomaStakingPool();

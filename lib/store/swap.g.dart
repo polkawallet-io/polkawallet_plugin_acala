@@ -24,12 +24,12 @@ mixin _$SwapStore on _SwapStore, Store {
     });
   }
 
-  final _$addLSwapTxAsyncAction = AsyncAction('_SwapStore.addLSwapTx');
+  final _$addSwapTxAsyncAction = AsyncAction('_SwapStore.addSwapTx');
 
   @override
   Future<void> addSwapTx(
       Map<dynamic, dynamic> tx, String pubKey, int decimals) {
-    return _$addLSwapTxAsyncAction
+    return _$addSwapTxAsyncAction
         .run(() => super.addSwapTx(tx, pubKey, decimals));
   }
 

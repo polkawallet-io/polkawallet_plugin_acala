@@ -69,8 +69,6 @@ abstract class _LoanStore with Store {
     }
     cached[pubKey] = list;
     cache.loanTxs.val = cached;
-    print('save cache loan');
-    print(cached);
   }
 
   @action
@@ -79,13 +77,10 @@ abstract class _LoanStore with Store {
 
     final cached = cache.loanTxs.val;
     final list = cached[pubKey] as List;
-    print(cached);
-    print('loadCache loan');
     if (list != null) {
       print(list);
       txs = ObservableList<TxLoanData>.of(
           list.map((e) => TxLoanData.fromJson(Map<String, dynamic>.from(e))));
     }
-    print(txs);
   }
 }

@@ -8,6 +8,7 @@ import 'package:polkawallet_plugin_acala/api/acalaService.dart';
 import 'package:polkawallet_plugin_acala/common/constants.dart';
 import 'package:polkawallet_plugin_acala/pages/acalaEntry.dart';
 import 'package:polkawallet_plugin_acala/pages/currencySelectPage.dart';
+import 'package:polkawallet_plugin_acala/pages/earn/earnPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanAdjustPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanCreatePage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanHistoryPage.dart';
@@ -90,6 +91,8 @@ class PluginAcala extends PolkawalletPlugin {
       // swap pages
       SwapPage.route: (_) => SwapPage(this, keyring),
       SwapHistoryPage.route: (_) => SwapHistoryPage(this, keyring),
+      // earn pages
+      EarnPage.route: (_) => EarnPage(this, keyring),
     };
   }
 

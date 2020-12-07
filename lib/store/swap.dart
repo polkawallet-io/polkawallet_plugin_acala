@@ -30,8 +30,6 @@ abstract class _SwapStore with Store {
     }
     cached[pubKey] = list;
     cache.swapTxs.val = cached;
-    print('save cache swap');
-    print(cached);
   }
 
   @action
@@ -40,12 +38,9 @@ abstract class _SwapStore with Store {
 
     final cached = cache.swapTxs.val;
     final list = cached[pubKey] as List;
-    print('loadCache swap');
     if (list != null) {
-      print(list);
       txs = ObservableList<TxSwapData>.of(list.map((e) => TxSwapData.fromJson(
           Map<String, dynamic>.from(e), acala_token_decimals)));
     }
-    print(txs);
   }
 }
