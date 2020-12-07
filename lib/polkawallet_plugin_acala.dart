@@ -2,6 +2,7 @@ library polkawallet_plugin_acala;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_plugin_acala/api/acalaApi.dart';
 import 'package:polkawallet_plugin_acala/api/acalaService.dart';
 import 'package:polkawallet_plugin_acala/common/constants.dart';
@@ -11,6 +12,8 @@ import 'package:polkawallet_plugin_acala/pages/loan/loanAdjustPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanCreatePage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/swapHistoryPage.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/swapPage.dart';
 import 'package:polkawallet_plugin_acala/service/index.dart';
 import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
 import 'package:polkawallet_plugin_acala/store/index.dart';
@@ -84,6 +87,9 @@ class PluginAcala extends PolkawalletPlugin {
       LoanCreatePage.route: (_) => LoanCreatePage(this, keyring),
       LoanAdjustPage.route: (_) => LoanAdjustPage(this, keyring),
       LoanHistoryPage.route: (_) => LoanHistoryPage(this, keyring),
+      // swap pages
+      SwapPage.route: (_) => SwapPage(this, keyring),
+      SwapHistoryPage.route: (_) => SwapHistoryPage(this, keyring),
     };
   }
 
@@ -98,25 +104,34 @@ class PluginAcala extends PolkawalletPlugin {
   PluginStore get store => _store;
   PluginService get service => _service;
 
+  Future<void> _subscribeTokenBalances(KeyPairData acc) async {
+    _api.subscribeTokenBalances(acc.address, (data) {
+      balances.setTokens(data);
+      _store.loan.setTokenBalanceMap(data);
+    });
+
+    final airdrops = await _api.queryAirdropTokens(acc.address);
+    balances
+        .setExtraTokens([ExtraTokenData(title: 'Airdrop', tokens: airdrops)]);
+  }
+
   @override
   Future<void> beforeStart(Keyring keyring) async {
     _api = AcalaApi(AcalaService(this));
 
+    await GetStorage.init(acala_plugin_cache_key);
+
     _store = PluginStore(_cache);
+    _store.loan.loadCache(keyring.current.pubKey);
+    _store.swap.loadCache(keyring.current.pubKey);
+
     _service = PluginService(this, keyring);
   }
 
   @override
   Future<void> onStarted(Keyring keyring) async {
     if (keyring.current.address != null) {
-      _api.subscribeTokenBalances(keyring.current.address, (data) {
-        balances.setTokens(data);
-        _store.loan.setTokenBalanceMap(data);
-      });
-
-      final airdrops = await _api.queryAirdropTokens(keyring.current.address);
-      balances
-          .setExtraTokens([ExtraTokenData(title: 'Airdrop', tokens: airdrops)]);
+      _subscribeTokenBalances(keyring.current);
     }
   }
 
@@ -124,8 +139,10 @@ class PluginAcala extends PolkawalletPlugin {
   Future<void> onAccountChanged(KeyPairData acc) async {
     _api.unsubscribeTokenBalances(acc.address);
     balances.setTokens([]);
-    _api.subscribeTokenBalances(acc.address, (data) {
-      balances.setTokens(data);
-    });
+
+    _subscribeTokenBalances(acc);
+
+    _store.loan.loadCache(acc.pubKey);
+    _store.swap.loadCache(acc.pubKey);
   }
 }

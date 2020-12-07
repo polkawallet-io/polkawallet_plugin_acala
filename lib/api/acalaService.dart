@@ -42,7 +42,7 @@ class AcalaService {
     dexPairs.forEach((e) {
       final LPToken = List.of(e).map((i) => i['Token']).toList();
       plugin.sdk.api
-          .unsubscribeMessage('$tokenBalanceChannel${LPToken.join('-')}');
+          .unsubscribeMessage('$tokenBalanceChannel${LPToken.join('')}');
     });
   }
 
@@ -50,6 +50,7 @@ class AcalaService {
       String address, Function(Map) callback) async {
     final tokens =
         List.of(plugin.networkConst['accounts']['allNonNativeCurrencyIds']);
+    print(tokens);
     tokens.forEach((e) {
       final channel = '$tokenBalanceChannel${e['Token']}';
       plugin.sdk.api.subscribeMessage(
@@ -57,9 +58,7 @@ class AcalaService {
         [address, e],
         channel,
         (Map data) {
-          if (BigInt.parse(data['free'].toString()) > BigInt.zero) {
-            callback({'symbol': e['Token'], 'balance': data});
-          }
+          callback({'symbol': e['Token'], 'balance': data});
         },
       );
     });
@@ -140,18 +139,18 @@ class AcalaService {
     return res;
   }
 
-  // Future<SwapOutputData> fetchTokenSwapAmount(
-  //   String supplyAmount,
-  //   String targetAmount,
-  //   List<String> swapPair,
-  //   String slippage,
-  // ) async {
-  //   final code =
-  //       'acala.calcTokenSwapAmount(api, $supplyAmount, $targetAmount, ${jsonEncode(swapPair)}, $slippage)';
-  //   final output = await apiRoot.evalJavascript(code, allowRepeat: true);
-  //   return SwapOutputData.fromJson(output);
-  // }
-  //
+  Future<Map> queryTokenSwapAmount(
+    String supplyAmount,
+    String targetAmount,
+    List<String> swapPair,
+    String slippage,
+  ) async {
+    final code =
+        'acala.calcTokenSwapAmount(api, $supplyAmount, $targetAmount, ${jsonEncode(swapPair)}, $slippage)';
+    final output = await plugin.sdk.webView.evalJavascript(code);
+    return output;
+  }
+
   // Future<void> fetchDexPools() async {
   //   final res = await apiRoot.evalJavascript('acala.getTokenPairs()');
   //   store.acala.setDexPools(res);

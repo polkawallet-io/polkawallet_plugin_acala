@@ -57,22 +57,35 @@ abstract class _LoanStore with Store {
   }
 
   @action
-  Future<void> addLoanTx(Map tx) async {
+  Future<void> addLoanTx(Map tx, String pubKey) async {
     txs.add(TxLoanData.fromJson(Map<String, dynamic>.from(tx)));
 
-    final cached = cache.loanTxs.val.toList();
-    if (cached.length > 0) {
-      cached.add(tx);
-      cache.loanTxs.val = cached;
+    final cached = cache.loanTxs.val;
+    List list = cached[pubKey];
+    if (list != null) {
+      list.add(tx);
     } else {
-      cache.loanTxs.val = [tx];
+      list = [tx];
     }
+    cached[pubKey] = list;
+    cache.loanTxs.val = cached;
+    print('save cache loan');
+    print(cached);
   }
 
   @action
-  Future<void> loadCache() async {
-    if (cache.loanTxs.val != null) {
-      txs = cache.loanTxs.val.toList();
+  Future<void> loadCache(String pubKey) async {
+    if (pubKey == null || pubKey.isEmpty) return;
+
+    final cached = cache.loanTxs.val;
+    final list = cached[pubKey] as List;
+    print(cached);
+    print('loadCache loan');
+    if (list != null) {
+      print(list);
+      txs = ObservableList<TxLoanData>.of(
+          list.map((e) => TxLoanData.fromJson(Map<String, dynamic>.from(e))));
     }
+    print(txs);
   }
 }

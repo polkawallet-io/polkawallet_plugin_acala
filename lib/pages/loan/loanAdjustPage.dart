@@ -334,7 +334,7 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
       res['params'] = params['params'];
       res['time'] = DateTime.now().millisecondsSinceEpoch;
 
-      widget.plugin.store.loan.addLoanTx(res);
+      widget.plugin.store.loan.addLoanTx(res, widget.keyring.current.pubKey);
       Navigator.of(context).pop(res);
     }
   }

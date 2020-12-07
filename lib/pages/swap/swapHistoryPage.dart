@@ -1,33 +1,27 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
-import 'package:polkawallet_plugin_acala/api/types/txLoanData.dart';
-import 'package:polkawallet_plugin_acala/common/constants.dart';
+import 'package:polkawallet_plugin_acala/api/types/txSwapData.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
-import 'package:polkawallet_ui/utils/format.dart';
 
-class LoanHistoryPage extends StatelessWidget {
-  LoanHistoryPage(this.plugin, this.keyring);
+class SwapHistoryPage extends StatelessWidget {
+  SwapHistoryPage(this.plugin, this.keyring);
   final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/acala/loan/txs';
+  static const String route = '/acala/swap/txs';
 
   @override
   Widget build(BuildContext context) {
-    final int decimals = plugin.networkState.tokenDecimals;
-    final list = plugin.store.loan.txs.reversed.toList();
-
-    final LoanType loanType = ModalRoute.of(context).settings.arguments;
-    list.retainWhere((i) => i.currencyId == loanType.token);
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+    final list = plugin.store.swap.txs.reversed.toList();
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            I18n.of(context).getDic(i18n_full_dic_acala, 'acala')['loan.txs']),
+        title: Text(dic['loan.txs']),
         centerTitle: true,
       ),
       body: SafeArea(
@@ -38,28 +32,15 @@ class LoanHistoryPage extends StatelessWidget {
               return ListTail(isEmpty: list.length == 0, isLoading: false);
             }
 
-            TxLoanData detail = list[i];
-            LoanType loanType = plugin.store.loan.loanTypes
-                .firstWhere((i) => i.token == detail.currencyId);
-            BigInt amountView = detail.amountCollateral;
-            if (detail.currencyIdView.toUpperCase() == acala_stable_coin) {
-              amountView =
-                  loanType.debitShareToDebit(detail.amountDebitShare, decimals);
-            } else {
-              amountView = BigInt.zero - amountView;
-            }
-            String icon = 'assets_down.png';
-            if (detail.actionType == TxLoanData.actionTypePayback ||
-                detail.actionType == TxLoanData.actionTypeDeposit) {
-              icon = 'assets_up.png';
-            }
+            TxSwapData detail = list[i];
             return Container(
               decoration: BoxDecoration(
                 border: Border(
                     bottom: BorderSide(width: 0.5, color: Colors.black12)),
               ),
               child: ListTile(
-                title: Text(list[i].actionType),
+                title: Text(
+                    '${dic['dex.tx.pay']} ${detail.amountPay} ${PluginFmt.tokenView(detail.tokenPay)}'),
                 subtitle: Text(list[i].time.toString()),
                 trailing: Container(
                   width: 140,
@@ -69,14 +50,14 @@ class LoanHistoryPage extends StatelessWidget {
                         child: Padding(
                           padding: EdgeInsets.only(right: 12),
                           child: Text(
-                            '${Fmt.priceFloorBigInt(amountView, decimals)} ${detail.currencyIdView}',
+                            '${detail.amountReceive} ${PluginFmt.tokenView(detail.tokenReceive)}',
                             style: Theme.of(context).textTheme.headline4,
                             textAlign: TextAlign.end,
                           ),
                         ),
                       ),
                       Image.asset(
-                          'packages/polkawallet_plugin_acala/assets/images/$icon',
+                          'packages/polkawallet_plugin_acala/assets/images/assets_down.png',
                           width: 16)
                     ],
                   ),

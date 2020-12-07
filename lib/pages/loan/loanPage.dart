@@ -79,8 +79,10 @@ class _LoanPageState extends State<LoanPage> {
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.history, color: cardColor),
-                onPressed: () => Navigator.of(context)
-                    .pushNamed(LoanHistoryPage.route, arguments: loan.type),
+                onPressed: loan == null
+                    ? null
+                    : () => Navigator.of(context)
+                        .pushNamed(LoanHistoryPage.route, arguments: loan.type),
               )
             ],
           ),

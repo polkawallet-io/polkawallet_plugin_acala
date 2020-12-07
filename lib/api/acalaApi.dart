@@ -1,6 +1,7 @@
 import 'package:polkawallet_plugin_acala/api/acalaService.dart';
 import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
 import 'package:polkawallet_plugin_acala/api/types/stakingPoolInfoData.dart';
+import 'package:polkawallet_plugin_acala/api/types/swapOutputData.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 
 class AcalaApi {
@@ -75,18 +76,17 @@ class AcalaApi {
         .toList();
   }
 
-  // Future<SwapOutputData> fetchTokenSwapAmount(
-  //   String supplyAmount,
-  //   String targetAmount,
-  //   List<String> swapPair,
-  //   String slippage,
-  // ) async {
-  //   final code =
-  //       'acala.calcTokenSwapAmount(api, $supplyAmount, $targetAmount, ${jsonEncode(swapPair)}, $slippage)';
-  //   final output = await apiRoot.evalJavascript(code, allowRepeat: true);
-  //   return SwapOutputData.fromJson(output);
-  // }
-  //
+  Future<SwapOutputData> queryTokenSwapAmount(
+    String supplyAmount,
+    String targetAmount,
+    List<String> swapPair,
+    String slippage,
+  ) async {
+    final output = await service.queryTokenSwapAmount(
+        supplyAmount, targetAmount, swapPair, slippage);
+    return SwapOutputData.fromJson(output);
+  }
+
   // Future<void> fetchDexPools() async {
   //   final res = await apiRoot.evalJavascript('acala.getTokenPairs()');
   //   store.acala.setDexPools(res);
