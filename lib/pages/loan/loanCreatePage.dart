@@ -298,16 +298,6 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
                     }
                   },
                 ),
-                // child: TxButton(
-                //   getTxParams: () async =>
-                //       _submitTxParams(pageTitle, loanType, decimals),
-                //   onFinish: (res) {
-                //     if (res != null) {
-                //       widget.plugin.store.loan.addLoanTx(res);
-                //       Navigator.of(context).pop(res);
-                //     }
-                //   },
-                // ),
               ),
             ],
           ),

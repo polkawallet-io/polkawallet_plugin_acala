@@ -9,6 +9,7 @@ import 'package:polkawallet_plugin_acala/pages/acalaEntry.dart';
 import 'package:polkawallet_plugin_acala/pages/currencySelectPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanAdjustPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanCreatePage.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
 import 'package:polkawallet_plugin_acala/service/index.dart';
 import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
@@ -60,10 +61,10 @@ class PluginAcala extends PolkawalletPlugin {
       HomeNavItem(
         text: 'Acala',
         icon: Image(
-            image: AssetImage('assets/images/Acala_dark.png',
+            image: AssetImage('assets/images/acala_dark.png',
                 package: 'polkawallet_plugin_acala')),
         iconActive: Image(
-            image: AssetImage('assets/images/Acala_indigo.png',
+            image: AssetImage('assets/images/acala_indigo.png',
                 package: 'polkawallet_plugin_acala')),
         content: AcalaEntry(this, keyring),
       )
@@ -73,8 +74,8 @@ class PluginAcala extends PolkawalletPlugin {
   @override
   Map<String, WidgetBuilder> getRoutes(Keyring keyring) {
     return {
-      // TxConfirmPage.route: (_) =>
-      //     TxConfirmPage(this, keyring, _service.getPassword),
+      TxConfirmPage.route: (_) =>
+          TxConfirmPage(this, keyring, _service.getPassword),
 
       CurrencySelectPage.route: (_) => CurrencySelectPage(this),
 
@@ -82,6 +83,7 @@ class PluginAcala extends PolkawalletPlugin {
       LoanPage.route: (_) => LoanPage(this, keyring),
       LoanCreatePage.route: (_) => LoanCreatePage(this, keyring),
       LoanAdjustPage.route: (_) => LoanAdjustPage(this, keyring),
+      LoanHistoryPage.route: (_) => LoanHistoryPage(this, keyring),
     };
   }
 

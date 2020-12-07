@@ -24,17 +24,11 @@ class LoanType extends _LoanType {
   }
 
   BigInt debitShareToDebit(BigInt debitShares, int decimals) {
-    return Fmt.balanceInt(Fmt.token(
-      debitShares * debitExchangeRate,
-      decimals,
-    ));
+    return debitShares * debitExchangeRate ~/ BigInt.from(pow(10, decimals));
   }
 
   BigInt debitToDebitShare(BigInt debits, int decimals) {
-    return Fmt.tokenInt(
-      (debits / debitExchangeRate).toString(),
-      decimals,
-    );
+    return debits * BigInt.from(pow(10, decimals)) ~/ debitExchangeRate;
   }
 
   BigInt tokenToUSD(BigInt amount, price, int decimals) {

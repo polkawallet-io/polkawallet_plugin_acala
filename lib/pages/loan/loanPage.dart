@@ -9,6 +9,7 @@ import 'package:polkawallet_plugin_acala/pages/loan/loanAdjustPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanCard.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanChart.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanCreatePage.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
@@ -78,8 +79,8 @@ class _LoanPageState extends State<LoanPage> {
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.history, color: cardColor),
-                // onPressed: () => Navigator.of(context)
-                //     .pushNamed(LoanHistoryPage.route, arguments: loan.type),
+                onPressed: () => Navigator.of(context)
+                    .pushNamed(LoanHistoryPage.route, arguments: loan.type),
               )
             ],
           ),
@@ -168,13 +169,13 @@ class _LoanPageState extends State<LoanPage> {
                                         dic['loan.payback'],
                                         style: TextStyle(color: cardColor),
                                       ),
-                                      // onPressed: () =>
-                                      //     Navigator.of(context).pushNamed(
-                                      //       LoanAdjustPage.route,
-                                      //       arguments: LoanAdjustPageParams(
-                                      //           LoanAdjustPage.actionTypePayback,
-                                      //           _tab),
-                                      //     ),
+                                      onPressed: () =>
+                                          Navigator.of(context).pushNamed(
+                                        LoanAdjustPage.route,
+                                        arguments: LoanAdjustPageParams(
+                                            LoanAdjustPage.actionTypePayback,
+                                            _tab),
+                                      ),
                                     ),
                                   ),
                                 )

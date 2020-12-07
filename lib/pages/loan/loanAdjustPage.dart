@@ -10,8 +10,11 @@ import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
+import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/utils/i18n.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class LoanAdjustPage extends StatefulWidget {
@@ -315,18 +318,25 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
     }
   }
 
-  Future<TxConfirmParams> _submitTxParams(
-      String pageTitle, LoanData loan) async {
+  Future<TxConfirmParams> _onSubmit(String title, LoanData loan) async {
     final params = await _getTxParams(loan);
     if (params == null) return null;
 
-    return TxConfirmParams(
-      module: 'honzon',
-      call: 'adjustLoan',
-      txTitle: pageTitle,
-      txDisplay: params['detail'],
-      params: params['params'],
-    );
+    final res = (await Navigator.of(context).pushNamed(TxConfirmPage.route,
+        arguments: TxConfirmParams(
+          module: 'honzon',
+          call: 'adjustLoan',
+          txTitle: title,
+          txDisplay: params['detail'],
+          params: params['params'],
+        ))) as Map;
+    if (res != null) {
+      res['params'] = params['params'];
+      res['time'] = DateTime.now().millisecondsSinceEpoch;
+
+      widget.plugin.store.loan.addLoanTx(res);
+      Navigator.of(context).pop(res);
+    }
   }
 
   @override
@@ -569,12 +579,12 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
               ),
               Padding(
                 padding: EdgeInsets.all(16),
-                child: TxButton(
-                  getTxParams: () => _submitTxParams(pageTitle, loan),
-                  onFinish: (res) {
-                    if (res != null) {
-                      widget.plugin.store.loan.addLoanTx(res);
-                      Navigator.of(context).pop(res);
+                child: RoundedButton(
+                  text: I18n.of(context)
+                      .getDic(i18n_full_dic_ui, 'common')['tx.submit'],
+                  onPressed: () {
+                    if (_formKey.currentState.validate()) {
+                      _onSubmit(pageTitle, loan);
                     }
                   },
                 ),

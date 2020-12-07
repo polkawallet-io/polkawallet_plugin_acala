@@ -39,10 +39,12 @@ dependency_overrides:
 flutter:
   assets:
     - lib/js_service_acala/dist/main.js
-    - assets/images/acala.png
-    - assets/images/acala_gray.png
-    - assets/images/Acala_indigo.png
-    - assets/images/Acala_dark.png
+    - assets/images/logo.png
+    - assets/images/logo_gray.png
+    - assets/images/acala_indigo.png
+    - assets/images/acala_dark.png
+    - assets/images/assets_up.png
+    - assets/images/assets_down.png
     - assets/images/swap.svg
     - assets/images/exchange.svg
     - assets/images/loan.svg
@@ -55,6 +57,7 @@ flutter:
     - assets/images/tokens/LDOT.png
     - assets/images/tokens/RENBTC.png
     - assets/images/tokens/XBTC.png
+
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages
   #

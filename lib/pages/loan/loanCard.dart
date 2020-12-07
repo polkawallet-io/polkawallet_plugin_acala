@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanAdjustPage.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
@@ -91,11 +92,11 @@ class LoanCard extends StatelessWidget {
                           style: TextStyle(color: primaryColor, fontSize: 13),
                         ),
                       ),
-                      // onTap: () => Navigator.of(context).pushNamed(
-                      //   LoanAdjustPage.route,
-                      //   arguments: LoanAdjustPageParams(
-                      //       LoanAdjustPage.actionTypeDeposit, loan.token),
-                      // ),
+                      onTap: () => Navigator.of(context).pushNamed(
+                        LoanAdjustPage.route,
+                        arguments: LoanAdjustPageParams(
+                            LoanAdjustPage.actionTypeDeposit, loan.token),
+                      ),
                     ),
                     GestureDetector(
                       child: Container(
@@ -108,11 +109,11 @@ class LoanCard extends StatelessWidget {
                           style: TextStyle(color: primaryColor, fontSize: 13),
                         ),
                       ),
-                      // onTap: () => Navigator.of(context).pushNamed(
-                      //   LoanAdjustPage.route,
-                      //   arguments: LoanAdjustPageParams(
-                      //       LoanAdjustPage.actionTypeWithdraw, loan.token),
-                      // ),
+                      onTap: () => Navigator.of(context).pushNamed(
+                        LoanAdjustPage.route,
+                        arguments: LoanAdjustPageParams(
+                            LoanAdjustPage.actionTypeWithdraw, loan.token),
+                      ),
                     ),
                   ],
                 ),
