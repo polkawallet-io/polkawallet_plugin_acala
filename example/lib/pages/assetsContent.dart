@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_ui/components/borderedTitle.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
@@ -60,10 +61,10 @@ class _AssetsContentState extends State<AssetsContent> {
                 margin: EdgeInsets.only(top: 16),
                 child: ListTile(
                   leading: Container(
-                    width: 36,
-                    child: CircleAvatar(
-                      child: Text(symbol),
-                    ),
+                    alignment: Alignment.centerLeft,
+                    width: 45,
+                    height: 36,
+                    child: widget.network.tokenIcons[symbol],
                   ),
                   title: Text(symbol),
                   trailing: Text(
@@ -86,7 +87,13 @@ class _AssetsContentState extends State<AssetsContent> {
               Column(
                 children: tokens == null || tokens.length == 0
                     ? [Container()]
-                    : tokens.map((i) => TokenItem(i, decimals)).toList(),
+                    : tokens
+                        .map((i) => TokenItem(
+                              i,
+                              decimals,
+                              icon: widget.network.tokenIcons[i.symbol],
+                            ))
+                        .toList(),
               ),
               Column(
                 children: extraTokens == null || extraTokens.length == 0
@@ -119,9 +126,10 @@ class _AssetsContentState extends State<AssetsContent> {
 }
 
 class TokenItem extends StatelessWidget {
-  TokenItem(this.item, this.decimals);
+  TokenItem(this.item, this.decimals, {this.icon});
   final TokenBalanceData item;
   final int decimals;
+  final Widget icon;
 
   @override
   Widget build(BuildContext context) {
@@ -129,12 +137,15 @@ class TokenItem extends StatelessWidget {
       margin: EdgeInsets.only(top: 16),
       child: ListTile(
         leading: Container(
-          width: 36,
-          child: CircleAvatar(
-            child: Text(item.symbol.substring(0, 2)),
-          ),
+          height: 36,
+          width: 45,
+          alignment: Alignment.centerLeft,
+          child: icon ??
+              CircleAvatar(
+                child: Text(item.symbol.substring(0, 2)),
+              ),
         ),
-        title: Text(item.symbol),
+        title: Text(item.name),
         trailing: Text(
           Fmt.priceFloorBigInt(Fmt.balanceInt(item.amount), decimals,
               lengthFixed: 3),

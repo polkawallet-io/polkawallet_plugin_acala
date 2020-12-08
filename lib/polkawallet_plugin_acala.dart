@@ -8,7 +8,11 @@ import 'package:polkawallet_plugin_acala/api/acalaService.dart';
 import 'package:polkawallet_plugin_acala/common/constants.dart';
 import 'package:polkawallet_plugin_acala/pages/acalaEntry.dart';
 import 'package:polkawallet_plugin_acala/pages/currencySelectPage.dart';
+import 'package:polkawallet_plugin_acala/pages/earn/LPStakePage.dart';
+import 'package:polkawallet_plugin_acala/pages/earn/addLiquidityPage.dart';
+import 'package:polkawallet_plugin_acala/pages/earn/earnHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earn/earnPage.dart';
+import 'package:polkawallet_plugin_acala/pages/earn/withdrawLiquidityPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanAdjustPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanCreatePage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanHistoryPage.dart';
@@ -18,6 +22,7 @@ import 'package:polkawallet_plugin_acala/pages/swap/swapPage.dart';
 import 'package:polkawallet_plugin_acala/service/index.dart';
 import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
 import 'package:polkawallet_plugin_acala/store/index.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
@@ -43,8 +48,7 @@ class PluginAcala extends PolkawalletPlugin {
     return node_list.map((e) => NetworkParams.fromJson(e)).toList();
   }
 
-  @override
-  Map<String, Widget> tokenIcons = {
+  Map<String, Widget> _basicIcons = {
     'ACA': Image.asset(
         'packages/polkawallet_plugin_acala/assets/images/tokens/ACA.png'),
     'AUSD': Image.asset(
@@ -58,6 +62,16 @@ class PluginAcala extends PolkawalletPlugin {
     'XBTC': Image.asset(
         'packages/polkawallet_plugin_acala/assets/images/tokens/XBTC.png'),
   };
+
+  @override
+  Map<String, Widget> get tokenIcons => {
+        ..._basicIcons,
+        'AUSD-DOT': TokenIcon('AUSD-DOT', _basicIcons),
+        'AUSD-LDOT': TokenIcon('AUSD-LDOT', _basicIcons),
+        'AUSD-XBTC': TokenIcon('AUSD-XBTC', _basicIcons),
+        'AUSD-RENBTC': TokenIcon('AUSD-RENBTC', _basicIcons),
+        'ACA-AUSD': TokenIcon('ACA-AUSD', _basicIcons),
+      };
 
   @override
   List<HomeNavItem> getNavItems(BuildContext context, Keyring keyring) {
@@ -93,6 +107,10 @@ class PluginAcala extends PolkawalletPlugin {
       SwapHistoryPage.route: (_) => SwapHistoryPage(this, keyring),
       // earn pages
       EarnPage.route: (_) => EarnPage(this, keyring),
+      EarnHistoryPage.route: (_) => EarnHistoryPage(this, keyring),
+      LPStakePage.route: (_) => LPStakePage(this, keyring),
+      AddLiquidityPage.route: (_) => AddLiquidityPage(this, keyring),
+      WithdrawLiquidityPage.route: (_) => WithdrawLiquidityPage(this, keyring),
     };
   }
 
@@ -127,6 +145,7 @@ class PluginAcala extends PolkawalletPlugin {
     _store = PluginStore(_cache);
     _store.loan.loadCache(keyring.current.pubKey);
     _store.swap.loadCache(keyring.current.pubKey);
+    _store.earn.loadCache(keyring.current.pubKey);
 
     _service = PluginService(this, keyring);
   }

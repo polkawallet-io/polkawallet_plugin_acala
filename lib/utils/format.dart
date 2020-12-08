@@ -10,7 +10,8 @@ class PluginFmt {
       tokenView = acala_token_ren_btc_view;
     }
     if (token.contains('-')) {
-      tokenView = '$token LP';
+      tokenView =
+          '${token.split('-').map((e) => PluginFmt.tokenView(e)).join('-')} LP';
     }
     return tokenView;
   }

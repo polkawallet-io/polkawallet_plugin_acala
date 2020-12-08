@@ -57,7 +57,7 @@ abstract class _LoanStore with Store {
   }
 
   @action
-  Future<void> addLoanTx(Map tx, String pubKey) async {
+  void addLoanTx(Map tx, String pubKey) {
     txs.add(TxLoanData.fromJson(Map<String, dynamic>.from(tx)));
 
     final cached = cache.loanTxs.val;
@@ -72,7 +72,7 @@ abstract class _LoanStore with Store {
   }
 
   @action
-  Future<void> loadCache(String pubKey) async {
+  void loadCache(String pubKey) {
     if (pubKey == null || pubKey.isEmpty) return;
 
     final cached = cache.loanTxs.val;

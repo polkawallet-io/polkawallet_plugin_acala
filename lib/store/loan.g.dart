@@ -84,20 +84,6 @@ mixin _$LoanStore on _LoanStore, Store {
     });
   }
 
-  final _$addLoanTxAsyncAction = AsyncAction('_LoanStore.addLoanTx');
-
-  @override
-  Future<void> addLoanTx(Map<dynamic, dynamic> tx, String pubKey) {
-    return _$addLoanTxAsyncAction.run(() => super.addLoanTx(tx, pubKey));
-  }
-
-  final _$loadCacheAsyncAction = AsyncAction('_LoanStore.loadCache');
-
-  @override
-  Future<void> loadCache(String pubKey) {
-    return _$loadCacheAsyncAction.run(() => super.loadCache(pubKey));
-  }
-
   final _$_LoanStoreActionController = ActionController(name: '_LoanStore');
 
   @override
@@ -139,6 +125,28 @@ mixin _$LoanStore on _LoanStore, Store {
         _$_LoanStoreActionController.startAction(name: '_LoanStore.setPrices');
     try {
       return super.setPrices(data);
+    } finally {
+      _$_LoanStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void addLoanTx(Map<dynamic, dynamic> tx, String pubKey) {
+    final _$actionInfo =
+        _$_LoanStoreActionController.startAction(name: '_LoanStore.addLoanTx');
+    try {
+      return super.addLoanTx(tx, pubKey);
+    } finally {
+      _$_LoanStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void loadCache(String pubKey) {
+    final _$actionInfo =
+        _$_LoanStoreActionController.startAction(name: '_LoanStore.loadCache');
+    try {
+      return super.loadCache(pubKey);
     } finally {
       _$_LoanStoreActionController.endAction(_$actionInfo);
     }

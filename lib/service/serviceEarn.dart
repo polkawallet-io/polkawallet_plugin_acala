@@ -1,4 +1,5 @@
 import 'package:polkawallet_plugin_acala/api/acalaApi.dart';
+import 'package:polkawallet_plugin_acala/api/types/swapOutputData.dart';
 import 'package:polkawallet_plugin_acala/common/constants.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/store/index.dart';
@@ -41,10 +42,13 @@ class ServiceEarn {
     return res;
   }
 
-  Future<void> queryDexPoolRewards() async {
+  Future<List<List<AcalaTokenData>>> getDexPools() async {
     final pools = await api.getDexPools();
     store.earn.setDexPools(pools);
+    return pools;
+  }
 
+  Future<void> queryDexPoolRewards(List<List<AcalaTokenData>> pools) async {
     final rewards = await api.queryDexLiquidityPoolRewards(pools);
     final res = Map<String, Map<String, double>>();
     res['incentives'] = _calcIncentives(rewards['incentives']);

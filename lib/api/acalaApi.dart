@@ -3,6 +3,7 @@ import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
 import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
 import 'package:polkawallet_plugin_acala/api/types/stakingPoolInfoData.dart';
 import 'package:polkawallet_plugin_acala/api/types/swapOutputData.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 
 class AcalaApi {
@@ -37,7 +38,7 @@ class AcalaApi {
       _tokenBalances[data['symbol']] = data;
       callback(_tokenBalances.values
           .map((e) => TokenBalanceData(
-              name: e['symbol'],
+              name: PluginFmt.tokenView(e['symbol']),
               symbol: e['symbol'],
               amount: e['balance']['free'].toString()))
           .toList());

@@ -18,7 +18,7 @@ abstract class _SwapStore with Store {
   ObservableList<TxSwapData> txs = ObservableList<TxSwapData>();
 
   @action
-  Future<void> addSwapTx(Map tx, String pubKey, int decimals) async {
+  void addSwapTx(Map tx, String pubKey, int decimals) {
     txs.add(TxSwapData.fromJson(Map<String, dynamic>.from(tx), decimals));
 
     final cached = cache.swapTxs.val;
@@ -33,7 +33,7 @@ abstract class _SwapStore with Store {
   }
 
   @action
-  Future<void> loadCache(String pubKey) async {
+  void loadCache(String pubKey) {
     if (pubKey == null || pubKey.isEmpty) return;
 
     final cached = cache.swapTxs.val;

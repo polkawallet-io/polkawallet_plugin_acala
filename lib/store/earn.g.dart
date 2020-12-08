@@ -71,6 +71,21 @@ mixin _$EarnStore on _EarnStore, Store {
     });
   }
 
+  final _$txsAtom = Atom(name: '_EarnStore.txs');
+
+  @override
+  ObservableList<TxDexLiquidityData> get txs {
+    _$txsAtom.reportRead();
+    return super.txs;
+  }
+
+  @override
+  set txs(ObservableList<TxDexLiquidityData> value) {
+    _$txsAtom.reportWrite(value, super.txs, () {
+      super.txs = value;
+    });
+  }
+
   final _$_EarnStoreActionController = ActionController(name: '_EarnStore');
 
   @override
@@ -107,12 +122,36 @@ mixin _$EarnStore on _EarnStore, Store {
   }
 
   @override
+  void addDexLiquidityTx(
+      Map<dynamic, dynamic> tx, String pubKey, int decimals) {
+    final _$actionInfo = _$_EarnStoreActionController.startAction(
+        name: '_EarnStore.addDexLiquidityTx');
+    try {
+      return super.addDexLiquidityTx(tx, pubKey, decimals);
+    } finally {
+      _$_EarnStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void loadCache(String pubKey) {
+    final _$actionInfo =
+        _$_EarnStoreActionController.startAction(name: '_EarnStore.loadCache');
+    try {
+      return super.loadCache(pubKey);
+    } finally {
+      _$_EarnStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 swapPoolRewards: ${swapPoolRewards},
 swapPoolSavingRewards: ${swapPoolSavingRewards},
 dexPools: ${dexPools},
-dexPoolInfoMap: ${dexPoolInfoMap}
+dexPoolInfoMap: ${dexPoolInfoMap},
+txs: ${txs}
     ''';
   }
 }

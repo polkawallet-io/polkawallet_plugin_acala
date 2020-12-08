@@ -6,6 +6,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_acala/api/types/swapOutputData.dart';
 import 'package:polkawallet_plugin_acala/common/constants.dart';
 import 'package:polkawallet_plugin_acala/pages/currencySelectPage.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
 import 'package:polkawallet_plugin_acala/pages/swap/swapHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/format.dart';
@@ -336,8 +337,8 @@ class _SwapPageState extends State<SwapPage> {
                                         GestureDetector(
                                           child: CurrencyWithIcon(
                                             PluginFmt.tokenView(_swapPair[0]),
-                                            widget.plugin
-                                                .tokenIcons[_swapPair[0]],
+                                            TokenIcon(_swapPair[0],
+                                                widget.plugin.tokenIcons),
                                             textStyle: Theme.of(context)
                                                 .textTheme
                                                 .headline4,
@@ -421,8 +422,8 @@ class _SwapPageState extends State<SwapPage> {
                                         GestureDetector(
                                           child: CurrencyWithIcon(
                                             PluginFmt.tokenView(_swapPair[1]),
-                                            widget.plugin
-                                                .tokenIcons[_swapPair[1]],
+                                            TokenIcon(_swapPair[1],
+                                                widget.plugin.tokenIcons),
                                             textStyle: Theme.of(context)
                                                 .textTheme
                                                 .headline4,

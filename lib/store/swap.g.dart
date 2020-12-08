@@ -24,20 +24,28 @@ mixin _$SwapStore on _SwapStore, Store {
     });
   }
 
-  final _$addSwapTxAsyncAction = AsyncAction('_SwapStore.addSwapTx');
+  final _$_SwapStoreActionController = ActionController(name: '_SwapStore');
 
   @override
-  Future<void> addSwapTx(
-      Map<dynamic, dynamic> tx, String pubKey, int decimals) {
-    return _$addSwapTxAsyncAction
-        .run(() => super.addSwapTx(tx, pubKey, decimals));
+  void addSwapTx(Map<dynamic, dynamic> tx, String pubKey, int decimals) {
+    final _$actionInfo =
+        _$_SwapStoreActionController.startAction(name: '_SwapStore.addSwapTx');
+    try {
+      return super.addSwapTx(tx, pubKey, decimals);
+    } finally {
+      _$_SwapStoreActionController.endAction(_$actionInfo);
+    }
   }
 
-  final _$loadCacheAsyncAction = AsyncAction('_SwapStore.loadCache');
-
   @override
-  Future<void> loadCache(String pubKey) {
-    return _$loadCacheAsyncAction.run(() => super.loadCache(pubKey));
+  void loadCache(String pubKey) {
+    final _$actionInfo =
+        _$_SwapStoreActionController.startAction(name: '_SwapStore.loadCache');
+    try {
+      return super.loadCache(pubKey);
+    } finally {
+      _$_SwapStoreActionController.endAction(_$actionInfo);
+    }
   }
 
   @override
