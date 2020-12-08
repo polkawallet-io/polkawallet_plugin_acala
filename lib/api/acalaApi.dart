@@ -1,163 +1,18 @@
 import 'package:polkawallet_plugin_acala/api/acalaService.dart';
-import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
-import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
-import 'package:polkawallet_plugin_acala/api/types/stakingPoolInfoData.dart';
-import 'package:polkawallet_plugin_acala/api/types/swapOutputData.dart';
-import 'package:polkawallet_plugin_acala/utils/format.dart';
-import 'package:polkawallet_sdk/plugin/store/balances.dart';
+import 'package:polkawallet_plugin_acala/api/assets/acalaApiAssets.dart';
+import 'package:polkawallet_plugin_acala/api/homa/acalaApiHoma.dart';
+import 'package:polkawallet_plugin_acala/api/loan/acalaApiLoan.dart';
+import 'package:polkawallet_plugin_acala/api/swap/acalaApiSwap.dart';
 
 class AcalaApi {
-  AcalaApi(this.service);
+  AcalaApi(AcalaService service)
+      : assets = AcalaApiAssets(service.assets),
+        loan = AcalaApiLoan(service.loan),
+        swap = AcalaApiSwap(service.swap),
+        homa = AcalaApiHoma(service.homa);
 
-  final AcalaService service;
-
-  final Map _tokenBalances = {};
-
-  // Future<String> fetchFaucet() async {
-  //   String address = store.account.currentAddress;
-  //   String deviceId = address;
-  //   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-  //   if (Platform.isAndroid) {
-  //     AndroidDeviceInfo info = await deviceInfo.androidInfo;
-  //     deviceId = info.androidId;
-  //   } else {
-  //     IosDeviceInfo info = await deviceInfo.iosInfo;
-  //     deviceId = info.identifierForVendor;
-  //   }
-  //   String res = await FaucetApi.getAcalaTokensV2(address, deviceId);
-  //   return res;
-  // }
-
-  void unsubscribeTokenBalances(String address) {
-    service.unsubscribeTokenBalances(address);
-  }
-
-  Future<void> subscribeTokenBalances(
-      String address, Function(List<TokenBalanceData>) callback) async {
-    await service.subscribeTokenBalances(address, (Map data) {
-      _tokenBalances[data['symbol']] = data;
-      callback(_tokenBalances.values
-          .map((e) => TokenBalanceData(
-              name: PluginFmt.tokenView(e['symbol']),
-              symbol: e['symbol'],
-              amount: e['balance']['free'].toString()))
-          .toList());
-    });
-  }
-
-  Future<List<TokenBalanceData>> queryAirdropTokens(String address) async {
-    final res = List<TokenBalanceData>();
-    final ls = await service.queryAirdropTokens(address);
-    if (ls['tokens'] != null) {
-      List.of(ls['tokens']).asMap().forEach((i, v) {
-        res.add(TokenBalanceData(
-            name: v, symbol: v, amount: ls['amount'][i].toString()));
-      });
-    }
-    return res;
-  }
-
-  Future<void> subscribeTokenPrices(
-      Function(Map<String, BigInt>) callback) async {
-    service.subscribeTokenPrices(callback);
-  }
-
-  void unsubscribeTokenPrices() {
-    service.unsubscribeTokenPrices();
-  }
-
-  Future<List> queryAccountLoans(String address) async {
-    final List res = await service.queryAccountLoans(address);
-    return res;
-  }
-
-  Future<List<LoanType>> queryLoanTypes() async {
-    final List res = await service.queryLoanTypes();
-    return res
-        .map((e) => LoanType.fromJson(Map<String, dynamic>.of(e)))
-        .toList();
-  }
-
-  Future<SwapOutputData> queryTokenSwapAmount(
-    String supplyAmount,
-    String targetAmount,
-    List<String> swapPair,
-    String slippage,
-  ) async {
-    final output = await service.queryTokenSwapAmount(
-        supplyAmount, targetAmount, swapPair, slippage);
-    return SwapOutputData.fromJson(output);
-  }
-
-  Future<List<List<AcalaTokenData>>> getDexPools() async {
-    final pools = await service.getDexPools();
-    return pools
-        .map((pool) =>
-            (pool as List).map((e) => AcalaTokenData.fromJson(e)).toList())
-        .toList();
-  }
-
-  Future<Map> queryDexLiquidityPoolRewards(
-      List<List<AcalaTokenData>> dexPools) async {
-    final res = await service.queryDexLiquidityPoolRewards(dexPools);
-    return res;
-  }
-
-  // Future<void> fetchDexLiquidityPoolRewards() async {
-  //   await webApi.acala.fetchDexPools();
-  //   final pools = store.acala.dexPools
-  //       .map((pool) =>
-  //           jsonEncode({'DEXShare': pool.map((e) => e.name).toList()}))
-  //       .toList();
-  //   final incentiveQuery = pools
-  //       .map((i) => 'api.query.incentives.dEXIncentiveRewards($i)')
-  //       .join(',');
-  //   final savingRateQuery =
-  //       pools.map((i) => 'api.query.incentives.dEXSavingRates($i)').join(',');
-  //   final res = await Future.wait([
-  //     apiRoot.evalJavascript('Promise.all([$incentiveQuery])',
-  //         allowRepeat: true),
-  //     apiRoot.evalJavascript('Promise.all([$savingRateQuery])',
-  //         allowRepeat: true)
-  //   ]);
-  //   final incentives = Map<String, dynamic>();
-  //   final savingRates = Map<String, dynamic>();
-  //   final tokenPairs = store.acala.dexPools
-  //       .map((e) => e.map((i) => i.symbol).join('-'))
-  //       .toList();
-  //   tokenPairs.asMap().forEach((k, v) {
-  //     incentives[v] = res[0][k];
-  //     savingRates[v] = res[1][k];
-  //   });
-  //   store.acala.setSwapPoolRewards(incentives);
-  //   store.acala.setSwapSavingRates(savingRates);
-  // }
-
-  Future<Map<String, DexPoolInfoData>> queryDexPoolInfo(
-      String pool, address) async {
-    final Map info = await service.queryDexPoolInfo(pool, address);
-    return {pool: DexPoolInfoData.fromJson(Map<String, dynamic>.of(info))};
-  }
-
-  Future<StakingPoolInfoData> queryHomaStakingPool() async {
-    final Map res = await service.queryHomaStakingPool();
-    return StakingPoolInfoData.fromJson(Map<String, dynamic>.of(res));
-  }
-
-  // Future<void> fetchHomaUserInfo() async {
-  //   String address = store.account.currentAddress;
-  //   Map res = await apiRoot
-  //       .evalJavascript('acala.fetchHomaUserInfo(api, "$address")');
-  //   store.acala.setHomaUserInfo(res);
-  // }
-  //
-  // Future<void> fetchUserNFTs() async {
-  //   final address = store.account.currentAddress;
-  //   final time = DateTime.now();
-  //   final enable = time.millisecondsSinceEpoch > 1604099149427;
-  //   final code =
-  //       'api.derive.nft.queryTokensByAccount("$address", ${enable ? 1 : 0}).then(res => res.map(e => ({...e.data.value, metadata: e.data.value.metadata.toUtf8()})))';
-  //   final List res = await apiRoot.evalJavascript(code, allowRepeat: true);
-  //   store.acala.setUserNFTs(res);
-  // }
+  final AcalaApiAssets assets;
+  final AcalaApiLoan loan;
+  final AcalaApiSwap swap;
+  final AcalaApiHoma homa;
 }

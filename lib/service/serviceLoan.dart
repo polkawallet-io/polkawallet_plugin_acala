@@ -2,7 +2,6 @@ import 'package:polkawallet_plugin_acala/api/acalaApi.dart';
 import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/store/index.dart';
-import 'package:polkawallet_sdk/api/api.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
@@ -47,13 +46,13 @@ class ServiceLoan {
     if (address == null) return;
 
     // 1. we need to get all LoanTypes
-    final loanTypes = await api.queryLoanTypes();
+    final loanTypes = await api.loan.queryLoanTypes();
     store.loan.setLoanTypes(loanTypes);
 
     // 2. subscribe all token prices, callback triggers per 5s.
-    api.subscribeTokenPrices((Map<String, BigInt> prices) async {
+    api.assets.subscribeTokenPrices((Map<String, BigInt> prices) async {
       // 3. we need homa staking pool info to calculate price of LDOT
-      final stakingPoolInfo = await api.queryHomaStakingPool();
+      final stakingPoolInfo = await api.homa.queryHomaStakingPool();
       store.homa.setStakingPoolInfoData(stakingPoolInfo);
 
       // 4. set prices
@@ -61,7 +60,7 @@ class ServiceLoan {
       store.loan.setPrices(prices);
 
       // 5. we need loanTypes & prices to get account loans
-      final loans = await api.queryAccountLoans(address);
+      final loans = await api.loan.queryAccountLoans(address);
       if (loans != null && loans.length > 0) {
         store.loan.setAccountLoans(_calcLoanData(loans, loanTypes, prices));
       }
@@ -69,6 +68,6 @@ class ServiceLoan {
   }
 
   void unsubscribeAccountLoans() {
-    api.unsubscribeTokenPrices();
+    api.assets.unsubscribeTokenPrices();
   }
 }

@@ -149,7 +149,7 @@ class _SwapPageState extends State<SwapPage> {
     bool init = false,
   }) async {
     if (supply == null) {
-      final output = await widget.plugin.api.queryTokenSwapAmount(
+      final output = await widget.plugin.api.swap.queryTokenSwapAmount(
         supply,
         target.isEmpty ? '1' : target,
         _swapPair,
@@ -168,7 +168,7 @@ class _SwapPageState extends State<SwapPage> {
         _formKey.currentState.validate();
       }
     } else if (target == null) {
-      final output = await widget.plugin.api.queryTokenSwapAmount(
+      final output = await widget.plugin.api.swap.queryTokenSwapAmount(
         supply.isEmpty ? '1' : supply,
         target,
         _swapPair,
@@ -596,7 +596,7 @@ class _SwapPageState extends State<SwapPage> {
                               children: <Widget>[
                                 CupertinoTextField(
                                   padding: EdgeInsets.fromLTRB(12, 4, 12, 4),
-                                  placeholder: 'customized',
+                                  placeholder: dic['custom'],
                                   inputFormatters: [
                                     UI.decimalInputFormatter(decimals)
                                   ],

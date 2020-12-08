@@ -41,7 +41,7 @@ class _WithdrawLiquidityPageState extends State<WithdrawLiquidityPage> {
     final String poolId = ModalRoute.of(context).settings.arguments;
     await widget.plugin.service.earn.queryDexPoolInfo(poolId);
 
-    final output = await widget.plugin.api.queryTokenSwapAmount(
+    final output = await widget.plugin.api.swap.queryTokenSwapAmount(
       '1',
       null,
       poolId.toUpperCase().split('-'),

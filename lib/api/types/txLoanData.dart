@@ -22,6 +22,9 @@ class TxLoanData extends _TxLoanData {
           ? actionTypeDeposit
           : actionTypeWithdraw;
       data.currencyIdView = data.currencyId;
+    } else if (data.amountDebitShare < BigInt.zero) {
+      data.actionType = actionTypePayback;
+      data.currencyIdView = 'aUSD';
     } else {
       data.actionType = 'create';
       data.currencyIdView = 'aUSD';

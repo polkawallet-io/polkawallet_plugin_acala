@@ -43,13 +43,13 @@ class ServiceEarn {
   }
 
   Future<List<List<AcalaTokenData>>> getDexPools() async {
-    final pools = await api.getDexPools();
+    final pools = await api.swap.getDexPools();
     store.earn.setDexPools(pools);
     return pools;
   }
 
   Future<void> queryDexPoolRewards(List<List<AcalaTokenData>> pools) async {
-    final rewards = await api.queryDexLiquidityPoolRewards(pools);
+    final rewards = await api.swap.queryDexLiquidityPoolRewards(pools);
     final res = Map<String, Map<String, double>>();
     res['incentives'] = _calcIncentives(rewards['incentives']);
     res['savingRates'] = _calcSavingRates(rewards['savingRates']);
@@ -57,7 +57,8 @@ class ServiceEarn {
   }
 
   Future<void> queryDexPoolInfo(String poolId) async {
-    final info = await api.queryDexPoolInfo(poolId, keyring.current.address);
+    final info =
+        await api.swap.queryDexPoolInfo(poolId, keyring.current.address);
     store.earn.setDexPoolInfo(info);
   }
 

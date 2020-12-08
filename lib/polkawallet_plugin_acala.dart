@@ -13,6 +13,10 @@ import 'package:polkawallet_plugin_acala/pages/earn/addLiquidityPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earn/earnHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earn/earnPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earn/withdrawLiquidityPage.dart';
+import 'package:polkawallet_plugin_acala/pages/homa/homaHistoryPage.dart';
+import 'package:polkawallet_plugin_acala/pages/homa/homaPage.dart';
+import 'package:polkawallet_plugin_acala/pages/homa/mintPage.dart';
+import 'package:polkawallet_plugin_acala/pages/homa/redeemPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanAdjustPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanCreatePage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanHistoryPage.dart';
@@ -22,7 +26,6 @@ import 'package:polkawallet_plugin_acala/pages/swap/swapPage.dart';
 import 'package:polkawallet_plugin_acala/service/index.dart';
 import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
 import 'package:polkawallet_plugin_acala/store/index.dart';
-import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
@@ -111,6 +114,11 @@ class PluginAcala extends PolkawalletPlugin {
       LPStakePage.route: (_) => LPStakePage(this, keyring),
       AddLiquidityPage.route: (_) => AddLiquidityPage(this, keyring),
       WithdrawLiquidityPage.route: (_) => WithdrawLiquidityPage(this, keyring),
+      // homa pages
+      HomaPage.route: (_) => HomaPage(this, keyring),
+      MintPage.route: (_) => MintPage(this, keyring),
+      HomaRedeemPage.route: (_) => HomaRedeemPage(this, keyring),
+      HomaHistoryPage.route: (_) => HomaHistoryPage(this, keyring),
     };
   }
 
@@ -126,12 +134,12 @@ class PluginAcala extends PolkawalletPlugin {
   PluginService get service => _service;
 
   Future<void> _subscribeTokenBalances(KeyPairData acc) async {
-    _api.subscribeTokenBalances(acc.address, (data) {
+    _api.assets.subscribeTokenBalances(acc.address, (data) {
       balances.setTokens(data);
       _store.loan.setTokenBalanceMap(data);
     });
 
-    final airdrops = await _api.queryAirdropTokens(acc.address);
+    final airdrops = await _api.assets.queryAirdropTokens(acc.address);
     balances
         .setExtraTokens([ExtraTokenData(title: 'Airdrop', tokens: airdrops)]);
   }
@@ -146,6 +154,7 @@ class PluginAcala extends PolkawalletPlugin {
     _store.loan.loadCache(keyring.current.pubKey);
     _store.swap.loadCache(keyring.current.pubKey);
     _store.earn.loadCache(keyring.current.pubKey);
+    _store.homa.loadCache(keyring.current.pubKey);
 
     _service = PluginService(this, keyring);
   }
@@ -159,7 +168,7 @@ class PluginAcala extends PolkawalletPlugin {
 
   @override
   Future<void> onAccountChanged(KeyPairData acc) async {
-    _api.unsubscribeTokenBalances(acc.address);
+    _api.assets.unsubscribeTokenBalances(acc.address);
     balances.setTokens([]);
 
     _subscribeTokenBalances(acc);
