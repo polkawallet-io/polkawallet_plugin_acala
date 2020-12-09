@@ -9,21 +9,6 @@ part of 'loan.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$LoanStore on _LoanStore, Store {
-  final _$tokenBalanceMapAtom = Atom(name: '_LoanStore.tokenBalanceMap');
-
-  @override
-  Map<String, TokenBalanceData> get tokenBalanceMap {
-    _$tokenBalanceMapAtom.reportRead();
-    return super.tokenBalanceMap;
-  }
-
-  @override
-  set tokenBalanceMap(Map<String, TokenBalanceData> value) {
-    _$tokenBalanceMapAtom.reportWrite(value, super.tokenBalanceMap, () {
-      super.tokenBalanceMap = value;
-    });
-  }
-
   final _$loanTypesAtom = Atom(name: '_LoanStore.loanTypes');
 
   @override
@@ -54,21 +39,6 @@ mixin _$LoanStore on _LoanStore, Store {
     });
   }
 
-  final _$pricesAtom = Atom(name: '_LoanStore.prices');
-
-  @override
-  Map<String, BigInt> get prices {
-    _$pricesAtom.reportRead();
-    return super.prices;
-  }
-
-  @override
-  set prices(Map<String, BigInt> value) {
-    _$pricesAtom.reportWrite(value, super.prices, () {
-      super.prices = value;
-    });
-  }
-
   final _$txsAtom = Atom(name: '_LoanStore.txs');
 
   @override
@@ -87,17 +57,6 @@ mixin _$LoanStore on _LoanStore, Store {
   final _$_LoanStoreActionController = ActionController(name: '_LoanStore');
 
   @override
-  void setTokenBalanceMap(List<TokenBalanceData> list) {
-    final _$actionInfo = _$_LoanStoreActionController.startAction(
-        name: '_LoanStore.setTokenBalanceMap');
-    try {
-      return super.setTokenBalanceMap(list);
-    } finally {
-      _$_LoanStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   void setLoanTypes(List<LoanType> list) {
     final _$actionInfo = _$_LoanStoreActionController.startAction(
         name: '_LoanStore.setLoanTypes');
@@ -114,17 +73,6 @@ mixin _$LoanStore on _LoanStore, Store {
         name: '_LoanStore.setAccountLoans');
     try {
       return super.setAccountLoans(data);
-    } finally {
-      _$_LoanStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
-  void setPrices(Map<String, BigInt> data) {
-    final _$actionInfo =
-        _$_LoanStoreActionController.startAction(name: '_LoanStore.setPrices');
-    try {
-      return super.setPrices(data);
     } finally {
       _$_LoanStoreActionController.endAction(_$actionInfo);
     }
@@ -155,10 +103,8 @@ mixin _$LoanStore on _LoanStore, Store {
   @override
   String toString() {
     return '''
-tokenBalanceMap: ${tokenBalanceMap},
 loanTypes: ${loanTypes},
 loans: ${loans},
-prices: ${prices},
 txs: ${txs}
     ''';
   }

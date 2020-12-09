@@ -165,7 +165,9 @@ class _ProfileContentState extends State<ProfileContent> {
         _loading = false;
       });
 
-      widget.network.changeAccount(acc);
+      if (widget.network.sdk.api.connectedNode != null) {
+        widget.network.changeAccount(acc);
+      }
     }
   }
 

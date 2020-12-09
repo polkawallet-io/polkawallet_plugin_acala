@@ -17,29 +17,13 @@ abstract class _LoanStore with Store {
   final String cacheTxsLoanKey = 'loan_txs';
 
   @observable
-  Map<String, TokenBalanceData> tokenBalanceMap =
-      Map<String, TokenBalanceData>();
-
-  @observable
   List<LoanType> loanTypes = List<LoanType>();
 
   @observable
   Map<String, LoanData> loans = {};
 
   @observable
-  Map<String, BigInt> prices = {};
-
-  @observable
   ObservableList<TxLoanData> txs = ObservableList<TxLoanData>();
-
-  @action
-  void setTokenBalanceMap(List<TokenBalanceData> list) {
-    final data = Map<String, TokenBalanceData>();
-    list.forEach((e) {
-      data[e.symbol] = e;
-    });
-    tokenBalanceMap = data;
-  }
 
   @action
   void setLoanTypes(List<LoanType> list) {
@@ -49,11 +33,6 @@ abstract class _LoanStore with Store {
   @action
   void setAccountLoans(Map<String, LoanData> data) {
     loans = data;
-  }
-
-  @action
-  void setPrices(Map<String, BigInt> data) {
-    prices = data;
   }
 
   @action

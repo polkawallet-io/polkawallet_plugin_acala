@@ -61,7 +61,7 @@ class _SwapPageState extends State<SwapPage> {
   }
 
   List<String> _getSwapTokens() {
-    final tokens = widget.plugin.store.loan.tokenBalanceMap.keys.toList();
+    final tokens = widget.plugin.store.assets.tokenBalanceMap.keys.toList();
     tokens.retainWhere((e) => !e.contains('-'));
     tokens.add('ACA');
     return tokens;
@@ -303,7 +303,7 @@ class _SwapPageState extends State<SwapPage> {
           balance = Fmt.balanceInt(
               widget.plugin.balances.native.freeBalance.toString());
         } else if (_getSwapTokens().length > 0 && _swapPair.length > 0) {
-          balance = Fmt.balanceInt(widget.plugin.store.loan
+          balance = Fmt.balanceInt(widget.plugin.store.assets
               .tokenBalanceMap[_swapPair[0].toUpperCase()].amount);
         }
 

@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
@@ -100,10 +99,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> _startPlugin() async {
     await _keyring.init();
 
-    final acalaJS = await rootBundle.loadString(
-        'packages/polkawallet_plugin_acala/lib/js_service_acala/dist/main.js');
-
-    final connected = await _network.start(_keyring, jsCode: acalaJS);
+    final connected = await _network.start(_keyring);
     _setConnectedNode(connected);
   }
 

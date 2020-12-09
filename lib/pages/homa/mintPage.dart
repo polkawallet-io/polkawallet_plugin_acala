@@ -109,7 +109,7 @@ class _MintPageState extends State<MintPage> {
         final decimals = widget.plugin.networkState.tokenDecimals;
 
         final balance = Fmt.balanceInt(
-            widget.plugin.store.loan.tokenBalanceMap['DOT'].amount);
+            widget.plugin.store.assets.tokenBalanceMap['DOT'].amount);
 
         final pool = widget.plugin.store.homa.stakingPoolInfo;
 

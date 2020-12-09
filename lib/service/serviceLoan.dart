@@ -57,7 +57,7 @@ class ServiceLoan {
 
       // 4. set prices
       _calcLDOTPrice(prices, stakingPoolInfo.liquidExchangeRate);
-      store.loan.setPrices(prices);
+      store.assets.setPrices(prices);
 
       // 5. we need loanTypes & prices to get account loans
       final loans = await api.loan.queryAccountLoans(address);

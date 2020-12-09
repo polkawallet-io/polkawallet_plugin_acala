@@ -2,11 +2,14 @@ library polkawallet_plugin_acala;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_plugin_acala/api/acalaApi.dart';
 import 'package:polkawallet_plugin_acala/api/acalaService.dart';
 import 'package:polkawallet_plugin_acala/common/constants.dart';
 import 'package:polkawallet_plugin_acala/pages/acalaEntry.dart';
+import 'package:polkawallet_plugin_acala/pages/assets/tokenDetailPage.dart';
+import 'package:polkawallet_plugin_acala/pages/assets/transferPage.dart';
 import 'package:polkawallet_plugin_acala/pages/currencySelectPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earn/LPStakePage.dart';
 import 'package:polkawallet_plugin_acala/pages/earn/addLiquidityPage.dart';
@@ -32,6 +35,7 @@ import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
+import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 
 class PluginAcala extends PolkawalletPlugin {
@@ -40,10 +44,10 @@ class PluginAcala extends PolkawalletPlugin {
     name: 'acala',
     ss58: 42,
     primaryColor: Colors.indigo,
-    icon: Image.asset(
-        'packages/polkawallet_plugin_acala/assets/images/acala.png'),
+    icon:
+        Image.asset('packages/polkawallet_plugin_acala/assets/images/logo.png'),
     iconDisabled: Image.asset(
-        'packages/polkawallet_plugin_acala/assets/images/acala_gray.png'),
+        'packages/polkawallet_plugin_acala/assets/images/logo_gray.png'),
   );
 
   @override
@@ -97,8 +101,11 @@ class PluginAcala extends PolkawalletPlugin {
     return {
       TxConfirmPage.route: (_) =>
           TxConfirmPage(this, keyring, _service.getPassword),
-
       CurrencySelectPage.route: (_) => CurrencySelectPage(this),
+      AccountQrCodePage.route: (_) => AccountQrCodePage(this, keyring),
+
+      TokenDetailPage.route: (_) => TokenDetailPage(this, keyring),
+      TransferPage.route: (_) => TransferPage(this, keyring),
 
       // staking pages
       LoanPage.route: (_) => LoanPage(this, keyring),
@@ -122,6 +129,10 @@ class PluginAcala extends PolkawalletPlugin {
     };
   }
 
+  @override
+  Future<String> loadJSCode() => rootBundle.loadString(
+      'packages/polkawallet_plugin_acala/lib/js_service_acala/dist/main.js');
+
   final balances = BalancesStore();
 
   AcalaApi _api;
@@ -136,7 +147,7 @@ class PluginAcala extends PolkawalletPlugin {
   Future<void> _subscribeTokenBalances(KeyPairData acc) async {
     _api.assets.subscribeTokenBalances(acc.address, (data) {
       balances.setTokens(data);
-      _store.loan.setTokenBalanceMap(data);
+      _store.assets.setTokenBalanceMap(data);
     });
 
     final airdrops = await _api.assets.queryAirdropTokens(acc.address);
@@ -151,6 +162,7 @@ class PluginAcala extends PolkawalletPlugin {
     await GetStorage.init(acala_plugin_cache_key);
 
     _store = PluginStore(_cache);
+    _store.assets.loadCache(keyring.current.pubKey);
     _store.loan.loadCache(keyring.current.pubKey);
     _store.swap.loadCache(keyring.current.pubKey);
     _store.earn.loadCache(keyring.current.pubKey);

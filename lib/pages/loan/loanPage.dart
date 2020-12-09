@@ -96,7 +96,7 @@ class _LoanPageState extends State<LoanPage> {
                   tokenIcons: widget.plugin.tokenIcons,
                   token: _tab,
                   decimals: decimals,
-                  price: widget.plugin.store.loan.prices[_tab],
+                  price: widget.plugin.store.assets.prices[_tab],
                   onSelect: (res) {
                     if (res != null) {
                       setState(() {

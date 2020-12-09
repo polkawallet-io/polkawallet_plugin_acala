@@ -34,9 +34,11 @@ class AcalaApiAssets {
       _tokenBalances[data['symbol']] = data;
       callback(_tokenBalances.values
           .map((e) => TokenBalanceData(
-              name: PluginFmt.tokenView(e['symbol']),
-              symbol: e['symbol'],
-              amount: e['balance']['free'].toString()))
+                name: PluginFmt.tokenView(e['symbol']),
+                symbol: e['symbol'],
+                amount: e['balance']['free'].toString(),
+                detailPageRoute: '/assets/token/detail',
+              ))
           .toList());
     });
   }

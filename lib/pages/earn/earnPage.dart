@@ -233,7 +233,7 @@ class _EarnPageState extends State<EarnPage> {
                     stakeShare;
           }
 
-          final balance = Fmt.balanceInt(widget.plugin.store.loan
+          final balance = Fmt.balanceInt(widget.plugin.store.assets
                   .tokenBalanceMap[_tab.toUpperCase()]?.amount ??
               '0');
 

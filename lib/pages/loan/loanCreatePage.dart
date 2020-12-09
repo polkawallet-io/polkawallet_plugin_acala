@@ -44,7 +44,7 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
     final decimals = widget.plugin.networkState.tokenDecimals;
     final LoanAdjustPageParams params =
         ModalRoute.of(context).settings.arguments;
-    final tokenPrice = widget.plugin.store.loan.prices[params.token];
+    final tokenPrice = widget.plugin.store.assets.prices[params.token];
     final stableCoinPrice = Fmt.tokenInt('1', decimals);
     final collateralInUSD =
         loanType.tokenToUSD(collateral, tokenPrice, decimals);
@@ -207,13 +207,13 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
 
     String pageTitle = '${dic['loan.create']} $symbol';
 
-    final price = widget.plugin.store.loan.prices[symbol];
+    final price = widget.plugin.store.assets.prices[symbol];
     final stableCoinPrice = Fmt.tokenInt('1', decimals);
 
     final loanType =
         widget.plugin.store.loan.loanTypes.firstWhere((i) => i.token == symbol);
     final balance = Fmt.balanceInt(
-        widget.plugin.store.loan.tokenBalanceMap[symbol]?.amount);
+        widget.plugin.store.assets.tokenBalanceMap[symbol]?.amount);
     final available = balance;
 
     final balanceView = Fmt.token(available, decimals);

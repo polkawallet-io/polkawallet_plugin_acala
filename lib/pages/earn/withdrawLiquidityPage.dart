@@ -161,8 +161,8 @@ class _WithdrawLiquidityPageState extends State<WithdrawLiquidityPage> {
         final poolInfo = widget.plugin.store.earn.dexPoolInfoMap[poolId];
         if (poolInfo != null) {
           shareTotal = Fmt.bigIntToDouble(poolInfo.issuance, decimals);
-          shareInt = Fmt.balanceInt(widget
-              .plugin.store.loan.tokenBalanceMap[poolId.toUpperCase()].amount);
+          shareInt = Fmt.balanceInt(widget.plugin.store.assets
+              .tokenBalanceMap[poolId.toUpperCase()].amount);
           shareInt10 = BigInt.from(shareInt / BigInt.from(10));
           shareInt25 = BigInt.from(shareInt / BigInt.from(4));
           shareInt50 = BigInt.from(shareInt / BigInt.from(2));

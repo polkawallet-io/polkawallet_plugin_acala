@@ -1,5 +1,6 @@
 const Map<String, String> enCommon = {
   'acala': 'Acala Platform',
+  'transfer': 'Transfer',
   'cancel': 'Cancel',
   'ok': 'Ok',
   'success': 'Success',
@@ -7,6 +8,7 @@ const Map<String, String> enCommon = {
   'custom': 'Customized',
   'list.empty': 'No Data',
   'list.end': 'No More Data',
+  'address': 'Send to Address',
   'amount': 'Amount',
   'amount.available': 'Available',
   'amount.error': 'Invalid amount',
@@ -15,6 +17,7 @@ const Map<String, String> enCommon = {
   'balance': 'Balance',
   'currency': 'Currency',
   'currency.select': 'Select Currency',
+  'make': 'Make Transfer',
   'staking': 'Staking',
   'governance': 'Governance',
   'node.connecting': 'Connecting remote node...',
@@ -38,6 +41,7 @@ const Map<String, String> enCommon = {
 
 const Map<String, String> zhCommon = {
   'acala': 'Acala 金融平台',
+  'transfer': '转账',
   'cancel': '取消',
   'ok': '确定',
   'success': '成功',
@@ -45,6 +49,7 @@ const Map<String, String> zhCommon = {
   'custom': '自定义',
   'list.empty': '暂无数据',
   'list.end': '加载完成',
+  'address': '收款地址',
   'amount': '数量',
   'amount.available': '可用',
   'amount.error': '数量无效',
@@ -53,6 +58,7 @@ const Map<String, String> zhCommon = {
   'balance': '余额',
   'currency': '币种',
   'currency.select': '选择币种',
+  'make': '添加转账',
   'staking': '质押',
   'governance': '治理',
   'node.connecting': '正在连接远程节点...',

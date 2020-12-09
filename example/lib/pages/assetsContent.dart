@@ -91,6 +91,7 @@ class _AssetsContentState extends State<AssetsContent> {
                         .map((i) => TokenItem(
                               i,
                               decimals,
+                              detailPageRoute: i.detailPageRoute,
                               icon: widget.network.tokenIcons[i.symbol],
                             ))
                         .toList(),
@@ -110,7 +111,13 @@ class _AssetsContentState extends State<AssetsContent> {
                             ),
                             Column(
                               children: i.tokens
-                                  .map((e) => TokenItem(e, decimals))
+                                  .map((e) => TokenItem(
+                                        e,
+                                        decimals,
+                                        detailPageRoute: e.detailPageRoute,
+                                        icon:
+                                            widget.network.tokenIcons[e.symbol],
+                                      ))
                                   .toList(),
                             )
                           ],
@@ -126,9 +133,10 @@ class _AssetsContentState extends State<AssetsContent> {
 }
 
 class TokenItem extends StatelessWidget {
-  TokenItem(this.item, this.decimals, {this.icon});
+  TokenItem(this.item, this.decimals, {this.detailPageRoute, this.icon});
   final TokenBalanceData item;
   final int decimals;
+  final String detailPageRoute;
   final Widget icon;
 
   @override
@@ -152,13 +160,12 @@ class TokenItem extends StatelessWidget {
           style: TextStyle(
               fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black54),
         ),
-        onTap: () {
-          // Navigator.pushNamed(
-          //     context, AssetPage.route,
-          //     arguments: TokenData(
-          //         tokenType: TokenType.Token,
-          //         id: token));
-        },
+        onTap: detailPageRoute == null
+            ? null
+            : () {
+                Navigator.of(context)
+                    .pushNamed(detailPageRoute, arguments: item);
+              },
       ),
     );
   }

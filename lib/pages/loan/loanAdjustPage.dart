@@ -57,7 +57,7 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
     final decimals = widget.plugin.networkState.tokenDecimals;
     final LoanAdjustPageParams params =
         ModalRoute.of(context).settings.arguments;
-    final tokenPrice = widget.plugin.store.loan.prices[params.token];
+    final tokenPrice = widget.plugin.store.assets.prices[params.token];
     final stableCoinPrice = Fmt.tokenInt('1', decimals);
     final collateralInUSD =
         loanType.tokenToUSD(collateral, tokenPrice, decimals);
@@ -373,7 +373,7 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
     final symbol = params.token;
     final loan = widget.plugin.store.loan.loans[symbol];
 
-    final price = widget.plugin.store.loan.prices[symbol];
+    final price = widget.plugin.store.assets.prices[symbol];
     final stableCoinPrice = Fmt.tokenInt('1', decimals);
 
     String titleSuffix = ' $symbol';
@@ -381,9 +381,9 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
     bool showDebit = true;
 
     BigInt balanceAUSD = Fmt.balanceInt(
-        widget.plugin.store.loan.tokenBalanceMap[acala_stable_coin].amount);
+        widget.plugin.store.assets.tokenBalanceMap[acala_stable_coin].amount);
     BigInt balance = Fmt.balanceInt(
-        widget.plugin.store.loan.tokenBalanceMap[params.token].amount);
+        widget.plugin.store.assets.tokenBalanceMap[params.token].amount);
     BigInt available = balance;
     BigInt maxToBorrow = loan.maxToBorrow - loan.debits;
     String maxToBorrowView = Fmt.priceFloorBigInt(maxToBorrow, decimals);

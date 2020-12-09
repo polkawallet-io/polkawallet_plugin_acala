@@ -187,7 +187,7 @@ class _HomaRedeemPageState extends State<HomaRedeemPage> {
         final decimals = widget.plugin.networkState.tokenDecimals;
 
         final balance = Fmt.balanceInt(
-            widget.plugin.store.loan.tokenBalanceMap['LDOT'].amount);
+            widget.plugin.store.assets.tokenBalanceMap['LDOT'].amount);
 
         final pool = widget.plugin.store.homa.stakingPoolInfo;
 

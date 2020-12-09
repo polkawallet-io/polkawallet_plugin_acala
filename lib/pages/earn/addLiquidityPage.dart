@@ -171,10 +171,10 @@ class _AddLiquidityPageState extends State<AddLiquidityPage> {
         BigInt balanceTokenUser = tokenPair[0] == 'ACA'
             ? Fmt.balanceInt(
                 widget.plugin.balances.native.freeBalance.toString())
-            : Fmt.balanceInt(widget.plugin.store.loan
+            : Fmt.balanceInt(widget.plugin.store.assets
                     .tokenBalanceMap[tokenPair[0].toUpperCase()]?.amount ??
                 '0');
-        BigInt balanceStableCoinUser = Fmt.balanceInt(widget.plugin.store.loan
+        BigInt balanceStableCoinUser = Fmt.balanceInt(widget.plugin.store.assets
                 .tokenBalanceMap[tokenPair[1].toUpperCase()]?.amount ??
             '0');
 

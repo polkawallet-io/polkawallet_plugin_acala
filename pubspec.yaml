@@ -46,11 +46,13 @@ flutter:
     - assets/images/acala_dark.png
     - assets/images/assets_up.png
     - assets/images/assets_down.png
+    - assets/images/assets_send.png
     - assets/images/swap.svg
     - assets/images/exchange.svg
     - assets/images/loan.svg
     - assets/images/loan-start.svg
     - assets/images/deposit.svg
+    - assets/images/scan.svg
     - assets/images/nft.svg
     - assets/images/tokens/ACA.png
     - assets/images/tokens/AUSD.png

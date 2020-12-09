@@ -1,6 +1,8 @@
 const Map<String, String> enDex = {
   'acala': 'Acala Platform',
   'airdrop': 'Airdrop',
+  'transfer': 'Transfer',
+  'receive': 'Receive',
   'dex.title': 'Swap',
   'dex.brief':
       'Decentralized token exchange with the liquid pool of the Acala platform.',
@@ -109,6 +111,8 @@ const Map<String, String> enDex = {
 const Map<String, String> zhDex = {
   'acala': 'Acala 稳定币平台',
   'airdrop': '空投',
+  'transfer': '转账',
+  'receive': '收款',
   'dex.title': '兑换',
   'dex.brief': '与 Acala 平台的流动性池进行去中心化 Token 交易.',
   'dex.pay': '支付数量',

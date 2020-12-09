@@ -126,7 +126,7 @@ class _LPStakePage extends State<LPStakePage> {
             if (!isStake) {
               balance = poolInfo.shares;
             } else {
-              balance = Fmt.balanceInt(widget.plugin.store.loan
+              balance = Fmt.balanceInt(widget.plugin.store.assets
                       .tokenBalanceMap[args.poolId.toUpperCase()]?.amount ??
                   '0');
             }
