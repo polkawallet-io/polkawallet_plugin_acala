@@ -1,4 +1,5 @@
 import 'package:mobx/mobx.dart';
+import 'package:polkawallet_plugin_acala/api/types/nftData.dart';
 import 'package:polkawallet_plugin_acala/api/types/transferData.dart';
 import 'package:polkawallet_plugin_acala/common/constants.dart';
 import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
@@ -28,6 +29,9 @@ abstract class _AssetsStore with Store {
   @observable
   ObservableList<TransferData> txs = ObservableList<TransferData>();
 
+  @observable
+  List<NFTData> nft = [];
+
   @action
   void setTokenBalanceMap(List<TokenBalanceData> list) {
     final data = Map<String, TokenBalanceData>();
@@ -40,6 +44,11 @@ abstract class _AssetsStore with Store {
   @action
   void setPrices(Map<String, BigInt> data) {
     prices = data;
+  }
+
+  @action
+  void setNFTs(List<NFTData> list) {
+    nft = list;
   }
 
   @action

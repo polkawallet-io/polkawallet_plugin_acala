@@ -124,13 +124,9 @@ class AcalaServiceAssets {
     }
   }
 
-// Future<void> fetchUserNFTs() async {
-//   final address = store.account.currentAddress;
-//   final time = DateTime.now();
-//   final enable = time.millisecondsSinceEpoch > 1604099149427;
-//   final code =
-//       'api.derive.nft.queryTokensByAccount("$address", ${enable ? 1 : 0}).then(res => res.map(e => ({...e.data.value, metadata: e.data.value.metadata.toUtf8()})))';
-//   final List res = await apiRoot.evalJavascript(code, allowRepeat: true);
-//   store.acala.setUserNFTs(res);
-// }
+  Future<List> queryNFTs(String address) async {
+    final List res = await plugin.sdk.webView
+        .evalJavascript('acala.queryNFTs(api, "$address")');
+    return res;
+  }
 }

@@ -18,6 +18,7 @@ dependencies:
   json_annotation: ^3.0.1
   flutter_svg: ^0.18.0
   get_storage: ^1.2.1
+  device_info: ^0.4.2
   polkawallet_sdk:
     path: ../sdk
   polkawallet_ui:
@@ -53,6 +54,7 @@ flutter:
     - assets/images/loan-start.svg
     - assets/images/deposit.svg
     - assets/images/scan.svg
+    - assets/images/faucet.svg
     - assets/images/nft.svg
     - assets/images/tokens/ACA.png
     - assets/images/tokens/AUSD.png

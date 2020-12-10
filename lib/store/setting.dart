@@ -15,21 +15,6 @@ abstract class _SettingStore with Store {
   @observable
   Map liveModules = Map();
 
-  // @observable
-  // List<LoanType> loanTypes = List<LoanType>();
-  //
-  // @observable
-  // Map<String, LoanData> loans = {};
-  //
-  // @observable
-  // Map<String, BigInt> prices = {};
-  //
-  // @observable
-  // List<LPTokenData> lpTokens = List<LPTokenData>();
-  //
-  // @observable
-  // ObservableList<TxLoanData> txsLoan = ObservableList<TxLoanData>();
-
   @action
   void setLiveModules(Map value) {
     liveModules = value;

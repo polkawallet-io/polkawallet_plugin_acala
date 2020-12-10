@@ -24,6 +24,7 @@ import 'package:polkawallet_plugin_acala/pages/loan/loanAdjustPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanCreatePage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
+import 'package:polkawallet_plugin_acala/pages/nft/nftPage.dart';
 import 'package:polkawallet_plugin_acala/pages/swap/swapHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/swap/swapPage.dart';
 import 'package:polkawallet_plugin_acala/service/index.dart';
@@ -126,6 +127,8 @@ class PluginAcala extends PolkawalletPlugin {
       MintPage.route: (_) => MintPage(this, keyring),
       HomaRedeemPage.route: (_) => HomaRedeemPage(this, keyring),
       HomaHistoryPage.route: (_) => HomaHistoryPage(this, keyring),
+      // NFT pages
+      NFTPage.route: (_) => NFTPage(this, keyring),
     };
   }
 
@@ -153,26 +156,38 @@ class PluginAcala extends PolkawalletPlugin {
     final airdrops = await _api.assets.queryAirdropTokens(acc.address);
     balances
         .setExtraTokens([ExtraTokenData(title: 'Airdrop', tokens: airdrops)]);
+
+    final nft = await _api.assets.queryNFTs(acc.address);
+    _store.assets.setNFTs(nft);
+  }
+
+  void _loadCacheData(KeyPairData acc) {
+    balances.setTokens([]);
+    balances.setExtraTokens([]);
+
+    _store.assets.loadCache(acc.pubKey);
+    _store.loan.loadCache(acc.pubKey);
+    _store.swap.loadCache(acc.pubKey);
+    _store.earn.loadCache(acc.pubKey);
+    _store.homa.loadCache(acc.pubKey);
   }
 
   @override
-  Future<void> beforeStart(Keyring keyring) async {
+  Future<void> onWillStart(Keyring keyring) async {
     _api = AcalaApi(AcalaService(this));
 
     await GetStorage.init(acala_plugin_cache_key);
 
     _store = PluginStore(_cache);
-    _store.assets.loadCache(keyring.current.pubKey);
-    _store.loan.loadCache(keyring.current.pubKey);
-    _store.swap.loadCache(keyring.current.pubKey);
-    _store.earn.loadCache(keyring.current.pubKey);
-    _store.homa.loadCache(keyring.current.pubKey);
+    _loadCacheData(keyring.current);
 
     _service = PluginService(this, keyring);
   }
 
   @override
   Future<void> onStarted(Keyring keyring) async {
+    _service.connected = true;
+
     if (keyring.current.address != null) {
       _subscribeTokenBalances(keyring.current);
     }
@@ -180,12 +195,11 @@ class PluginAcala extends PolkawalletPlugin {
 
   @override
   Future<void> onAccountChanged(KeyPairData acc) async {
-    _api.assets.unsubscribeTokenBalances(acc.address);
-    balances.setTokens([]);
+    _loadCacheData(acc);
 
-    _subscribeTokenBalances(acc);
-
-    _store.loan.loadCache(acc.pubKey);
-    _store.swap.loadCache(acc.pubKey);
+    if (_service.connected) {
+      _api.assets.unsubscribeTokenBalances(acc.address);
+      _subscribeTokenBalances(acc);
+    }
   }
 }

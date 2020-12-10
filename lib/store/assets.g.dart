@@ -54,6 +54,21 @@ mixin _$AssetsStore on _AssetsStore, Store {
     });
   }
 
+  final _$nftAtom = Atom(name: '_AssetsStore.nft');
+
+  @override
+  List<NFTData> get nft {
+    _$nftAtom.reportRead();
+    return super.nft;
+  }
+
+  @override
+  set nft(List<NFTData> value) {
+    _$nftAtom.reportWrite(value, super.nft, () {
+      super.nft = value;
+    });
+  }
+
   final _$_AssetsStoreActionController = ActionController(name: '_AssetsStore');
 
   @override
@@ -73,6 +88,17 @@ mixin _$AssetsStore on _AssetsStore, Store {
         name: '_AssetsStore.setPrices');
     try {
       return super.setPrices(data);
+    } finally {
+      _$_AssetsStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setNFTs(List<NFTData> list) {
+    final _$actionInfo = _$_AssetsStoreActionController.startAction(
+        name: '_AssetsStore.setNFTs');
+    try {
+      return super.setNFTs(list);
     } finally {
       _$_AssetsStoreActionController.endAction(_$actionInfo);
     }
@@ -105,7 +131,8 @@ mixin _$AssetsStore on _AssetsStore, Store {
     return '''
 tokenBalanceMap: ${tokenBalanceMap},
 prices: ${prices},
-txs: ${txs}
+txs: ${txs},
+nft: ${nft}
     ''';
   }
 }

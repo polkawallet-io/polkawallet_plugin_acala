@@ -216,6 +216,31 @@ async function queryHomaRedeemAmount(api: ApiPromise, amount: number, redeemType
   }
 }
 
+async function queryNFTs(api: ApiPromise, address: string) {
+  const tokens = await api.query.ormlNft.tokensByOwner.entries(address);
+  const nfts = tokens.map((item) => {
+    return {
+      classes: item[0].args[1][0].toString(),
+      tokenId: item[0].args[1][1].toString(),
+    };
+  });
+  const res = await api.queryMulti(
+    nfts.map((nft: { classes: string; tokenId: string }) => {
+      return [api.query.ormlNft.tokens, [nft.classes, nft.tokenId]];
+    })
+  );
+  return res
+    .map((item: any) => item.unwrap())
+    .map((item) => {
+      try {
+        return JSON.parse(item.metadata.toUtf8());
+      } catch (e) {
+        return null;
+      }
+    })
+    .filter((i) => !!i);
+}
+
 export default {
   calcTokenSwapAmount,
   queryLPTokens,
@@ -224,4 +249,5 @@ export default {
   fetchHomaStakingPool,
   fetchHomaUserInfo,
   queryHomaRedeemAmount,
+  queryNFTs,
 };

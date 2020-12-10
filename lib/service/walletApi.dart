@@ -18,4 +18,32 @@ class WalletApi {
       return null;
     }
   }
+
+  static Future<String> fetchAcalaFaucet(
+      String address, String deviceId) async {
+    Map<String, String> headers = {"Content-type": "application/json"};
+    String body = jsonEncode({
+      "address": address,
+      "account": deviceId,
+    });
+    try {
+      Response res = await post('$_endpoint/v2/faucet/faucet',
+          headers: headers, body: body);
+      if (res.statusCode == 200) {
+        try {
+          final body = jsonDecode(res.body);
+          if (body['code'] == 200) {
+            return 'success';
+          }
+          return body['message'];
+        } catch (_) {
+          return null;
+        }
+      }
+      return null;
+    } catch (err) {
+      print(err);
+      return null;
+    }
+  }
 }

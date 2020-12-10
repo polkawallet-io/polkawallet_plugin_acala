@@ -21,6 +21,8 @@ class PluginService {
 
   final PluginAcala plugin;
 
+  bool connected = false;
+
   Future<String> getPassword(BuildContext context, KeyPairData acc) async {
     final password = await showCupertinoDialog(
       context: context,

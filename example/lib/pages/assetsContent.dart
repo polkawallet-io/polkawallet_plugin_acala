@@ -7,6 +7,7 @@ import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_ui/components/textTag.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
 class AssetsContent extends StatefulWidget {
@@ -53,8 +54,22 @@ class _AssetsContentState extends State<AssetsContent> {
               ),
               Padding(
                 padding: EdgeInsets.only(top: 16),
-                child: BorderedTitle(
-                  title: 'Assets',
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    BorderedTitle(
+                      title: 'Assets',
+                    ),
+                    widget.network.basic.isTestNet
+                        ? TextTag(
+                            'TestToken',
+                            fontSize: 16,
+                            color: Colors.red,
+                            margin: EdgeInsets.only(left: 12),
+                            padding: EdgeInsets.fromLTRB(8, 4, 8, 4),
+                          )
+                        : Container()
+                  ],
                 ),
               ),
               RoundedCard(
