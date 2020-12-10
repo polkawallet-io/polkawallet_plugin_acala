@@ -34,8 +34,16 @@ class AcalaApiAssets {
 
   Future<void> subscribeTokenBalances(
       String address, Function(List<TokenBalanceData>) callback) async {
+    final tokens = List.of(
+        service.plugin.networkConst['accounts']['allNonNativeCurrencyIds']);
+    _tokenBalances.clear();
+
     await service.subscribeTokenBalances(address, (Map data) {
       _tokenBalances[data['symbol']] = data;
+
+      // do not callback if we did not receive enough data.
+      if (_tokenBalances.keys.length < tokens.length) return;
+
       callback(_tokenBalances.values
           .map((e) => TokenBalanceData(
                 name: PluginFmt.tokenView(e['symbol']),
