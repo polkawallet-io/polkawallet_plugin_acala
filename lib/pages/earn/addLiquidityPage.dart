@@ -229,8 +229,7 @@ class _AddLiquidityPageState extends State<AddLiquidityPage> {
                             width: inputWidth,
                             child: CurrencyWithIcon(
                               tokenPair[1],
-                              TokenIcon(tokenPair[1].toUpperCase(),
-                                  widget.plugin.tokenIcons),
+                              TokenIcon(tokenPair[1], widget.plugin.tokenIcons),
                               textStyle: Theme.of(context).textTheme.headline4,
                             ),
                           ),

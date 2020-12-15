@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
@@ -284,6 +282,6 @@ class TokenIcon extends StatelessWidget {
         width: 45,
       );
     }
-    return SizedBox(child: tokenIcons[symbol], width: 32);
+    return SizedBox(child: tokenIcons[symbol.toUpperCase()], width: 32);
   }
 }

@@ -193,7 +193,7 @@ class _SwapPageState extends State<SwapPage> {
     final Map dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     try {
       double value = double.parse(v.trim());
-      if (value > 5 || value < 0.1) {
+      if (value > 50 || value < 0.1) {
         setState(() {
           _slippageError = dic['dex.slippage.error'];
         });
@@ -532,8 +532,8 @@ class _SwapPageState extends State<SwapPage> {
                                         children: _swapOutput.path.map((e) {
                                           return CurrencyWithIcon(
                                             e['Token'].toUpperCase(),
-                                            widget
-                                                .plugin.tokenIcons[e['Token']],
+                                            TokenIcon(e['Token'],
+                                                widget.plugin.tokenIcons),
                                             textStyle: Theme.of(context)
                                                 .textTheme
                                                 .headline4,

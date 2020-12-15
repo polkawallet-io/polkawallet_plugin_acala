@@ -191,13 +191,15 @@ class _HomaRedeemPageState extends State<HomaRedeemPage> {
 
         final pool = widget.plugin.store.homa.stakingPoolInfo;
 
-        final availableNow = pool.communalTotal * pool.communalFreeRatio;
+        final availableNow = pool.communalTotal *
+            pool.communalFreeRatio *
+            pool.liquidExchangeRate;
         double available = 0;
         String eraSelectText = dic['homa.era'];
         String eraSelectTextTail = '';
         if (pool.freeList.length > 0) {
           final item = pool.freeList[_eraSelected];
-          available = item.free;
+          available = item.free * pool.liquidExchangeRate;
           eraSelectText += ': ${item.era}';
           eraSelectTextTail =
               '(≈ ${(item.era - pool.currentEra).toInt()}${dic['homa.redeem.day']}, ${dicAssets['amount.available']}: ${Fmt.priceFloor(pool.freeList[_eraSelected].free, lengthMax: 3)} DOT)';

@@ -164,6 +164,7 @@ class PluginAcala extends PolkawalletPlugin {
   void _loadCacheData(KeyPairData acc) {
     balances.setTokens([]);
     balances.setExtraTokens([]);
+    _store.assets.setNFTs([]);
 
     _store.assets.loadCache(acc.pubKey);
     _store.loan.loadCache(acc.pubKey);

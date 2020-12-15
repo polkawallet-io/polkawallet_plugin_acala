@@ -20,7 +20,7 @@ abstract class _LoanStore with Store {
   List<LoanType> loanTypes = List<LoanType>();
 
   @observable
-  Map<String, LoanData> loans = {};
+  Map<String, LoanData> loans = Map<String, LoanData>();
 
   @observable
   ObservableList<TxLoanData> txs = ObservableList<TxLoanData>();
@@ -61,5 +61,7 @@ abstract class _LoanStore with Store {
       txs = ObservableList<TxLoanData>.of(
           list.map((e) => TxLoanData.fromJson(Map<String, dynamic>.from(e))));
     }
+
+    setAccountLoans(Map<String, LoanData>());
   }
 }

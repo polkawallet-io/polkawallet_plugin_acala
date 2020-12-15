@@ -59,5 +59,7 @@ abstract class _HomaStore with Store {
       txs = ObservableList<TxHomaData>.of(list.map((e) => TxHomaData.fromJson(
           Map<String, dynamic>.from(e), acala_token_decimals)));
     }
+
+    setHomaUserInfo(HomaUserInfoData());
   }
 }
