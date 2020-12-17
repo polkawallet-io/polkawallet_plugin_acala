@@ -1,17 +1,7 @@
-import {
-  keyExtractSuri,
-  mnemonicGenerate,
-  cryptoWaitReady,
-} from "@polkadot/util-crypto";
+import { keyExtractSuri, mnemonicGenerate, cryptoWaitReady } from "@polkadot/util-crypto";
 import { hexToU8a, u8aToHex } from "@polkadot/util";
 import BN from "bn.js";
-import {
-  parseQrCode,
-  getSigner,
-  makeTx,
-  getSubmittable,
-} from "../utils/QrSigner";
-import gov from "./gov";
+import { parseQrCode, getSigner, makeTx, getSubmittable } from "../utils/QrSigner";
 
 import { Keyring } from "@polkadot/keyring";
 import { KeypairType } from "@polkadot/util-crypto/types";
@@ -35,12 +25,7 @@ async function gen() {
 /**
  * Import keyPair from mnemonic, rawSeed or keystore.
  */
-function recover(
-  keyType: string,
-  cryptoType: KeypairType,
-  key: string,
-  password: string
-) {
+function recover(keyType: string, cryptoType: KeypairType, key: string, password: string) {
   return new Promise((resolve, reject) => {
     let keyPair: KeyringPair;
     let mnemonic = "";
@@ -118,15 +103,7 @@ async function initKeys(accounts: KeyringPair$Json[], ss58Formats: number[]) {
  * estimate gas fee of an extrinsic
  */
 async function txFeeEstimate(api: ApiPromise, txInfo: any, paramList: any[]) {
-  let tx: SubmittableExtrinsic<"promise">;
-  // wrap tx with council.propose for treasury propose
-  if (txInfo.txName == "treasury.approveProposal") {
-    tx = await gov.makeTreasuryProposalSubmission(api, paramList[0], false);
-  } else if (txInfo.txName == "treasury.rejectProposal") {
-    tx = await gov.makeTreasuryProposalSubmission(api, paramList[0], true);
-  } else {
-    tx = api.tx[txInfo.module][txInfo.call](...paramList);
-  }
+  let tx: SubmittableExtrinsic<"promise"> = api.tx[txInfo.module][txInfo.call](...paramList);
 
   let sender = txInfo.sender.address;
   if (txInfo.proxy) {
@@ -155,9 +132,7 @@ function _extractEvents(api: ApiPromise, result: SubmittableResult) {
         if (dispatchError.isModule) {
           try {
             const mod = dispatchError.asModule;
-            const err = api.registry.findMetaError(
-              new Uint8Array([mod.index.toNumber(), mod.error.toNumber()])
-            );
+            const err = api.registry.findMetaError(new Uint8Array([mod.index.toNumber(), mod.error.toNumber()]));
 
             message = `${err.section}.${err.name}`;
           } catch (error) {
@@ -185,23 +160,10 @@ function _extractEvents(api: ApiPromise, result: SubmittableResult) {
 /**
  * sign and send extrinsic to network and wait for result.
  */
-function sendTx(
-  api: ApiPromise,
-  txInfo: any,
-  paramList: any[],
-  password: string,
-  msgId: string
-) {
+function sendTx(api: ApiPromise, txInfo: any, paramList: any[], password: string, msgId: string) {
   return new Promise(async (resolve) => {
-    let tx: SubmittableExtrinsic<"promise">;
-    // wrap tx with council.propose for treasury propose
-    if (txInfo.txName == "treasury.approveProposal") {
-      tx = await gov.makeTreasuryProposalSubmission(api, paramList[0], false);
-    } else if (txInfo.txName == "treasury.rejectProposal") {
-      tx = await gov.makeTreasuryProposalSubmission(api, paramList[0], true);
-    } else {
-      tx = api.tx[txInfo.module][txInfo.call](...paramList);
-    }
+    let tx: SubmittableExtrinsic<"promise"> = api.tx[txInfo.module][txInfo.call](...paramList);
+
     let unsub = () => {};
     const onStatusChange = (result: SubmittableResult) => {
       if (result.status.isInBlock || result.status.isFinalized) {
@@ -299,11 +261,7 @@ function changePassword(pubKey: string, passOld: string, passNew: string) {
 /**
  * check if user input DerivePath valid.
  */
-async function checkDerivePath(
-  seed: string,
-  derivePath: string,
-  pairType: KeypairType
-) {
+async function checkDerivePath(seed: string, derivePath: string, pairType: KeypairType) {
   try {
     const { path } = keyExtractSuri(`${seed}${derivePath}`);
     // we don't allow soft for ed25519
@@ -328,11 +286,7 @@ async function signAsync(api: ApiPromise, password: string) {
         keyPair.lock();
       }
       keyPair.decodePkcs8(password);
-      const payload = api.registry.createType(
-        "ExtrinsicPayload",
-        unsignedData.data.data,
-        { version: api.extrinsicVersion }
-      );
+      const payload = api.registry.createType("ExtrinsicPayload", unsignedData.data.data, { version: api.extrinsicVersion });
       const signed = payload.sign(keyPair);
       resolve(signed);
     } catch (err) {
@@ -405,11 +359,7 @@ async function signTxAsExtension(api: ApiPromise, password: string, json: any) {
 /**
  * sign bytes from dapp as extension
  */
-async function signBytesAsExtension(
-  api: ApiPromise,
-  password: string,
-  json: any
-) {
+async function signBytesAsExtension(api: ApiPromise, password: string, json: any) {
   return new Promise((resolve) => {
     const keyPair = keyring.getPair(json["address"]);
     try {

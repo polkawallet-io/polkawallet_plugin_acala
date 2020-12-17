@@ -108,7 +108,7 @@ class PluginAcala extends PolkawalletPlugin {
       TokenDetailPage.route: (_) => TokenDetailPage(this, keyring),
       TransferPage.route: (_) => TransferPage(this, keyring),
 
-      // staking pages
+      // loan pages
       LoanPage.route: (_) => LoanPage(this, keyring),
       LoanCreatePage.route: (_) => LoanCreatePage(this, keyring),
       LoanAdjustPage.route: (_) => LoanAdjustPage(this, keyring),
@@ -135,8 +135,6 @@ class PluginAcala extends PolkawalletPlugin {
   @override
   Future<String> loadJSCode() => rootBundle.loadString(
       'packages/polkawallet_plugin_acala/lib/js_service_acala/dist/main.js');
-
-  final balances = BalancesStore();
 
   AcalaApi _api;
   AcalaApi get api => _api;

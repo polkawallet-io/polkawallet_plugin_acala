@@ -4,7 +4,6 @@ import { subscribeMessage, getNetworkConst, getNetworkProperties } from "./servi
 import keyring from "./service/keyring";
 import { options } from "@acala-network/api";
 import account from "./service/account";
-import gov from "./service/gov";
 import acala from "./service/acala";
 import { genLinks } from "./utils/config/config";
 
@@ -16,7 +15,7 @@ function send(path: string, data: any) {
     console.log(path, data);
   }
 }
-send("log", "main js loaded");
+send("log", "acala main js loaded");
 (<any>window).send = send;
 
 async function connect(nodes: string[]) {
@@ -50,5 +49,4 @@ async function connect(nodes: string[]) {
 };
 (<any>window).keyring = keyring;
 (<any>window).account = account;
-(<any>window).gov = gov;
 (<any>window).acala = acala;

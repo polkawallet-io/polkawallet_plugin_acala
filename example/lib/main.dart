@@ -162,7 +162,7 @@ class _MyAppState extends State<MyApp> {
         _connectedNode, _setNetwork, _setConnectedNode, _changeLang);
     final assets = AssetsContent(_network, _keyring);
     return MaterialApp(
-      title: 'Polkawallet Plugin Kusama Demo',
+      title: 'Polkawallet Plugin Acala Demo',
       theme: _theme ?? _getAppTheme(widget.plugins[0].basic.primaryColor),
       localizationsDelegates: [
         AppLocalizationsDelegate(_locale ?? Locale('en', '')),
