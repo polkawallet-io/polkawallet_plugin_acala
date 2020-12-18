@@ -19,25 +19,22 @@ import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 
 void main() {
-  final _plugins = [
-    PluginAcala(),
-  ];
-
-  runApp(MyApp(_plugins));
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  MyApp(this.plugins);
-  final List<PolkawalletPlugin> plugins;
   @override
-  _MyAppState createState() => _MyAppState(plugins[0]);
+  _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  _MyAppState(PolkawalletPlugin defaultPlugin) : this._network = defaultPlugin;
-
-  PolkawalletPlugin _network;
+  /// The Keyring instance manages the local keyPairs
+  /// with dart package `get_storage`
   final _keyring = Keyring();
+
+  /// The PluginAcala instance connects remote node
+  /// and provides APIs from acala.js
+  PolkawalletPlugin _network = PluginAcala();
 
   ThemeData _theme;
 
@@ -97,8 +94,15 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _startPlugin() async {
+    /// Waiting for Keyring local storage initiate.
     await _keyring.init();
 
+    /// Waiting for PluginAcala load js code
+    /// and start a hidden webView to run `acala.js`.
+    await _network.beforeStart(_keyring);
+
+    /// Calling `PluginAcala(Keyring)` to
+    /// connect to remote acala node.
     final connected = await _network.start(_keyring);
     _setConnectedNode(connected);
   }
@@ -158,12 +162,12 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    final profile = ProfileContent(_network, _keyring, _locale, widget.plugins,
+    final profile = ProfileContent(_network, _keyring, _locale, [_network],
         _connectedNode, _setNetwork, _setConnectedNode, _changeLang);
     final assets = AssetsContent(_network, _keyring);
     return MaterialApp(
       title: 'Polkawallet Plugin Acala Demo',
-      theme: _theme ?? _getAppTheme(widget.plugins[0].basic.primaryColor),
+      theme: _theme ?? _getAppTheme(_network.basic.primaryColor),
       localizationsDelegates: [
         AppLocalizationsDelegate(_locale ?? Locale('en', '')),
         GlobalMaterialLocalizations.delegate,
