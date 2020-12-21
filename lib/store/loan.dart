@@ -57,9 +57,10 @@ abstract class _LoanStore with Store {
     final cached = cache.loanTxs.val;
     final list = cached[pubKey] as List;
     if (list != null) {
-      print(list);
       txs = ObservableList<TxLoanData>.of(
           list.map((e) => TxLoanData.fromJson(Map<String, dynamic>.from(e))));
+    } else {
+      txs = ObservableList<TxLoanData>();
     }
 
     setAccountLoans(Map<String, LoanData>());

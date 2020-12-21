@@ -60,7 +60,7 @@ class LoanHistoryPage extends StatelessWidget {
               ),
               child: ListTile(
                 title: Text(list[i].actionType),
-                subtitle: Text(list[i].time.toString()),
+                subtitle: Text(Fmt.dateTime(list[i].time)),
                 trailing: Container(
                   width: 140,
                   child: Row(

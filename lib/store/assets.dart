@@ -88,6 +88,8 @@ abstract class _AssetsStore with Store {
     if (list != null) {
       txs = ObservableList<TransferData>.of(
           list.map((e) => TransferData.fromJson(Map<String, dynamic>.from(e))));
+    } else {
+      txs = ObservableList<TransferData>();
     }
   }
 }

@@ -29,13 +29,21 @@ class LoanPage extends StatefulWidget {
 class _LoanPageState extends State<LoanPage> {
   String _tab = 'DOT';
 
+  Future<void> _fetchData() async {
+    await widget.plugin.service.loan
+        .queryLoanTypes(widget.keyring.current.address);
+    if (mounted) {
+      widget.plugin.service.loan
+          .subscribeAccountLoans(widget.keyring.current.address);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.plugin.service.loan
-          .subscribeAccountLoans(widget.keyring.current.address);
+      _fetchData();
     });
   }
 

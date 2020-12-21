@@ -6,6 +6,7 @@ import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
+import 'package:polkawallet_ui/utils/format.dart';
 
 class HomaHistoryPage extends StatelessWidget {
   HomaHistoryPage(this.plugin, this.keyring);
@@ -49,7 +50,7 @@ class HomaHistoryPage extends StatelessWidget {
               ),
               child: ListTile(
                 title: Text('${list[i].action} $amountReceive'),
-                subtitle: Text(list[i].time.toString()),
+                subtitle: Text(Fmt.dateTime(list[i].time)),
                 trailing: Container(
                   width: 140,
                   child: Row(

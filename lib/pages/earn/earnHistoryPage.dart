@@ -81,7 +81,7 @@ class EarnHistoryPage extends StatelessWidget {
                   ),
                   child: ListTile(
                     title: Text(detail.action),
-                    subtitle: Text(list[i].time.toString().split('.')[0]),
+                    subtitle: Text(Fmt.dateTime(detail.time)),
                     trailing: Container(
                       width: MediaQuery.of(context).size.width / 2,
                       child: Row(

@@ -41,6 +41,8 @@ abstract class _SwapStore with Store {
     if (list != null) {
       txs = ObservableList<TxSwapData>.of(list.map((e) => TxSwapData.fromJson(
           Map<String, dynamic>.from(e), acala_token_decimals)));
+    } else {
+      txs = ObservableList<TxSwapData>();
     }
   }
 }
