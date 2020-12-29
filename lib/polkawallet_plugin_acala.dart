@@ -42,13 +42,14 @@ import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 class PluginAcala extends PolkawalletPlugin {
   @override
   final basic = PluginBasicData(
-    name: 'acala',
+    name: 'acala-tc5',
     ss58: 42,
     primaryColor: Colors.indigo,
     icon:
         Image.asset('packages/polkawallet_plugin_acala/assets/images/logo.png'),
     iconDisabled: Image.asset(
         'packages/polkawallet_plugin_acala/assets/images/logo_gray.png'),
+    jsCodeVersion: 10910,
   );
 
   @override

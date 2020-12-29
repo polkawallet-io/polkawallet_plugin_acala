@@ -136,7 +136,7 @@ packages:
       name: get
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.21.2"
+    version: "3.24.0"
   get_storage:
     dependency: transitive
     description:
@@ -164,7 +164,7 @@ packages:
       name: image_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.6.7+14"
+    version: "0.6.7+17"
   image_picker_platform_interface:
     dependency: transitive
     description:
@@ -311,16 +311,14 @@ packages:
       name: polkawallet_sdk
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.1"
+    version: "0.0.3"
   polkawallet_ui:
     dependency: "direct main"
     description:
-      path: "."
-      ref: master
-      resolved-ref: bdcee63f10339a54351c7d0f4a98691d2edec05f
-      url: "https://github.com/polkawallet-io/ui.git"
-    source: git
-    version: "0.0.1"
+      path: "../../ui"
+      relative: true
+    source: path
+    version: "0.0.2"
   process:
     dependency: transitive
     description:
