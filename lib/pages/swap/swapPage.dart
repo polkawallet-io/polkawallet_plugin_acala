@@ -301,10 +301,11 @@ class _SwapPageState extends State<SwapPage> {
         BigInt balance = BigInt.zero;
         if (_swapPair.length > 0 && _swapPair[0] == 'ACA') {
           balance = Fmt.balanceInt(
-              widget.plugin.balances.native.freeBalance.toString());
+              (widget.plugin.balances.native?.freeBalance ?? 0).toString());
         } else if (_getSwapTokens().length > 0 && _swapPair.length > 0) {
           balance = Fmt.balanceInt(widget.plugin.store.assets
-              .tokenBalanceMap[_swapPair[0].toUpperCase()].amount);
+                  .tokenBalanceMap[_swapPair[0].toUpperCase()]?.amount ??
+              '0');
         }
 
         final primary = Theme.of(context).primaryColor;
