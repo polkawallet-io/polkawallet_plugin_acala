@@ -71,9 +71,7 @@ class AcalaServiceAssets {
         ],
         channel,
         (Map data) {
-          if (BigInt.parse(data['free'].toString()) > BigInt.zero) {
-            callback({'symbol': LPToken.join('-'), 'balance': data});
-          }
+          callback({'symbol': LPToken.join('-'), 'balance': data});
         },
       );
     });

@@ -148,8 +148,10 @@ class PluginAcala extends PolkawalletPlugin {
 
   Future<void> _subscribeTokenBalances(KeyPairData acc) async {
     _api.assets.subscribeTokenBalances(acc.address, (data) {
-      balances.setTokens(data);
       _store.assets.setTokenBalanceMap(data);
+
+      data.removeWhere((e) => e.symbol.contains('-') && e.amount == '0');
+      balances.setTokens(data);
     });
 
     final airdrops = await _api.assets.queryAirdropTokens(acc.address);
