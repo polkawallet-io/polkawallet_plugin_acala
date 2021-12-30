@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/api/types/calcHomaRedeemAmount.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/pages/swap/bootstrapPage.dart';
-import 'package:polkawallet_plugin_karura/pages/swap/swapTokenInput.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/calcHomaRedeemAmount.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/bootstrapPage.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/swapTokenInput.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -21,10 +21,10 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class RedeemPage extends StatefulWidget {
   RedeemPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/homa/redeem';
+  static const String route = '/acala/homa/redeem';
 
   @override
   _RedeemPageState createState() => _RedeemPageState();
@@ -106,7 +106,7 @@ class _RedeemPageState extends State<RedeemPage> {
   }
 
   String _validateInput(String supply) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
     final error = Fmt.validatePrice(supply, context);
     if (error != null) {
       return error;
@@ -119,7 +119,7 @@ class _RedeemPageState extends State<RedeemPage> {
 
     if (pay <= minStake && !homaNow) {
       final minLabel = I18n.of(context)
-          .getDic(i18n_full_dic_karura, 'acala')['homa.pool.redeem'];
+          .getDic(i18n_full_dic_acala, 'acala')['homa.pool.redeem'];
       return '$minLabel > ${minStake.toStringAsFixed(4)}';
     }
 
@@ -129,7 +129,7 @@ class _RedeemPageState extends State<RedeemPage> {
     final poolInfo = widget.plugin.store.homa.poolInfo;
     if (Fmt.tokenInt(supply, stakeDecimal) + poolInfo.staked > poolInfo.cap) {
       return I18n.of(context)
-          .getDic(i18n_full_dic_karura, 'acala')['homa.pool.cap.error'];
+          .getDic(i18n_full_dic_acala, 'acala')['homa.pool.cap.error'];
     }
     return error;
   }
@@ -155,7 +155,7 @@ class _RedeemPageState extends State<RedeemPage> {
 
     if (_error != null || pay.isEmpty || _data == null) return;
 
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
 
     var params = [_data.newRedeemBalance, 0];
     var module = 'homaLite';
@@ -244,7 +244,7 @@ class _RedeemPageState extends State<RedeemPage> {
     final labelStyle = TextStyle(color: grey, fontSize: 13);
     return Observer(
       builder: (BuildContext context) {
-        final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+        final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
 
         return Scaffold(
           appBar: AppBar(

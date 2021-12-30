@@ -1,5 +1,5 @@
-name: polkawallet_plugin_karura
-description: Karura network plugin for Polkawallet.
+name: polkawallet_plugin_acala
+description: Acala network plugin for Polkawallet.
 version: 0.3.8
 homepage:
 
@@ -44,7 +44,7 @@ dependency_overrides:
 # The following section is specific to Flutter.
 flutter:
   assets:
-    - lib/js_service_karura/dist/main.js
+    - lib/js_service_acala/dist/main.js
     - assets/images/
     - assets/images/tokens/
     - assets/images/2.0X/

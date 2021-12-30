@@ -4,8 +4,8 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/api/types/gov/referendumInfoData.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -17,7 +17,7 @@ import 'package:polkawallet_ui/utils/index.dart';
 
 class ReferendumVotePage extends StatefulWidget {
   ReferendumVotePage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
   static final String route = '/gov/referenda';
@@ -37,8 +37,8 @@ class _ReferendumVoteState extends State<ReferendumVotePage> {
 
   Future<TxConfirmParams> _getTxParams() async {
     if (_formKey.currentState.validate()) {
-      final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
-      final govDic = I18n.of(context).getDic(i18n_full_dic_karura, 'gov');
+      final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
+      final govDic = I18n.of(context).getDic(i18n_full_dic_acala, 'gov');
       final decimals = widget.plugin.networkState.tokenDecimals[0];
       final Map args = ModalRoute.of(context).settings.arguments;
       final ReferendumInfo info = args['referenda'];
@@ -93,7 +93,7 @@ class _ReferendumVoteState extends State<ReferendumVotePage> {
   }
 
   String _getConvictionLabel(int value) {
-    final dicGov = I18n.of(context).getDic(i18n_full_dic_karura, 'gov');
+    final dicGov = I18n.of(context).getDic(i18n_full_dic_acala, 'gov');
     final Map conviction =
         value > 0 ? widget.plugin.store.gov.voteConvictions[value - 1] : {};
     return value == 0
@@ -131,7 +131,7 @@ class _ReferendumVoteState extends State<ReferendumVotePage> {
 
   @override
   Widget build(BuildContext context) {
-    final dicGov = I18n.of(context).getDic(i18n_full_dic_karura, 'gov');
+    final dicGov = I18n.of(context).getDic(i18n_full_dic_acala, 'gov');
     return Scaffold(
       appBar: AppBar(
         title: Text(dicGov['vote.proposal']),
@@ -140,7 +140,7 @@ class _ReferendumVoteState extends State<ReferendumVotePage> {
       ),
       body: Observer(
         builder: (_) {
-          final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+          final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
           final decimals = widget.plugin.networkState.tokenDecimals[0];
 
           final balance = Fmt.balanceInt(

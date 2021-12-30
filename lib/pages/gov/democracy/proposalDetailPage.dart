@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/store/accounts.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/store/accounts.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/api/types/gov/genExternalLinksParams.dart';
 import 'package:polkawallet_sdk/api/types/gov/proposalInfoData.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
@@ -19,7 +19,7 @@ import 'package:polkawallet_ui/utils/index.dart';
 
 class ProposalDetailPage extends StatefulWidget {
   ProposalDetailPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
   static const String route = '/gov/democracy/proposal';
@@ -54,7 +54,7 @@ class _ProposalDetailPageState extends State<ProposalDetailPage> {
   }
 
   Future<void> _onSwitch() async {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'gov');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'gov');
     final ProposalInfoData proposal = ModalRoute.of(context).settings.arguments;
     final TxConfirmParams params = TxConfirmParams(
       module: 'democracy',
@@ -79,7 +79,7 @@ class _ProposalDetailPageState extends State<ProposalDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    var dic = I18n.of(context).getDic(i18n_full_dic_karura, 'gov');
+    var dic = I18n.of(context).getDic(i18n_full_dic_acala, 'gov');
     final ProposalInfoData proposalPara =
         ModalRoute.of(context).settings.arguments;
     return Scaffold(
@@ -239,7 +239,7 @@ class ProposalSecondsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Map dic = I18n.of(context).getDic(i18n_full_dic_karura, 'gov');
+    final Map dic = I18n.of(context).getDic(i18n_full_dic_acala, 'gov');
     final List seconding = proposal.seconds.toList();
     seconding.removeAt(0);
     return Container(
@@ -319,7 +319,7 @@ class _ProposalArgsListState extends State<ProposalArgsList> {
                   ? Icons.keyboard_arrow_down
                   : Icons.keyboard_arrow_right,
             ),
-            Text(I18n.of(context).getDic(i18n_full_dic_karura, 'gov')['detail'])
+            Text(I18n.of(context).getDic(i18n_full_dic_acala, 'gov')['detail'])
           ],
         ),
         onTap: () {

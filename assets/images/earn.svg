@@ -4,13 +4,13 @@
     <defs>
         <rect id="path-1" x="0" y="0" width="30.4761905" height="68.5714286"></rect>
         <linearGradient x1="50%" y1="100%" x2="50%" y2="3.061617e-15%" id="linearGradient-3">
-            <stop stop-color="#FE863F" offset="0%"></stop>
-            <stop stop-color="#FE423F" offset="100%"></stop>
+            <stop stop-color="#4762F1" offset="0%"></stop>
+            <stop stop-color="#6981FF" offset="100%"></stop>
         </linearGradient>
         <rect id="path-4" x="0.0995898276" y="0" width="32.097561" height="67.2520325"></rect>
         <linearGradient x1="50%" y1="100%" x2="50%" y2="3.061617e-15%" id="linearGradient-6">
-            <stop stop-color="#FE523F" offset="0%"></stop>
-            <stop stop-color="#FE383F" offset="100%"></stop>
+            <stop stop-color="#798EFF" offset="0%"></stop>
+            <stop stop-color="#8296FF" offset="100%"></stop>
         </linearGradient>
     </defs>
     <g id="首页" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">

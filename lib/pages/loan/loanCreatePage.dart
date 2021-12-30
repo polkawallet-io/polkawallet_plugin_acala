@@ -1,15 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/api/types/loanType.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/pages/currencySelectPage.dart';
-import 'package:polkawallet_plugin_karura/pages/loan/loanDetailPage.dart';
-import 'package:polkawallet_plugin_karura/pages/loan/loanInfoPanel.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/currencySelectPage.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanDetailPage.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanInfoPanel.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -24,10 +24,10 @@ import 'package:polkawallet_ui/utils/index.dart';
 
 class LoanCreatePage extends StatefulWidget {
   LoanCreatePage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/loan/create';
+  static const String route = '/acala/loan/create';
 
   @override
   _LoanCreatePageState createState() => _LoanCreatePageState();
@@ -125,7 +125,7 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
 
   String _validateAmount1(
       String value, BigInt available, int collateralDecimals) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
 
     String v = value.trim();
     final error = Fmt.validatePrice(v, context);
@@ -141,8 +141,8 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
 
   String _validateAmount2(
       String value, LoanType loanType, String max, int stableCoinDecimals) {
-    final assetDic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final assetDic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
 
     String v = value.trim();
     final error = Fmt.validatePrice(v, context);
@@ -165,7 +165,7 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
 
   Map _getTxParams(LoanType loanType,
       {int stableCoinDecimals, int collateralDecimals}) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final debitShare = loanType.debitToDebitShare(
         _amountDebit <= loanType.minimumDebitValue
             ? (loanType.minimumDebitValue + BigInt.from(10000))
@@ -177,7 +177,7 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
           style: Theme.of(context).textTheme.headline1,
         ),
         dic['loan.mint']: Text(
-          '${Fmt.token(_amountDebit, stableCoinDecimals)} $karura_stable_coin_view',
+          '${Fmt.token(_amountDebit, stableCoinDecimals)} $acala_stable_coin_view',
           style: Theme.of(context).textTheme.headline1,
         ),
       },
@@ -243,13 +243,13 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
   @override
   Widget build(BuildContext context) {
     return Observer(builder: (_) {
-      final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
-      final assetDic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+      final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+      final assetDic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
 
       final token = _token ?? widget.plugin.store.loan.loanTypes[0].token;
 
       final balancePair = AssetsUtils.getBalancePairFromTokenNameId(
-          widget.plugin, [token.tokenNameId, karura_stable_coin]);
+          widget.plugin, [token.tokenNameId, acala_stable_coin]);
 
       final pageTitle =
           '${dic['loan.create']} ${PluginFmt.tokenView(token.symbol)}';
@@ -345,7 +345,7 @@ class _LoanCreatePageState extends State<LoanCreatePage> {
                           decoration: InputDecoration(
                             hintText: assetDic['amount'],
                             labelText:
-                                '${assetDic['amount']} (${dic['loan.max']}: $maxToBorrow $karura_stable_coin_view)',
+                                '${assetDic['amount']} (${dic['loan.max']}: $maxToBorrow $acala_stable_coin_view)',
                           ),
                           inputFormatters: [
                             UI.decimalInputFormatter(balancePair[1].decimals)

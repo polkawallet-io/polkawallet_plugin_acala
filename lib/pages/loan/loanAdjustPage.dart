@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:polkawallet_plugin_karura/api/types/loanType.dart';
-import 'package:polkawallet_plugin_karura/common/constants/base.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/pages/loan/loanInfoPanel.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
+import 'package:polkawallet_plugin_acala/common/constants/base.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanInfoPanel.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -22,10 +22,10 @@ import 'package:polkawallet_ui/utils/index.dart';
 
 class LoanAdjustPage extends StatefulWidget {
   LoanAdjustPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/loan/adjust';
+  static const String route = '/acala/loan/adjust';
   static const String actionTypeMint = 'mint';
   static const String actionTypePayback = 'payback';
   static const String actionTypeDeposit = 'deposit';
@@ -173,7 +173,7 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
   }
 
   String _validateAmount1(String value, BigInt available) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
 
     final error = Fmt.validatePrice(value, context);
     if (error != null) {
@@ -187,8 +187,8 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
 
   String _validateAmount2(String value, BigInt max, String maxToBorrowView,
       BigInt balanceAUSD, LoanData loan, int stableCoinDecimals) {
-    final assetDic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final assetDic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
 
     final error = Fmt.validatePrice(value, context);
     if (error != null) {
@@ -227,13 +227,12 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
   }
 
   Future<bool> _confirmPaybackParams() async {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final bool res = await showCupertinoDialog(
         context: context,
         builder: (_) {
           return CupertinoAlertDialog(
-            content: Text(dic[
-                'loan.warn${widget.plugin.basic.name == plugin_name_karura ? '.KSM' : ''}']),
+            content: Text(dic['loan.warn']),
             actions: <Widget>[
               CupertinoDialogAction(
                 child: Text(dic['loan.warn.back']),
@@ -241,7 +240,7 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
               ),
               CupertinoDialogAction(
                 child: Text(I18n.of(context)
-                    .getDic(i18n_full_dic_karura, 'common')['ok']),
+                    .getDic(i18n_full_dic_acala, 'common')['ok']),
                 onPressed: () => Navigator.of(context).pop(true),
               )
             ],
@@ -253,7 +252,7 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
   Future<Map> _getTxParams(LoanData loan, int stableCoinDecimals) async {
     final LoanAdjustPageParams params =
         ModalRoute.of(context).settings.arguments;
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     switch (params.actionType) {
       case LoanAdjustPage.actionTypeMint:
         // borrow min debit value if user's debit is empty
@@ -265,7 +264,7 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
         return {
           'detail': {
             dic['loan.mint']: Text(
-              '${_amountCtrl2.text.trim()} $karura_stable_coin_view',
+              '${_amountCtrl2.text.trim()} $acala_stable_coin_view',
               style: Theme.of(context).textTheme.headline1,
             ),
           },
@@ -294,7 +293,7 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
         return {
           'detail': {
             dic['loan.payback']: Text(
-              '${_amountCtrl2.text.trim()} $karura_stable_coin_view',
+              '${_amountCtrl2.text.trim()} $acala_stable_coin_view',
               style: Theme.of(context).textTheme.headline1,
             ),
           },
@@ -375,7 +374,7 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
           loan.collaterals,
           loan.debits,
           AssetsUtils.getBalanceFromTokenNameId(
-                  widget.plugin, karura_stable_coin)
+                  widget.plugin, acala_stable_coin)
               .decimals,
           params.token.decimals);
     });
@@ -390,13 +389,13 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
 
   @override
   Widget build(BuildContext context) {
-    var dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
-    var assetDic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+    var dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+    var assetDic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
 
     final LoanAdjustPageParams params =
         ModalRoute.of(context).settings.arguments;
     final balancePair = AssetsUtils.getBalancePairFromTokenNameId(
-        widget.plugin, [params.token.tokenNameId, karura_stable_coin]);
+        widget.plugin, [params.token.tokenNameId, acala_stable_coin]);
 
     final loan = widget.plugin.store.loan.loans[params.token.tokenNameId];
 
@@ -404,7 +403,7 @@ class _LoanAdjustPageState extends State<LoanAdjustPage> {
     final stableCoinPrice = Fmt.tokenInt('1', balancePair[1].decimals);
 
     final symbolView = PluginFmt.tokenView(params.token.symbol);
-    final stableCoinView = karura_stable_coin_view;
+    final stableCoinView = acala_stable_coin_view;
     String titleSuffix = ' $symbolView';
     bool showCollateral = true;
     bool showDebit = true;

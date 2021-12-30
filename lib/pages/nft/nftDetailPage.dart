@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/api/types/nftData.dart';
-import 'package:polkawallet_plugin_karura/pages/nft/nftBurnPage.dart';
-import 'package:polkawallet_plugin_karura/pages/nft/nftTransferPage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/nftData.dart';
+import 'package:polkawallet_plugin_acala/pages/nft/nftBurnPage.dart';
+import 'package:polkawallet_plugin_acala/pages/nft/nftTransferPage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/outlinedButtonSmall.dart';
@@ -15,10 +15,10 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class NFTDetailPage extends StatefulWidget {
   NFTDetailPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/nft/detail';
+  static const String route = '/acala/nft/detail';
 
   @override
   _NFTDetailPageState createState() => _NFTDetailPageState();
@@ -43,7 +43,7 @@ class _NFTDetailPageState extends State<NFTDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final NFTData item = ModalRoute.of(context).settings.arguments;
     final symbol = widget.plugin.networkState.tokenSymbol[0];
     final decimal = widget.plugin.networkState.tokenDecimals[0];

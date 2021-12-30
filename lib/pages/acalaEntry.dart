@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/pages/earn/earnPage.dart';
-import 'package:polkawallet_plugin_karura/pages/gov/democracyPage.dart';
-import 'package:polkawallet_plugin_karura/pages/homa/homaPage.dart';
-import 'package:polkawallet_plugin_karura/pages/loan/loanPage.dart';
-import 'package:polkawallet_plugin_karura/pages/nft/nftPage.dart';
-import 'package:polkawallet_plugin_karura/pages/swap/swapPage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/earn/earnPage.dart';
+import 'package:polkawallet_plugin_acala/pages/gov/democracyPage.dart';
+import 'package:polkawallet_plugin_acala/pages/homa/homaPage.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
+import 'package:polkawallet_plugin_acala/pages/nft/nftPage.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/swapPage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/SkaletonList.dart';
@@ -20,7 +20,7 @@ import 'package:polkawallet_ui/components/entryPageCard.dart';
 class AcalaEntry extends StatefulWidget {
   AcalaEntry(this.plugin, this.keyring);
 
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
   @override
@@ -38,8 +38,8 @@ class _AcalaEntryState extends State<AcalaEntry> {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
-    final dicGov = I18n.of(context).getDic(i18n_full_dic_karura, 'gov');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
+    final dicGov = I18n.of(context).getDic(i18n_full_dic_acala, 'gov');
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -52,7 +52,7 @@ class _AcalaEntryState extends State<AcalaEntry> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    dic['karura'],
+                    dic['acala'],
                     style: TextStyle(
                       fontSize: 20,
                       color: Theme.of(context).cardColor,
@@ -71,7 +71,7 @@ class _AcalaEntryState extends State<AcalaEntry> {
                         height: 68,
                         margin: EdgeInsets.only(bottom: 16),
                         child: SvgPicture.asset(
-                            'packages/polkawallet_plugin_karura/assets/images/logo_kar_empty.svg',
+                            'packages/polkawallet_plugin_acala/assets/images/logo_kar_empty.svg',
                             color: Colors.white70),
                       ),
                       Expanded(
@@ -103,7 +103,7 @@ class _AcalaEntryState extends State<AcalaEntry> {
                         height: 68,
                         margin: EdgeInsets.only(bottom: 16),
                         child: SvgPicture.asset(
-                            'packages/polkawallet_plugin_karura/assets/images/logo_kar_empty.svg',
+                            'packages/polkawallet_plugin_acala/assets/images/logo_kar_empty.svg',
                             color: Colors.white70),
                       ),
                       ...liveModules.map((e) {
@@ -155,7 +155,7 @@ class _AcalaEntryState extends State<AcalaEntry> {
                             dicGov['democracy'],
                             dicGov['democracy.brief'],
                             SvgPicture.asset(
-                              'packages/polkawallet_plugin_karura/assets/images/democracy.svg',
+                              'packages/polkawallet_plugin_acala/assets/images/democracy.svg',
                               height: 88,
                               color: Theme.of(context).primaryColor,
                             ),

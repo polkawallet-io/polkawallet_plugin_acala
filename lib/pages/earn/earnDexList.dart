@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/api/types/dexPoolInfoData.dart';
-import 'package:polkawallet_plugin_karura/pages/earn/earnDetailPage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
+import 'package:polkawallet_plugin_acala/pages/earn/earnDetailPage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/currencyWithIcon.dart';
 import 'package:polkawallet_ui/components/infoItem.dart';
@@ -19,7 +19,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class EarnDexList extends StatefulWidget {
   EarnDexList(this.plugin);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
 
   @override
   _EarnDexListState createState() => _EarnDexListState();
@@ -65,7 +65,7 @@ class _EarnDexListState extends State<EarnDexList> {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
 
     return Observer(builder: (_) {
       var dexPools = widget.plugin.store.earn.dexPools.toList();
@@ -146,7 +146,7 @@ class _EarnDexListState extends State<EarnDexList> {
                             visible: (poolInfo?.shares ?? BigInt.zero) !=
                                 BigInt.zero,
                             child: Image.asset(
-                              "packages/polkawallet_plugin_karura/assets/images/staked.png",
+                              "packages/polkawallet_plugin_acala/assets/images/staked.png",
                               width: 35,
                             )),
                         Column(

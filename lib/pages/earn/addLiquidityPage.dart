@@ -4,14 +4,14 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/api/types/dexPoolInfoData.dart';
-import 'package:polkawallet_plugin_karura/common/components/insufficientKARWarn.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/pages/swap/swapTokenInput.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
+import 'package:polkawallet_plugin_acala/common/components/insufficientKARWarn.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/swapTokenInput.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -25,10 +25,10 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class AddLiquidityPage extends StatefulWidget {
   AddLiquidityPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/earn/deposit';
+  static const String route = '/acala/earn/deposit';
   static const String actionDeposit = 'deposit';
 
   @override
@@ -114,7 +114,7 @@ class _AddLiquidityPageState extends State<AddLiquidityPage> {
     if (index == 0 && _maxInputLeft != null) return null;
     if (index == 1 && _maxInputRight != null) return null;
 
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
     final DexPoolData pool = ModalRoute.of(context).settings.arguments;
     final balancePair = pool.tokens
         .map((e) => AssetsUtils.tokenDataFromCurrencyId(widget.plugin, e))
@@ -210,7 +210,7 @@ class _AddLiquidityPageState extends State<AddLiquidityPage> {
 
   Future<void> _onSubmit(int decimalsLeft, int decimalsRight) async {
     if (_onValidate()) {
-      final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+      final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
       final DexPoolData pool = ModalRoute.of(context).settings.arguments;
 
       final amountLeft = _amountLeftCtrl.text.trim();
@@ -248,7 +248,7 @@ class _AddLiquidityPageState extends State<AddLiquidityPage> {
               module: 'utility',
               call: 'batch',
               txTitle: I18n.of(context)
-                  .getDic(i18n_full_dic_karura, 'acala')['earn.add'],
+                  .getDic(i18n_full_dic_acala, 'acala')['earn.add'],
               txDisplay: {
                 dic['earn.pool']:
                     '${tokenPair[0].symbol}-${tokenPair[1].symbol}',
@@ -284,7 +284,7 @@ class _AddLiquidityPageState extends State<AddLiquidityPage> {
               module: 'dex',
               call: 'addLiquidity',
               txTitle: I18n.of(context)
-                  .getDic(i18n_full_dic_karura, 'acala')['earn.add'],
+                  .getDic(i18n_full_dic_acala, 'acala')['earn.add'],
               txDisplay: txDisplay,
               txDisplayBold: {
                 "Token 1": Text(
@@ -355,7 +355,7 @@ class _AddLiquidityPageState extends State<AddLiquidityPage> {
   Widget build(_) {
     return Observer(
       builder: (BuildContext context) {
-        final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+        final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
 
         final DexPoolData pool = ModalRoute.of(context).settings.arguments;
         final tokenPair = pool.tokens
@@ -584,7 +584,7 @@ class StakeLPTips extends StatelessWidget {
       this.switch1Active,
       this.onSwitch,
       this.onSwitch1});
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final String poolSymbol;
   final DexPoolData pool;
   final bool switchActive;
@@ -594,8 +594,8 @@ class StakeLPTips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
-    final dicCommon = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+    final dicCommon = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
     return Observer(builder: (_) {
       double rewardAPY = 0;
       double savingRewardAPY = 0;

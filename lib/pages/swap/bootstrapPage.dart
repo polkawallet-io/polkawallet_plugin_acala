@@ -4,13 +4,13 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/api/types/dexPoolInfoData.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/pages/swap/swapTokenInput.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/swapTokenInput.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/infoItem.dart';
@@ -23,10 +23,10 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class BootstrapPage extends StatefulWidget {
   BootstrapPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/dex/bootstrap';
+  static const String route = '/acala/dex/bootstrap';
 
   @override
   _BootstrapPageState createState() => _BootstrapPageState();
@@ -66,7 +66,7 @@ class _BootstrapPageState extends State<BootstrapPage> {
   }
 
   void _onAmountChange(int index, String value) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
     final DexPoolData args = ModalRoute.of(context).settings.arguments;
     final balancePair = args.tokens
         .map((e) => AssetsUtils.tokenDataFromCurrencyId(widget.plugin, e))
@@ -127,7 +127,7 @@ class _BootstrapPageState extends State<BootstrapPage> {
       return null;
     }
 
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final DexPoolData pool = ModalRoute.of(context).settings.arguments;
     final balancePair = pool.tokens
         .map((e) => AssetsUtils.tokenDataFromCurrencyId(widget.plugin, e))
@@ -181,7 +181,7 @@ class _BootstrapPageState extends State<BootstrapPage> {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final colorGrey = Theme.of(context).unselectedWidgetColor;
 
     final DexPoolData args = ModalRoute.of(context).settings.arguments;

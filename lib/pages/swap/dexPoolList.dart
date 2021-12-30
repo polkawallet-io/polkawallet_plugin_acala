@@ -3,13 +3,13 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/api/types/dexPoolInfoData.dart';
-import 'package:polkawallet_plugin_karura/pages/earn/addLiquidityPage.dart';
-import 'package:polkawallet_plugin_karura/pages/earn/withdrawLiquidityPage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
+import 'package:polkawallet_plugin_acala/pages/earn/addLiquidityPage.dart';
+import 'package:polkawallet_plugin_acala/pages/earn/withdrawLiquidityPage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/infoItem.dart';
@@ -21,7 +21,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class DexPoolList extends StatefulWidget {
   DexPoolList(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
   @override
@@ -101,14 +101,14 @@ class _DexPoolListState extends State<DexPoolList> {
 class _DexPoolCard extends StatelessWidget {
   _DexPoolCard({this.plugin, this.pool, this.poolAmount, this.tokenIcons});
 
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final DexPoolData pool;
   final List poolAmount;
   final Map<String, Widget> tokenIcons;
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final colorGrey = Theme.of(context).unselectedWidgetColor;
 
     final balancePair = pool.tokens

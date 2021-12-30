@@ -1,6 +1,6 @@
-import 'package:polkawallet_plugin_karura/api/loan/acalaServiceLoan.dart';
-import 'package:polkawallet_plugin_karura/api/types/loanType.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/api/loan/acalaServiceLoan.dart';
+import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
 
 class AcalaApiLoan {
   AcalaApiLoan(this.service);

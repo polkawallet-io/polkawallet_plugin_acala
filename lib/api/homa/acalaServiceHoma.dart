@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 
 class AcalaServiceHoma {
   AcalaServiceHoma(this.plugin);
 
-  final PluginKarura plugin;
+  final PluginAcala plugin;
 
   Future<List> queryHomaLiteStakingPool() async {
     final List res = await plugin.sdk.webView.evalJavascript('Promise.all(['

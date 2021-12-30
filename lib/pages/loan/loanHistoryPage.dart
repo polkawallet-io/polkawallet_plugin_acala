@@ -2,13 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:polkawallet_plugin_karura/api/types/txLoanData.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/common/constants/subQuery.dart';
-import 'package:polkawallet_plugin_karura/pages/loan/loanTxDetailPage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/txLoanData.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/common/constants/subQuery.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanTxDetailPage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/TransferIcon.dart';
@@ -18,14 +18,14 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class LoanHistoryPage extends StatelessWidget {
   LoanHistoryPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/loan/txs';
+  static const String route = '/acala/loan/txs';
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     return Scaffold(
       appBar: AppBar(
         title: Text(dic['loan.txs']),
@@ -56,7 +56,7 @@ class LoanHistoryPage extends StatelessWidget {
               }
               final list = List.of(result.data['loanActions']['nodes'])
                   .map((i) =>
-                      TxLoanData.fromJson(i as Map, karura_stable_coin, plugin))
+                      TxLoanData.fromJson(i as Map, acala_stable_coin, plugin))
                   .toList();
               return ListView.builder(
                 itemCount: list.length + 1,
@@ -74,7 +74,7 @@ class LoanHistoryPage extends StatelessWidget {
                     isOut = true;
                   }
                   String amount = detail.amountDebit;
-                  String token = karura_stable_coin_view;
+                  String token = acala_stable_coin_view;
                   if (detail.actionType == TxLoanData.actionTypeDeposit ||
                       detail.actionType == TxLoanData.actionTypeWithdraw) {
                     amount = detail.amountCollateral;

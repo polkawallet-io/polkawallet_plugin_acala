@@ -1,6 +1,6 @@
 import 'package:mobx/mobx.dart';
-import 'package:polkawallet_plugin_karura/api/types/nftData.dart';
-import 'package:polkawallet_plugin_karura/store/cache/storeCache.dart';
+import 'package:polkawallet_plugin_acala/api/types/nftData.dart';
+import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 
 part 'assets.g.dart';

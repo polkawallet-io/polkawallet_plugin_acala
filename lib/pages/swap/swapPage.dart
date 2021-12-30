@@ -1,21 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_plugin_karura/pages/swap/bootstrapList.dart';
-import 'package:polkawallet_plugin_karura/pages/swap/dexPoolList.dart';
-import 'package:polkawallet_plugin_karura/pages/swap/swapForm.dart';
-import 'package:polkawallet_plugin_karura/pages/swap/swapHistoryPage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/bootstrapList.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/dexPoolList.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/swapForm.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/swapHistoryPage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/pageTitleTaps.dart';
 
 class SwapPage extends StatefulWidget {
   SwapPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/dex';
+  static const String route = '/acala/dex';
 
   @override
   _SwapPageState createState() => _SwapPageState();
@@ -46,7 +46,7 @@ class _SwapPageState extends State<SwapPage> {
 
   @override
   Widget build(_) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     // todo: fix this after new acala online
     final bool enabled = widget.plugin.basic.name == 'acala'
         ? ModalRoute.of(context).settings.arguments

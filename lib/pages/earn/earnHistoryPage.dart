@@ -4,11 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:polkawallet_plugin_karura/api/types/txIncentiveData.dart';
-import 'package:polkawallet_plugin_karura/common/constants/subQuery.dart';
-import 'package:polkawallet_plugin_karura/pages/earn/earnTxDetailPage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/txIncentiveData.dart';
+import 'package:polkawallet_plugin_acala/common/constants/subQuery.dart';
+import 'package:polkawallet_plugin_acala/pages/earn/earnTxDetailPage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/TransferIcon.dart';
@@ -18,14 +18,14 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class EarnHistoryPage extends StatelessWidget {
   EarnHistoryPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/earn/txs';
+  static const String route = '/acala/earn/txs';
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
 
     return Scaffold(
       appBar: AppBar(

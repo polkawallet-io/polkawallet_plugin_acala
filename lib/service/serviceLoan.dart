@@ -1,10 +1,10 @@
-import 'package:polkawallet_plugin_karura/api/acalaApi.dart';
-import 'package:polkawallet_plugin_karura/api/types/loanType.dart';
-import 'package:polkawallet_plugin_karura/api/types/stakingPoolInfoData.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/store/index.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/api/acalaApi.dart';
+import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
+import 'package:polkawallet_plugin_acala/api/types/stakingPoolInfoData.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/store/index.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
@@ -13,7 +13,7 @@ class ServiceLoan {
       : api = plugin.api,
         store = plugin.store;
 
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
   final AcalaApi api;
   final PluginStore store;
@@ -37,7 +37,7 @@ class ServiceLoan {
 
   // Future<double> _fetchNativeTokenPrice() async {
   //   final output = await api.swap.queryTokenSwapAmount('1', null,
-  //       [plugin.networkState.tokenSymbol[0], karura_stable_coin], '0.1');
+  //       [plugin.networkState.tokenSymbol[0], acala_stable_coin], '0.1');
   //   return output.amount;
   // }
 

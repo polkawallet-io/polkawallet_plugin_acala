@@ -37,7 +37,7 @@ class WalletApi {
   }
 
   static Future<Map> getTokensConfig() async {
-    final url = '$_configEndpoint/config/karuraTokens.json';
+    final url = '$_configEndpoint/config/acalaTokens.json';
     try {
       Response res = await get(Uri.parse(url));
       if (res == null) {

@@ -4,16 +4,16 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/api/types/dexPoolInfoData.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/pages/earn/LPStakePage.dart';
-import 'package:polkawallet_plugin_karura/pages/earn/addLiquidityPage.dart';
-import 'package:polkawallet_plugin_karura/pages/earn/withdrawLiquidityPage.dart';
-import 'package:polkawallet_plugin_karura/pages/loan/loanPage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/earn/LPStakePage.dart';
+import 'package:polkawallet_plugin_acala/pages/earn/addLiquidityPage.dart';
+import 'package:polkawallet_plugin_acala/pages/earn/withdrawLiquidityPage.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/infoItem.dart';
@@ -27,10 +27,10 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class EarnDetailPage extends StatelessWidget {
   EarnDetailPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/earn/detail';
+  static const String route = '/acala/earn/detail';
 
   Future<void> _onStake(
       BuildContext context, String action, DexPoolData pool) async {
@@ -42,7 +42,7 @@ class EarnDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final symbols = plugin.networkState.tokenSymbol;
 
     final DexPoolData pool = ModalRoute.of(context).settings.arguments;
@@ -166,10 +166,10 @@ class EarnDetailPage extends StatelessWidget {
                               savingLoyaltyBonus: savingLoyaltyBonus,
                               fee: plugin.service.earn.getSwapFee(),
                               incentiveCoinSymbol: symbols[0],
-                              stableCoinSymbol: karura_stable_coin,
+                              stableCoinSymbol: acala_stable_coin,
                               stableCoinDecimal:
                                   plugin.networkState.tokenDecimals[
-                                      symbols.indexOf(karura_stable_coin)],
+                                      symbols.indexOf(acala_stable_coin)],
                               bestNumber: plugin.store.gov.bestNumber,
                               dexIncentiveLoyaltyEndBlock: this
                                   .plugin
@@ -243,7 +243,7 @@ class _SystemCard extends StatelessWidget {
   final Widget actions;
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final primary = Theme.of(context).primaryColor;
     final TextStyle primaryText = TextStyle(
       fontSize: 22,
@@ -314,7 +314,7 @@ class _UserCard extends StatelessWidget {
     this.bestNumber,
     this.dexIncentiveLoyaltyEndBlock,
   });
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final double share;
   final DexPoolInfoData poolInfo;
   final String poolSymbol;
@@ -331,7 +331,7 @@ class _UserCard extends StatelessWidget {
 
   Future<void> _onClaim(
       BuildContext context, String rewardV2, double rewardSaving) async {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     showCupertinoDialog(
       context: context,
       builder: (BuildContext ctx) {
@@ -341,14 +341,14 @@ class _UserCard extends StatelessWidget {
           actions: <Widget>[
             CupertinoButton(
               child: Text(I18n.of(context)
-                  .getDic(i18n_full_dic_karura, 'common')['cancel']),
+                  .getDic(i18n_full_dic_acala, 'common')['cancel']),
               onPressed: () {
                 Navigator.of(ctx).pop();
               },
             ),
             CupertinoButton(
-              child: Text(I18n.of(context)
-                  .getDic(i18n_full_dic_karura, 'common')['ok']),
+              child: Text(
+                  I18n.of(context).getDic(i18n_full_dic_acala, 'common')['ok']),
               onPressed: () {
                 Navigator.of(ctx).pop();
                 _onWithdrawReward(context, rewardV2, rewardSaving);
@@ -362,7 +362,7 @@ class _UserCard extends StatelessWidget {
 
   void _onWithdrawReward(
       BuildContext context, String rewardV2, double rewardSaving) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final DexPoolData pool = ModalRoute.of(context).settings.arguments;
 
     Navigator.of(context).pushNamed(TxConfirmPage.route,
@@ -373,7 +373,7 @@ class _UserCard extends StatelessWidget {
           txDisplay: {
             dic['loan.amount']: '≈ $rewardV2' +
                 (rewardSaving >= 0.01
-                    ? ' + ${Fmt.priceFloor(rewardSaving)} $karura_stable_coin_view'
+                    ? ' + ${Fmt.priceFloor(rewardSaving)} $acala_stable_coin_view'
                     : ''),
             dic['earn.pool']:
                 AssetsUtils.getBalanceFromTokenNameId(plugin, pool.tokenNameId)
@@ -386,7 +386,7 @@ class _UserCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     bool canClaim = false;
 
     var rewardSaving =

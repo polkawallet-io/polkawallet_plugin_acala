@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/currencyWithIcon.dart';
@@ -11,7 +11,7 @@ import 'package:polkawallet_ui/components/v3/back.dart';
 
 class CurrencySelectPage extends StatelessWidget {
   CurrencySelectPage(this.plugin);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   static const String route = '/assets/currency';
 
   @override
@@ -21,7 +21,7 @@ class CurrencySelectPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(I18n.of(context)
-            .getDic(i18n_full_dic_karura, 'common')['currency.select']),
+            .getDic(i18n_full_dic_acala, 'common')['currency.select']),
         centerTitle: true,
         leading: BackBtn(),
       ),

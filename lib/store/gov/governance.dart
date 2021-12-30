@@ -1,5 +1,5 @@
 import 'package:mobx/mobx.dart';
-import 'package:polkawallet_plugin_karura/store/cache/storeCache.dart';
+import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
 import 'package:polkawallet_sdk/api/types/gov/proposalInfoData.dart';
 import 'package:polkawallet_sdk/api/types/gov/referendumInfoData.dart';
 import 'package:polkawallet_sdk/api/types/gov/treasuryOverviewData.dart';

@@ -4,17 +4,17 @@ import 'package:flutter/painting.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
-import 'package:polkawallet_plugin_karura/api/earn/types/incentivesData.dart';
-import 'package:polkawallet_plugin_karura/api/types/loanType.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/pages/loan/loanCreatePage.dart';
-import 'package:polkawallet_plugin_karura/pages/loan/loanDepositPage.dart';
-import 'package:polkawallet_plugin_karura/pages/loan/loanDetailPage.dart';
-import 'package:polkawallet_plugin_karura/pages/loan/loanHistoryPage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/earn/types/incentivesData.dart';
+import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanCreatePage.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanDepositPage.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanDetailPage.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanHistoryPage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
@@ -36,10 +36,10 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class LoanPage extends StatefulWidget {
   LoanPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/loan';
+  static const String route = '/acala/loan';
 
   @override
   _LoanPageState createState() => _LoanPageState();
@@ -91,10 +91,10 @@ class _LoanPageState extends State<LoanPage> {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
 
     final stableCoinDecimals = widget.plugin.networkState.tokenDecimals[
-        widget.plugin.networkState.tokenSymbol.indexOf(karura_stable_coin)];
+        widget.plugin.networkState.tokenSymbol.indexOf(acala_stable_coin)];
     final incentiveTokenSymbol = widget.plugin.networkState.tokenSymbol[0];
     return Observer(
       builder: (_) {
@@ -167,7 +167,7 @@ class _LoanPageState extends State<LoanPage> {
                                         children: loans.map((loan) {
                                           return LoanOverviewCard(
                                             loan,
-                                            karura_stable_coin,
+                                            acala_stable_coin,
                                             stableCoinDecimals,
                                             widget.plugin.store.assets.allTokens
                                                 .firstWhere((e) =>
@@ -184,7 +184,7 @@ class _LoanPageState extends State<LoanPage> {
                                         padding:
                                             EdgeInsets.fromLTRB(80, 24, 80, 24),
                                         child: SvgPicture.asset(
-                                            'packages/polkawallet_plugin_karura/assets/images/loan-start.svg',
+                                            'packages/polkawallet_plugin_acala/assets/images/loan-start.svg',
                                             color:
                                                 Theme.of(context).primaryColor),
                                       )
@@ -252,7 +252,7 @@ class LoanOverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
 
     final requiredCollateralRatio =
         double.parse(Fmt.token(loan.type.requiredCollateralRatio, 18));
@@ -415,7 +415,7 @@ class CollateralIncentiveList extends StatelessWidget {
     this.dexIncentiveLoyaltyEndBlock,
   });
 
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Map<String, LoanData> loans;
   final Map<String, List<IncentiveItemData>> incentives;
   final Map<String, CollateralRewardData> rewards;
@@ -428,7 +428,7 @@ class CollateralIncentiveList extends StatelessWidget {
 
   Future<void> _onClaimReward(
       BuildContext context, TokenBalanceData token, String rewardView) async {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final pool = {'Loans': token.currencyId};
     final params = TxConfirmParams(
       module: 'incentives',
@@ -445,7 +445,7 @@ class CollateralIncentiveList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final List<String> tokensAll = incentives.keys.toList();
     tokensAll.addAll(rewards.keys.toList());
     final tokenIds = tokensAll.toSet().toList();

@@ -1,7 +1,7 @@
-import 'package:polkawallet_plugin_karura/api/assets/acalaServiceAssets.dart';
-import 'package:polkawallet_plugin_karura/api/types/nftData.dart';
-import 'package:polkawallet_plugin_karura/pages/assets/tokenDetailPage.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
+import 'package:polkawallet_plugin_acala/api/assets/acalaServiceAssets.dart';
+import 'package:polkawallet_plugin_acala/api/types/nftData.dart';
+import 'package:polkawallet_plugin_acala/pages/assets/tokenDetailPage.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 
 class AcalaApiAssets {

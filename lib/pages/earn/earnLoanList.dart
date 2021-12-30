@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/pages/loan/loanPage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 
 class EarnLoanList extends StatefulWidget {
   EarnLoanList(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
   @override
@@ -57,7 +57,7 @@ class _EarnLoanListState extends State<EarnLoanList> {
   @override
   Widget build(BuildContext context) {
     final stableCoinDecimals = widget.plugin.networkState.tokenDecimals[
-        widget.plugin.networkState.tokenSymbol.indexOf(karura_stable_coin)];
+        widget.plugin.networkState.tokenSymbol.indexOf(acala_stable_coin)];
     final incentiveTokenSymbol = widget.plugin.networkState.tokenSymbol[0];
     return Observer(
       builder: (_) {

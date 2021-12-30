@@ -1,18 +1,18 @@
-import 'package:polkawallet_plugin_karura/common/constants/base.dart';
+import 'package:polkawallet_plugin_acala/common/constants/base.dart';
 
-const plugin_cache_key = 'plugin_karura';
+const plugin_cache_key = 'plugin_acala';
 
 const plugin_genesis_hash =
-    '0xbaf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b';
+    '0x5fad1818cb637f0737771f27db0c28e7f669305ea71d84299291370d6723809c';
 const acala_price_decimals = 18;
-const karura_stable_coin = 'KUSD';
-const karura_stable_coin_view = 'kUSD';
+const acala_stable_coin = 'AUSD';
+const acala_stable_coin_view = 'aUSD';
 const acala_token_ren_btc = 'RENBTC';
 const acala_token_ren_btc_view = 'renBTC';
 const acala_token_polka_btc = 'POLKABTC';
 const acala_token_polka_btc_view = 'polkaBTC';
 
-const relay_chain_name = 'kusama';
+const relay_chain_name = 'polkadot';
 const para_chain_name_bifrost = 'bifrost';
 const para_chain_name_khala = 'khala';
 const para_chain_ids = {
@@ -21,12 +21,12 @@ const para_chain_ids = {
 };
 
 const network_ss58_format = {
-  plugin_name_karura: 8,
+  plugin_name_acala: 42,
   relay_chain_name: 2,
   para_chain_name_bifrost: 6,
   para_chain_name_khala: 30,
 };
-const relay_chain_token_symbol = 'KSM';
+const relay_chain_token_symbol = 'DOT';
 const para_chain_token_symbol_bifrost = 'BNC';
 const para_chain_token_symbol_khala = 'PHA';
 const cross_chain_xcm_fees = {
@@ -39,10 +39,6 @@ const cross_chain_xcm_fees = {
   para_chain_name_bifrost: {
     relay_chain_token_symbol: {
       'fee': '64000000',
-      'existentialDeposit': '100000000',
-    },
-    karura_stable_coin: {
-      'fee': '25600000000',
       'existentialDeposit': '100000000',
     },
     para_chain_token_symbol_bifrost: {
@@ -66,20 +62,15 @@ const xcm_dest_weight_karura = '600000000';
 const xcm_dest_weight_v2 = '5000000000';
 
 const acala_token_ids = [
-  'KAR',
-  'KUSD',
-  'KSM',
-  'LKSM',
-  'BNC',
-  'VSKSM',
-  'PHA',
-  'RMRK',
-  'USDT',
-  'KBTC',
-  'KINT',
-  // 'RENBTC',
-  // 'XBTC',
-  // 'POLKABTC',
+  'ACA',
+  'AUSD',
+  'DOT',
+  'LDOT',
+  'RENBTC',
+  'XBTC',
+  'POLKABTC',
+  'PLM',
+  'PHA'
 ];
 
 const module_name_assets = 'assets';
@@ -115,7 +106,7 @@ const config_modules = {
   },
 };
 
-const image_assets_uri = 'packages/polkawallet_plugin_karura/assets/images';
+const image_assets_uri = 'packages/polkawallet_plugin_acala/assets/images';
 const module_icons_uri = {
   module_name_loan: '$image_assets_uri/loan.svg',
   module_name_swap: '$image_assets_uri/swap.svg',
@@ -125,7 +116,7 @@ const module_icons_uri = {
 };
 
 const cross_chain_icons = {
-  plugin_name_karura: '$image_assets_uri/tokens/KAR.png',
+  plugin_name_acala: '$image_assets_uri/tokens/DOT.png',
   relay_chain_name: '$image_assets_uri/tokens/KSM.png',
   para_chain_name_bifrost: '$image_assets_uri/tokens/BNC.png',
   para_chain_name_khala: '$image_assets_uri/tokens/PHA.png',

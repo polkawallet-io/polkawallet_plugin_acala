@@ -1,7 +1,7 @@
-import 'package:polkawallet_plugin_karura/api/acalaApi.dart';
-import 'package:polkawallet_plugin_karura/api/types/stakingPoolInfoData.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/store/index.dart';
+import 'package:polkawallet_plugin_acala/api/acalaApi.dart';
+import 'package:polkawallet_plugin_acala/api/types/stakingPoolInfoData.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/store/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 
 class ServiceHoma {
@@ -9,7 +9,7 @@ class ServiceHoma {
       : api = plugin.api,
         store = plugin.store;
 
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
   final AcalaApi api;
   final PluginStore store;

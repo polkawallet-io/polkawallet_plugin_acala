@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_plugin_karura/pages/earn/earnDexList.dart';
-import 'package:polkawallet_plugin_karura/pages/earn/earnHistoryPage.dart';
-import 'package:polkawallet_plugin_karura/pages/earn/earnLoanList.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/pages/earn/earnDexList.dart';
+import 'package:polkawallet_plugin_acala/pages/earn/earnHistoryPage.dart';
+import 'package:polkawallet_plugin_acala/pages/earn/earnLoanList.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/MainTabBar.dart';
@@ -13,10 +13,10 @@ import 'package:polkawallet_ui/components/v3/iconButton.dart' as v3;
 
 class EarnPage extends StatefulWidget {
   EarnPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/earn';
+  static const String route = '/acala/earn';
 
   @override
   _EarnPageState createState() => _EarnPageState();
@@ -33,7 +33,7 @@ class _EarnPageState extends State<EarnPage> {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
 
     return Scaffold(
       appBar: AppBar(

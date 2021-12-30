@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:polkawallet_plugin_karura/api/types/loanType.dart';
-import 'package:polkawallet_plugin_karura/pages/loan/loanAdjustPage.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanAdjustPage.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/outlinedButtonSmall.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
@@ -27,7 +27,7 @@ class LoanDebtCard extends StatelessWidget {
   final Map<String, Widget> tokenIcons;
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     return RoundedCard(
       margin: EdgeInsets.only(bottom: 8),
       padding: EdgeInsets.all(16),
@@ -63,7 +63,7 @@ class LoanDebtCard extends StatelessWidget {
                       Container(
                         margin: EdgeInsets.only(top: 4),
                         child: Text(
-                          '${I18n.of(context).getDic(i18n_full_dic_karura, 'common')['balance']}: $balance',
+                          '${I18n.of(context).getDic(i18n_full_dic_acala, 'common')['balance']}: $balance',
                           style: TextStyle(
                             fontSize: 12,
                             color: Theme.of(context).unselectedWidgetColor,
@@ -139,7 +139,7 @@ class LoanCollateralCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     return RoundedCard(
       margin: EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.all(16),
@@ -175,7 +175,7 @@ class LoanCollateralCard extends StatelessWidget {
                       Container(
                         margin: EdgeInsets.only(top: 4),
                         child: Text(
-                          '${I18n.of(context).getDic(i18n_full_dic_karura, 'common')['balance']}: $balance',
+                          '${I18n.of(context).getDic(i18n_full_dic_acala, 'common')['balance']}: $balance',
                           style: TextStyle(
                             fontSize: 12,
                             color: Theme.of(context).unselectedWidgetColor,

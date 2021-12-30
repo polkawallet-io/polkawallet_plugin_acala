@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_plugin_karura/api/types/transferData.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/transferData.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/txDetail.dart';
@@ -11,7 +11,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class TransferDetailPage extends StatelessWidget {
   TransferDetailPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
   static final String route = '/assets/token/tx';
@@ -19,7 +19,7 @@ class TransferDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Map<String, String> dic =
-        I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+        I18n.of(context).getDic(i18n_full_dic_acala, 'common');
 
     final TransferData tx = ModalRoute.of(context).settings.arguments;
 

@@ -4,15 +4,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:intl/intl.dart';
-import 'package:polkawallet_plugin_karura/api/types/dexPoolInfoData.dart';
-import 'package:polkawallet_plugin_karura/common/constants/base.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/pages/earn/addLiquidityPage.dart';
-import 'package:polkawallet_plugin_karura/pages/swap/bootstrapPage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
+import 'package:polkawallet_plugin_acala/common/constants/base.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/earn/addLiquidityPage.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/bootstrapPage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/infoItem.dart';
@@ -28,7 +28,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class BootstrapList extends StatefulWidget {
   BootstrapList(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
   @override
@@ -106,7 +106,7 @@ class _BootstrapListState extends State<BootstrapList> {
     setState(() {
       _claimSubmitting = true;
     });
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final params = [
       widget.keyring.current.address,
       pool.tokens[0],
@@ -251,7 +251,7 @@ class _BootStrapCard extends StatelessWidget {
       this.tokenIcons,
       this.relayChainTokenPrice});
 
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final DexPoolData pool;
   final int bestNumber;
   final Map<String, Widget> tokenIcons;
@@ -259,7 +259,7 @@ class _BootStrapCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final primaryColor = Theme.of(context).primaryColor;
     final colorGrey = Theme.of(context).unselectedWidgetColor;
 
@@ -431,7 +431,7 @@ class _BootStrapCardEnabled extends StatelessWidget {
       this.onFinish,
       this.submitting});
 
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final DexPoolData pool;
   final List userProvision;
   final List shareRate;
@@ -445,7 +445,7 @@ class _BootStrapCardEnabled extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final primaryColor = Theme.of(context).primaryColor;
     final colorGrey = Theme.of(context).unselectedWidgetColor;
 

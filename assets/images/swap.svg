@@ -3,21 +3,21 @@
     <title>swap</title>
     <defs>
         <linearGradient x1="100%" y1="50%" x2="0%" y2="50%" id="linearGradient-1">
-            <stop stop-color="#FE863F" offset="0%"></stop>
-            <stop stop-color="#FE423F" offset="100%"></stop>
+            <stop stop-color="#4762F1" offset="0%"></stop>
+            <stop stop-color="#6981FF" offset="100%"></stop>
         </linearGradient>
         <linearGradient x1="50%" y1="100%" x2="50%" y2="3.061617e-15%" id="linearGradient-2">
-            <stop stop-color="#FFA6A5" offset="0%"></stop>
+            <stop stop-color="#D5DCFF" offset="0%"></stop>
             <stop stop-color="#FFFFFF" offset="100%"></stop>
         </linearGradient>
         <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-3">
-            <stop stop-color="#FE423F" offset="0%"></stop>
-            <stop stop-color="#FE863F" offset="100%"></stop>
+            <stop stop-color="#6981FF" offset="0%"></stop>
+            <stop stop-color="#4762F1" offset="100%"></stop>
         </linearGradient>
         <path d="M58.2055507,38.4028723 C61.907301,38.4028723 64.9081626,41.4037338 64.9081626,45.1054842 L64.9081626,61.8620139 C64.9081626,65.5637643 61.907301,68.5646259 58.2055507,68.5646259 C54.5038003,68.5646259 51.5029388,65.5637643 51.5029388,61.8620139 L51.5029388,45.1054842 C51.5029388,41.4037338 54.5038003,38.4028723 58.2055507,38.4028723 Z" id="path-4"></path>
         <linearGradient x1="99.0220717%" y1="50%" x2="0%" y2="50%" id="linearGradient-5">
-            <stop stop-color="#FE863F" offset="0%"></stop>
-            <stop stop-color="#FE423F" offset="100%"></stop>
+            <stop stop-color="#4762F1" offset="0%"></stop>
+            <stop stop-color="#6981FF" offset="100%"></stop>
         </linearGradient>
         <path d="M85.9357108,75.5789872 C89.6374611,75.5789872 92.6383227,78.5798487 92.6383227,82.2815991 L92.6383227,99.0381288 C92.6383227,102.739879 89.6374611,105.740741 85.9357108,105.740741 C82.2339604,105.740741 79.2330989,102.739879 79.2330989,99.0381288 L79.2330989,82.2815991 C79.2330989,78.5798487 82.2339604,75.5789872 85.9357108,75.5789872 Z" id="path-6"></path>
     </defs>

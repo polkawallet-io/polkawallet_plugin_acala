@@ -1,14 +1,14 @@
 import 'dart:math';
 
-import 'package:polkawallet_plugin_karura/common/constants/base.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/common/constants/base.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
 class LoanType extends _LoanType {
-  static LoanType fromJson(Map<String, dynamic> json, PluginKarura plugin) {
+  static LoanType fromJson(Map<String, dynamic> json, PluginAcala plugin) {
     LoanType data = LoanType();
     data.token = AssetsUtils.tokenDataFromCurrencyId(plugin, json['currency']);
     data.debitExchangeRate = BigInt.parse(json['debitExchangeRate'].toString());
@@ -104,11 +104,11 @@ abstract class _LoanType {
 
 class LoanData extends _LoanData {
   static LoanData fromJson(Map<String, dynamic> json, LoanType type,
-      BigInt tokenPrice, PluginKarura plugin) {
+      BigInt tokenPrice, PluginAcala plugin) {
     LoanData data = LoanData();
     data.token = AssetsUtils.tokenDataFromCurrencyId(plugin, json['currency']);
     final stableCoinDecimals =
-        plugin.store.assets.tokenBalanceMap[karura_stable_coin].decimals;
+        plugin.store.assets.tokenBalanceMap[acala_stable_coin].decimals;
     final collateralDecimals = data.token.decimals;
     data.type = type;
     data.price = tokenPrice;
@@ -166,7 +166,7 @@ abstract class _LoanData {
 }
 
 class CollateralIncentiveData extends _CollateralIncentiveData {
-  static CollateralIncentiveData fromJson(List json, PluginKarura plugin) {
+  static CollateralIncentiveData fromJson(List json, PluginAcala plugin) {
     final data = CollateralIncentiveData();
     data.token = AssetsUtils.tokenDataFromCurrencyId(
         plugin, json[0][0]['LoansIncentive']);

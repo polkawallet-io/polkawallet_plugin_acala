@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/api/types/calcHomaMintAmountData.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/pages/swap/bootstrapPage.dart';
-import 'package:polkawallet_plugin_karura/pages/swap/swapTokenInput.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/calcHomaMintAmountData.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/bootstrapPage.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/swapTokenInput.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/infoItemRow.dart';
@@ -19,10 +19,10 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class MintPage extends StatefulWidget {
   MintPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/homa/mint';
+  static const String route = '/acala/homa/mint';
 
   @override
   _MintPageState createState() => _MintPageState();
@@ -67,7 +67,7 @@ class _MintPageState extends State<MintPage> {
   }
 
   String _validateInput(String supply, double balance, double minStake) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
     final error = Fmt.validatePrice(supply, context);
     if (error != null) {
       return error;
@@ -79,7 +79,7 @@ class _MintPageState extends State<MintPage> {
 
     if (pay <= minStake) {
       final minLabel = I18n.of(context)
-          .getDic(i18n_full_dic_karura, 'acala')['homa.pool.min'];
+          .getDic(i18n_full_dic_acala, 'acala')['homa.pool.min'];
       return '$minLabel > ${minStake.toStringAsFixed(4)}';
     }
 
@@ -89,7 +89,7 @@ class _MintPageState extends State<MintPage> {
     final poolInfo = widget.plugin.store.homa.poolInfo;
     if (Fmt.tokenInt(supply, stakeDecimal) + poolInfo.staked > poolInfo.cap) {
       return I18n.of(context)
-          .getDic(i18n_full_dic_karura, 'acala')['homa.pool.cap.error'];
+          .getDic(i18n_full_dic_acala, 'acala')['homa.pool.cap.error'];
     }
 
     return error;
@@ -116,7 +116,7 @@ class _MintPageState extends State<MintPage> {
 
     if (_error != null || pay.isEmpty) return;
 
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
 
     final call = _data?.suggestRedeemRequests != null &&
             _data.suggestRedeemRequests.length > 0
@@ -166,7 +166,7 @@ class _MintPageState extends State<MintPage> {
   Widget build(_) {
     return Observer(
       builder: (BuildContext context) {
-        final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+        final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
 
         final symbols = widget.plugin.networkState.tokenSymbol;
         final stakeToken = relay_chain_token_symbol;

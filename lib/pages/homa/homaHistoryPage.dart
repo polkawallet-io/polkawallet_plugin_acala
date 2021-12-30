@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:polkawallet_plugin_karura/api/types/txHomaData.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/common/constants/subQuery.dart';
-import 'package:polkawallet_plugin_karura/pages/homa/homaTxDetailPage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/txHomaData.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/common/constants/subQuery.dart';
+import 'package:polkawallet_plugin_acala/pages/homa/homaTxDetailPage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/TransferIcon.dart';
@@ -17,14 +17,14 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class HomaHistoryPage extends StatelessWidget {
   HomaHistoryPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/homa/txs';
+  static const String route = '/acala/homa/txs';
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final symbols = plugin.networkState.tokenSymbol;
     final decimals = plugin.networkState.tokenDecimals;
     final symbol = relay_chain_token_symbol;

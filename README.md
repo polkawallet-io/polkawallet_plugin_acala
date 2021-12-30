@@ -1,6 +1,6 @@
-# polkawallet_plugin_karura
+# polkawallet_plugin_acala
 
-Karura network plugin for Polkawallet.
+Acala network plugin for Polkawallet.
 
 ## Getting Started
 

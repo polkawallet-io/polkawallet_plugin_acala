@@ -1,13 +1,13 @@
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
 class PluginFmt {
   static String tokenView(String token) {
-    if (token == karura_stable_coin) {
-      return karura_stable_coin_view;
+    if (token == acala_stable_coin) {
+      return acala_stable_coin_view;
     }
     if (token == acala_token_ren_btc) {
       return acala_token_ren_btc_view;
@@ -43,7 +43,7 @@ class PluginFmt {
     return LiquidityShareInfo(userShare, userShare / totalShare);
   }
 
-  static List<TokenBalanceData> getAllDexTokens(PluginKarura plugin) {
+  static List<TokenBalanceData> getAllDexTokens(PluginAcala plugin) {
     final List<TokenBalanceData> tokens = [];
     plugin.store.earn.dexPools.forEach((e) {
       e.tokens.forEach((currencyId) {
@@ -56,7 +56,7 @@ class PluginFmt {
     return tokens;
   }
 
-  static BigInt getAccountED(PluginKarura plugin) {
+  static BigInt getAccountED(PluginAcala plugin) {
     final nativeED = Fmt.balanceInt(
         plugin.networkConst['balances']['existentialDeposit'].toString());
     final unavailable = Fmt.balanceInt(
@@ -65,7 +65,7 @@ class PluginFmt {
     return unavailable > nativeED ? BigInt.zero : (nativeED - unavailable);
   }
 
-  static String getPool(PluginKarura plugin, dynamic pool) {
+  static String getPool(PluginAcala plugin, dynamic pool) {
     if (pool['dex'] != null) {
       return List.from(pool['dex']['dexShare'])
           .map((e) => AssetsUtils.tokenDataFromCurrencyId(plugin, e).symbol)

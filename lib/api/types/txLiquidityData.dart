@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
 class TxDexLiquidityData extends _TxDexLiquidityData {
@@ -13,7 +13,7 @@ class TxDexLiquidityData extends _TxDexLiquidityData {
       String stableCoinSymbol,
       List<String> symbols,
       List<int> decimals,
-      PluginKarura plugin) {
+      PluginAcala plugin) {
     final args = jsonDecode(json['args']);
 
     final data = TxDexLiquidityData();

@@ -577,7 +577,7 @@ function _addAsset(assetsMap: object, tokenSymbol: string, value: number) {
   assetsMap[tokenSymbol] += value;
 }
 function _calcLoanAssets(api: ApiPromise, allTokens: any[], loanTypes: any[], loans: any[], loanRewards: any[], incentives: any) {
-  const karura_stable_coin = "KUSD";
+  const acala_stable_coin = "KUSD";
   const res = {};
   const rewardsMap = {};
   loans.forEach((e) => {
@@ -586,9 +586,9 @@ function _calcLoanAssets(api: ApiPromise, allTokens: any[], loanTypes: any[], lo
     _addAsset(res, _getTokenSymbol(allTokens, tokenNameId), FPNum(e.collateral, _getTokenDecimal(allTokens, tokenNameId)).toNumber());
     _addAsset(
       res,
-      karura_stable_coin,
+      acala_stable_coin,
       0 -
-        FPNum(e.debit, _getTokenDecimal(allTokens, karura_stable_coin))
+        FPNum(e.debit, _getTokenDecimal(allTokens, acala_stable_coin))
           .times(FPNum(loanTypes.find((t) => t.currency == e.currency).debitExchangeRate))
           .toNumber()
     );

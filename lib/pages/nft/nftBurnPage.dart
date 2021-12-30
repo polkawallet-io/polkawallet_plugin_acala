@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/api/types/nftData.dart';
-import 'package:polkawallet_plugin_karura/pages/nft/nftTransferPage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/nftData.dart';
+import 'package:polkawallet_plugin_acala/pages/nft/nftTransferPage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
@@ -12,10 +12,10 @@ import 'package:polkawallet_ui/components/v3/back.dart';
 
 class NFTBurnPage extends StatefulWidget {
   NFTBurnPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/nft/burn';
+  static const String route = '/acala/nft/burn';
 
   @override
   _NFTBurnPageState createState() => _NFTBurnPageState();
@@ -33,8 +33,8 @@ class _NFTBurnPageState extends State<NFTBurnPage> {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
-    final dicCommon = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+    final dicCommon = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
 
     final colorGrey = Theme.of(context).unselectedWidgetColor;
     return Scaffold(

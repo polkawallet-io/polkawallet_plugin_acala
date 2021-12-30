@@ -1,6 +1,6 @@
-import 'package:polkawallet_plugin_karura/api/swap/acalaServiceSwap.dart';
-import 'package:polkawallet_plugin_karura/api/types/dexPoolInfoData.dart';
-import 'package:polkawallet_plugin_karura/api/types/swapOutputData.dart';
+import 'package:polkawallet_plugin_acala/api/swap/acalaServiceSwap.dart';
+import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
+import 'package:polkawallet_plugin_acala/api/types/swapOutputData.dart';
 
 class AcalaApiSwap {
   AcalaApiSwap(this.service);

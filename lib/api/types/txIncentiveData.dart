@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
 class TxDexIncentiveData extends _TxDexIncentiveData {
@@ -11,7 +11,7 @@ class TxDexIncentiveData extends _TxDexIncentiveData {
   static const String actionClaimRewards = 'ClaimRewards';
   static const String actionPayoutRewards = 'PayoutRewards';
   static TxDexIncentiveData fromJson(
-      Map<String, dynamic> json, PluginKarura plugin) {
+      Map<String, dynamic> json, PluginAcala plugin) {
     final data = TxDexIncentiveData();
     data.hash = json['extrinsic']['id'];
     data.event = json['type'];

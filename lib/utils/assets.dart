@@ -1,5 +1,5 @@
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/types/aggregatedAssetsData.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/types/aggregatedAssetsData.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 
 class AssetsUtils {
@@ -64,7 +64,7 @@ class AssetsUtils {
   }
 
   static TokenBalanceData tokenDataFromCurrencyId(
-      PluginKarura plugin, Map currencyId) {
+      PluginAcala plugin, Map currencyId) {
     if (currencyId['token'] != null || currencyId['Token'] != null) {
       return getBalanceFromTokenNameId(
           plugin, currencyId['token'] ?? currencyId['Token']);
@@ -101,7 +101,7 @@ class AssetsUtils {
   }
 
   static TokenBalanceData getBalanceFromTokenNameId(
-      PluginKarura plugin, String tokenNameId) {
+      PluginAcala plugin, String tokenNameId) {
     if (tokenNameId == plugin.networkState.tokenSymbol[0]) {
       return TokenBalanceData(
           id: tokenNameId,
@@ -124,7 +124,7 @@ class AssetsUtils {
   }
 
   static List<TokenBalanceData> getBalancePairFromTokenNameId(
-      PluginKarura plugin, List<String> tokenNameIdPair) {
+      PluginAcala plugin, List<String> tokenNameIdPair) {
     return tokenNameIdPair
         .map((e) => getBalanceFromTokenNameId(plugin, e))
         .toList();

@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
 
 class TxSwapData extends _TxSwapData {
-  static TxSwapData fromJson(Map json, PluginKarura plugin) {
+  static TxSwapData fromJson(Map json, PluginAcala plugin) {
     final data = TxSwapData();
     data.action = json['type'];
     data.hash = json['extrinsic']['id'];

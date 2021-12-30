@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/api/types/dexPoolInfoData.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
@@ -23,10 +23,10 @@ class LPStakePageParams {
 
 class LPStakePage extends StatefulWidget {
   LPStakePage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/earn/stake';
+  static const String route = '/acala/earn/stake';
   static const String actionStake = 'stake';
   static const String actionUnStake = 'unStake';
 
@@ -42,7 +42,7 @@ class _LPStakePage extends State<LPStakePage> {
   bool _isMax = false;
 
   String _validateAmount(String value, BigInt available, int decimals) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
 
     String v = value.trim();
     final error = Fmt.validatePrice(value, context);
@@ -76,7 +76,7 @@ class _LPStakePage extends State<LPStakePage> {
   Future<void> _onSubmit(BigInt max, int decimals) async {
     if (!_formKey.currentState.validate()) return;
 
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final LPStakePageParams params = ModalRoute.of(context).settings.arguments;
     final isStake = params.action == LPStakePage.actionStake;
 
@@ -116,8 +116,8 @@ class _LPStakePage extends State<LPStakePage> {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
-    final assetDic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+    final assetDic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
 
     final LPStakePageParams args = ModalRoute.of(context).settings.arguments;
 

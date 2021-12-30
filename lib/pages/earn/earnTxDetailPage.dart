@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:polkawallet_plugin_karura/api/types/txIncentiveData.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/txIncentiveData.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/txDetail.dart';
@@ -11,14 +11,14 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class EarnTxDetailPage extends StatelessWidget {
   EarnTxDetailPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static final String route = '/karura/earn/incentive/tx';
+  static final String route = '/acala/earn/incentive/tx';
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final amountStyle = TextStyle(fontSize: 16, fontWeight: FontWeight.bold);
 
     final TxDexIncentiveData tx = ModalRoute.of(context).settings.arguments;
@@ -51,7 +51,7 @@ class EarnTxDetailPage extends StatelessWidget {
         ),
         TxDetailInfoItem(
           label:
-              I18n.of(context).getDic(i18n_full_dic_karura, 'common')['amount'],
+              I18n.of(context).getDic(i18n_full_dic_acala, 'common')['amount'],
           content: Text(tx.amountShare, style: amountStyle),
         )
       ],

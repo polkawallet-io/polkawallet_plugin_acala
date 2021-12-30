@@ -1,12 +1,12 @@
-import 'package:polkawallet_plugin_karura/api/assets/acalaServiceAssets.dart';
-import 'package:polkawallet_plugin_karura/api/earn/acalaServiceEarn.dart';
-import 'package:polkawallet_plugin_karura/api/homa/acalaServiceHoma.dart';
-import 'package:polkawallet_plugin_karura/api/loan/acalaServiceLoan.dart';
-import 'package:polkawallet_plugin_karura/api/swap/acalaServiceSwap.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
+import 'package:polkawallet_plugin_acala/api/assets/acalaServiceAssets.dart';
+import 'package:polkawallet_plugin_acala/api/earn/acalaServiceEarn.dart';
+import 'package:polkawallet_plugin_acala/api/homa/acalaServiceHoma.dart';
+import 'package:polkawallet_plugin_acala/api/loan/acalaServiceLoan.dart';
+import 'package:polkawallet_plugin_acala/api/swap/acalaServiceSwap.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 
 class AcalaService {
-  AcalaService(PluginKarura plugin)
+  AcalaService(PluginAcala plugin)
       : assets = AcalaServiceAssets(plugin),
         loan = AcalaServiceLoan(plugin),
         swap = AcalaServiceSwap(plugin),

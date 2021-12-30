@@ -1,8 +1,8 @@
-import 'package:polkawallet_plugin_karura/api/homa/acalaServiceHoma.dart';
-import 'package:polkawallet_plugin_karura/api/types/calcHomaMintAmountData.dart';
-import 'package:polkawallet_plugin_karura/api/types/calcHomaRedeemAmount.dart';
-import 'package:polkawallet_plugin_karura/api/types/homaRedeemAmountData.dart';
-import 'package:polkawallet_plugin_karura/api/types/stakingPoolInfoData.dart';
+import 'package:polkawallet_plugin_acala/api/homa/acalaServiceHoma.dart';
+import 'package:polkawallet_plugin_acala/api/types/calcHomaMintAmountData.dart';
+import 'package:polkawallet_plugin_acala/api/types/calcHomaRedeemAmount.dart';
+import 'package:polkawallet_plugin_acala/api/types/homaRedeemAmountData.dart';
+import 'package:polkawallet_plugin_acala/api/types/stakingPoolInfoData.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
 class AcalaApiHoma {

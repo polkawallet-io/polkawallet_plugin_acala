@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:polkawallet_plugin_karura/store/cache/storeCache.dart';
+import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
 
 class SwapStore {
   SwapStore(this.cache);

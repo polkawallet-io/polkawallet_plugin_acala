@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
 class AcalaServiceLoan {
   AcalaServiceLoan(this.plugin);
 
-  final PluginKarura plugin;
+  final PluginAcala plugin;
 
   Future<List> queryAccountLoans(String address) async {
     return await plugin.sdk.webView

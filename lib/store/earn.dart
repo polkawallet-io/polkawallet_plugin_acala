@@ -1,8 +1,8 @@
 import 'package:mobx/mobx.dart';
-import 'package:polkawallet_plugin_karura/api/earn/types/incentivesData.dart';
-import 'package:polkawallet_plugin_karura/api/types/dexPoolInfoData.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/store/cache/storeCache.dart';
+import 'package:polkawallet_plugin_acala/api/earn/types/incentivesData.dart';
+import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
 
 part 'earn.g.dart';
 
@@ -60,7 +60,7 @@ abstract class _EarnStore with Store {
     incentives = data;
   }
 
-  getdexIncentiveLoyaltyEndBlock(PluginKarura plugin) async {
+  getdexIncentiveLoyaltyEndBlock(PluginAcala plugin) async {
     if (dexIncentiveLoyaltyEndBlock == null) {
       setDexIncentiveLoyaltyEndBlock(
           await plugin.api.earn.queryDexIncentiveLoyaltyEndBlock());

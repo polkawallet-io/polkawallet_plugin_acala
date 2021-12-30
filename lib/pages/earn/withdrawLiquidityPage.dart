@@ -5,11 +5,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/api/types/dexPoolInfoData.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/infoItem.dart';
@@ -25,10 +25,10 @@ import 'package:polkawallet_ui/utils/index.dart';
 
 class WithdrawLiquidityPage extends StatefulWidget {
   WithdrawLiquidityPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/earn/withdraw';
+  static const String route = '/acala/earn/withdraw';
 
   @override
   _WithdrawLiquidityPageState createState() => _WithdrawLiquidityPageState();
@@ -70,7 +70,7 @@ class _WithdrawLiquidityPageState extends State<WithdrawLiquidityPage> {
   }
 
   String _validateInput(String value) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
 
     final v = value.trim();
     final error = Fmt.validatePrice(v, context);
@@ -129,7 +129,7 @@ class _WithdrawLiquidityPageState extends State<WithdrawLiquidityPage> {
 
   Future<void> _onSubmit(int shareDecimals) async {
     if (_formKey.currentState.validate()) {
-      final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+      final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
       final DexPoolData pool = ModalRoute.of(context).settings.arguments;
       final poolToken = AssetsUtils.getBalanceFromTokenNameId(
           widget.plugin, pool.tokenNameId);
@@ -141,7 +141,7 @@ class _WithdrawLiquidityPageState extends State<WithdrawLiquidityPage> {
         module: 'dex',
         call: 'removeLiquidity',
         txTitle: I18n.of(context)
-            .getDic(i18n_full_dic_karura, 'acala')['earn.remove'],
+            .getDic(i18n_full_dic_acala, 'acala')['earn.remove'],
         txDisplay: {dic['earn.pool']: poolToken.symbol},
         txDisplayBold: {
           dic['loan.amount']: Text(
@@ -157,7 +157,7 @@ class _WithdrawLiquidityPageState extends State<WithdrawLiquidityPage> {
             module: 'dex',
             call: 'removeLiquidity',
             txTitle: I18n.of(context)
-                .getDic(i18n_full_dic_karura, 'acala')['earn.remove'],
+                .getDic(i18n_full_dic_acala, 'acala')['earn.remove'],
             txDisplay: {
               dic['earn.pool']: poolToken.symbol,
               "": dic['earn.fromPool'],
@@ -179,7 +179,7 @@ class _WithdrawLiquidityPageState extends State<WithdrawLiquidityPage> {
             module: 'utility',
             call: 'batch',
             txTitle: I18n.of(context)
-                .getDic(i18n_full_dic_karura, 'acala')['earn.remove'],
+                .getDic(i18n_full_dic_acala, 'acala')['earn.remove'],
             txDisplay: {
               dic['earn.pool']: poolToken.symbol,
               "": dic['earn.fromPool'],
@@ -228,9 +228,9 @@ class _WithdrawLiquidityPageState extends State<WithdrawLiquidityPage> {
   Widget build(_) {
     return Observer(
       builder: (BuildContext context) {
-        final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+        final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
         final dicAssets =
-            I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+            I18n.of(context).getDic(i18n_full_dic_acala, 'common');
 
         final DexPoolData pool = ModalRoute.of(context).settings.arguments;
 

@@ -3,15 +3,15 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/api/types/swapOutputData.dart';
-import 'package:polkawallet_plugin_karura/common/components/insufficientKARWarn.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/pages/swap/bootstrapPage.dart';
-import 'package:polkawallet_plugin_karura/pages/swap/swapTokenInput.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/swapOutputData.dart';
+import 'package:polkawallet_plugin_acala/common/components/insufficientKARWarn.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/bootstrapPage.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/swapTokenInput.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -25,7 +25,7 @@ import 'package:polkawallet_ui/utils/index.dart';
 
 class SwapForm extends StatefulWidget {
   SwapForm(this.plugin, this.keyring, this.enabled);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
   final bool enabled;
 
@@ -89,7 +89,7 @@ class _SwapFormState extends State<SwapForm> {
   }
 
   bool _onCheckBalance() {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
     final v = _amountPayCtrl.text.trim();
     final balancePair =
         AssetsUtils.getBalancePairFromTokenNameId(widget.plugin, _swapPair);
@@ -275,7 +275,7 @@ class _SwapFormState extends State<SwapForm> {
   }
 
   void _onSlippageChange(String v) {
-    final Map dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final Map dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     try {
       double value = double.parse(v.trim());
       if (value >= 50 || value < 0.1) {
@@ -333,7 +333,7 @@ class _SwapFormState extends State<SwapForm> {
 
   Future<void> _onSubmit(List<int> pairDecimals, double minMax) async {
     if (_onCheckBalance()) {
-      final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+      final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
 
       final pay = _amountPayCtrl.text.trim();
       final receive = _amountReceiveCtrl.text.trim();
@@ -439,7 +439,7 @@ class _SwapFormState extends State<SwapForm> {
   Widget build(_) {
     return Observer(
       builder: (BuildContext context) {
-        final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+        final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
 
         final currencyOptionsLeft = PluginFmt.getAllDexTokens(widget.plugin);
         final currencyOptionsRight = currencyOptionsLeft.toList();
@@ -661,7 +661,7 @@ class _SwapFormState extends State<SwapForm> {
                                           padding:
                                               EdgeInsets.fromLTRB(12, 4, 12, 2),
                                           placeholder: I18n.of(context).getDic(
-                                              i18n_full_dic_karura,
+                                              i18n_full_dic_acala,
                                               'common')['custom'],
                                           placeholderStyle: TextStyle(
                                               fontSize: 12,

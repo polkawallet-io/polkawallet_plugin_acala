@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/common/constants/base.dart';
-import 'package:polkawallet_plugin_karura/pages/gov/democracy/referendumPanel.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/common/constants/base.dart';
+import 'package:polkawallet_plugin_acala/pages/gov/democracy/referendumPanel.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/listTail.dart';
@@ -17,7 +17,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 class Democracy extends StatefulWidget {
   Democracy(this.plugin, this.keyring);
 
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
   @override
@@ -60,12 +60,12 @@ class _DemocracyState extends State<Democracy> {
   }
 
   void _submitCancelVote(int id) {
-    final govDic = I18n.of(context).getDic(i18n_full_dic_karura, 'gov');
+    final govDic = I18n.of(context).getDic(i18n_full_dic_acala, 'gov');
     _unlockTx(govDic['vote.remove'], ["$id"]);
   }
 
   void _onUnlock(List<String> ids) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'gov');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'gov');
     _unlockTx(dic['democracy.unlock'], ids);
   }
 
@@ -193,7 +193,7 @@ class _DemocracyState extends State<Democracy> {
     if (locks.length == 0) {
       return Container();
     }
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'gov');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'gov');
     final bestNumber = widget.plugin.store.gov.bestNumber;
     final decimals = widget.plugin.networkState.tokenDecimals[0];
     final symbol = widget.plugin.networkState.tokenSymbol[0];

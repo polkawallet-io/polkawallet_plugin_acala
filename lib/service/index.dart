@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
-import 'package:polkawallet_plugin_karura/common/constants/base.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/service/serviceAssets.dart';
-import 'package:polkawallet_plugin_karura/service/serviceEarn.dart';
-import 'package:polkawallet_plugin_karura/service/serviceGov.dart';
-import 'package:polkawallet_plugin_karura/service/serviceHoma.dart';
-import 'package:polkawallet_plugin_karura/service/serviceLoan.dart';
-import 'package:polkawallet_plugin_karura/service/walletApi.dart';
+import 'package:polkawallet_plugin_acala/common/constants/base.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/service/serviceAssets.dart';
+import 'package:polkawallet_plugin_acala/service/serviceEarn.dart';
+import 'package:polkawallet_plugin_acala/service/serviceGov.dart';
+import 'package:polkawallet_plugin_acala/service/serviceHoma.dart';
+import 'package:polkawallet_plugin_acala/service/serviceLoan.dart';
+import 'package:polkawallet_plugin_acala/service/walletApi.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -15,7 +15,7 @@ import 'package:polkawallet_ui/components/passwordInputDialog.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
 
 class PluginService {
-  PluginService(PluginKarura plugin, Keyring keyring)
+  PluginService(PluginAcala plugin, Keyring keyring)
       : assets = ServiceAssets(plugin, keyring),
         loan = ServiceLoan(plugin, keyring),
         earn = ServiceEarn(plugin, keyring),
@@ -28,7 +28,7 @@ class PluginService {
   final ServiceHoma homa;
   final ServiceGov gov;
 
-  final PluginKarura plugin;
+  final PluginAcala plugin;
 
   bool connected = false;
 
@@ -48,9 +48,7 @@ class PluginService {
   }
 
   Future<void> fetchLiveModules() async {
-    final res = plugin.basic.name == plugin_name_karura
-        ? await WalletApi.getLiveModules()
-        : config_modules;
+    final res = config_modules;
     if (res != null) {
       plugin.store.setting.setLiveModules(res);
     } else {

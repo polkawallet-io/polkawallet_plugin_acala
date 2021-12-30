@@ -1,5 +1,5 @@
-import 'package:polkawallet_plugin_karura/api/earn/acalaServiceEarn.dart';
-import 'package:polkawallet_plugin_karura/api/earn/types/incentivesData.dart';
+import 'package:polkawallet_plugin_acala/api/earn/acalaServiceEarn.dart';
+import 'package:polkawallet_plugin_acala/api/earn/types/incentivesData.dart';
 
 class AcalaApiEarn {
   AcalaApiEarn(this.service);

@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:polkawallet_plugin_karura/api/types/loanType.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/pages/loan/loanCreatePage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanCreatePage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -20,10 +20,10 @@ import 'package:polkawallet_ui/utils/index.dart';
 
 class LoanDepositPage extends StatefulWidget {
   LoanDepositPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/loan/deposit';
+  static const String route = '/acala/loan/deposit';
   static const String actionTypeDeposit = 'deposit';
   static const String actionTypeWithdraw = 'withdraw';
 
@@ -64,7 +64,7 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
   }
 
   String _validateAmount1(String value, BigInt available) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
 
     final error = Fmt.validatePrice(value, context);
     if (error != null) {
@@ -79,7 +79,7 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
   Future<Map> _getTxParams(LoanData loan, int stableCoinDecimals) async {
     final LoanDepositPageParams params =
         ModalRoute.of(context).settings.arguments;
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     switch (params.actionType) {
       case LoanDepositPage.actionTypeDeposit:
         return {
@@ -156,15 +156,15 @@ class _LoanDepositPageState extends State<LoanDepositPage> {
 
   @override
   Widget build(BuildContext context) {
-    var dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
-    var assetDic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+    var dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+    var assetDic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
 
     final LoanDepositPageParams params =
         ModalRoute.of(context).settings.arguments;
     final token = _token ?? params.token;
 
     final balancePair = AssetsUtils.getBalancePairFromTokenNameId(
-        widget.plugin, [token.tokenNameId, karura_stable_coin]);
+        widget.plugin, [token.tokenNameId, acala_stable_coin]);
 
     final tokenOptions =
         widget.plugin.store.loan.loanTypes.map((e) => e.token).toList();

@@ -1,6 +1,6 @@
 import 'package:mobx/mobx.dart';
-import 'package:polkawallet_plugin_karura/api/types/loanType.dart';
-import 'package:polkawallet_plugin_karura/store/cache/storeCache.dart';
+import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
+import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
 
 part 'loan.g.dart';
 

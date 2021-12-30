@@ -1,11 +1,11 @@
-import 'package:polkawallet_plugin_karura/api/acalaApi.dart';
-import 'package:polkawallet_plugin_karura/api/earn/types/incentivesData.dart';
-import 'package:polkawallet_plugin_karura/api/types/dexPoolInfoData.dart';
-import 'package:polkawallet_plugin_karura/common/constants/base.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/store/index.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
+import 'package:polkawallet_plugin_acala/api/acalaApi.dart';
+import 'package:polkawallet_plugin_acala/api/earn/types/incentivesData.dart';
+import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
+import 'package:polkawallet_plugin_acala/common/constants/base.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/store/index.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
@@ -14,7 +14,7 @@ class ServiceEarn {
       : api = plugin.api,
         store = plugin.store;
 
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
   final AcalaApi api;
   final PluginStore store;
@@ -98,9 +98,7 @@ class ServiceEarn {
     final tabNow = poolId ??
         (store.earn.dexPools.length > 0
             ? store.earn.dexPools[0].tokenNameId
-            : (plugin.basic.name == plugin_name_karura
-                ? 'lp://KAR/KUSD'
-                : 'lp://ACA/AUSD'));
+            : 'lp://ACA/AUSD');
     // 3. query mining pool info
     await Future.wait([
       queryDexPoolInfo(),

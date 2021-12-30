@@ -4,13 +4,13 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/pages/homa/homaHistoryPage.dart';
-import 'package:polkawallet_plugin_karura/pages/homa/mintPage.dart';
-import 'package:polkawallet_plugin_karura/pages/homa/redeemPage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/homa/homaHistoryPage.dart';
+import 'package:polkawallet_plugin_acala/pages/homa/mintPage.dart';
+import 'package:polkawallet_plugin_acala/pages/homa/redeemPage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/infoItem.dart';
@@ -24,10 +24,10 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class HomaPage extends StatefulWidget {
   HomaPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/homa';
+  static const String route = '/acala/homa';
 
   @override
   _HomaPageState createState() => _HomaPageState();
@@ -71,7 +71,7 @@ class _HomaPageState extends State<HomaPage> {
     showCupertinoDialog(
       context: context,
       builder: (BuildContext context) {
-        final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+        final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
         return CupertinoAlertDialog(
           title: Text(dic['homa.confirm']),
           content: Text(dic['homa.redeem.hint']),
@@ -110,7 +110,7 @@ class _HomaPageState extends State<HomaPage> {
           module: module,
           call: call,
           txTitle:
-              "${I18n.of(context).getDic(i18n_full_dic_karura, 'acala')['homa.redeem.cancel']}${I18n.of(context).getDic(i18n_full_dic_karura, 'acala')['homa.redeem']}$relay_chain_token_symbol",
+              "${I18n.of(context).getDic(i18n_full_dic_acala, 'acala')['homa.redeem.cancel']}${I18n.of(context).getDic(i18n_full_dic_acala, 'acala')['homa.redeem']}$relay_chain_token_symbol",
           txDisplay: txDisplay,
           params: params,
         ))) as Map;
@@ -141,7 +141,7 @@ class _HomaPageState extends State<HomaPage> {
   Widget build(_) {
     return Observer(
       builder: (BuildContext context) {
-        final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+        final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
         final symbols = widget.plugin.networkState.tokenSymbol;
         final decimals = widget.plugin.networkState.tokenDecimals;
 

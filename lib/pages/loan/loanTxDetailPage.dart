@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:polkawallet_plugin_karura/api/types/txLoanData.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/txLoanData.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/v3/txDetail.dart';
@@ -13,15 +13,15 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class LoanTxDetailPage extends StatelessWidget {
   LoanTxDetailPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static final String route = '/karura/loan/tx';
+  static final String route = '/acala/loan/tx';
 
   @override
   Widget build(BuildContext context) {
     final Map<String, String> dic =
-        I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+        I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final amountStyle = TextStyle(fontSize: 16, fontWeight: FontWeight.bold);
 
     final TxLoanData tx = ModalRoute.of(context).settings.arguments;
@@ -37,7 +37,7 @@ class LoanTxDetailPage extends StatelessWidget {
             dic['loan.${tx.actionType}'] +
                 (tx.actionType == TxLoanData.actionTypeBorrow ||
                         tx.actionType == TxLoanData.actionTypePayback
-                    ? ' $karura_stable_coin_view'
+                    ? ' $acala_stable_coin_view'
                     : ' ${PluginFmt.tokenView(tx.token)}'),
             style: amountStyle),
       )
@@ -54,7 +54,7 @@ class LoanTxDetailPage extends StatelessWidget {
     if (tx.debit != BigInt.zero) {
       items.add(TxDetailInfoItem(
         label: tx.debit < BigInt.zero ? dic['loan.payback'] : dic['loan.mint'],
-        content: Text('${tx.amountDebit} $karura_stable_coin_view',
+        content: Text('${tx.amountDebit} $acala_stable_coin_view',
             style: amountStyle),
       ));
     }

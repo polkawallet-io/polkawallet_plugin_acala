@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:graphql_flutter/graphql_flutter.dart';
-import 'package:polkawallet_plugin_karura/api/types/transferData.dart';
-import 'package:polkawallet_plugin_karura/common/constants/subQuery.dart';
-import 'package:polkawallet_plugin_karura/pages/assets/transferDetailPage.dart';
-import 'package:polkawallet_plugin_karura/pages/assets/transferPage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/transferData.dart';
+import 'package:polkawallet_plugin_acala/common/constants/subQuery.dart';
+import 'package:polkawallet_plugin_acala/pages/assets/transferDetailPage.dart';
+import 'package:polkawallet_plugin_acala/pages/assets/transferPage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -22,7 +22,7 @@ import 'package:polkawallet_ui/utils/format.dart';
 
 class TokenDetailPage extends StatefulWidget {
   TokenDetailPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
   static final String route = '/assets/token/detail';
@@ -50,7 +50,7 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
 
     final TokenBalanceData token = ModalRoute.of(context).settings.arguments;
 
@@ -176,7 +176,7 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
                           children: <Widget>[
                             BorderedTitle(
                               title: I18n.of(context).getDic(
-                                  i18n_full_dic_karura, 'acala')['loan.txs'],
+                                  i18n_full_dic_acala, 'acala')['loan.txs'],
                             )
                           ],
                         ),
@@ -259,7 +259,7 @@ class _TokenDetailPageSate extends State<TokenDetailPage> {
                                 icon: SizedBox(
                                   height: 20,
                                   child: Image.asset(
-                                      'packages/polkawallet_plugin_karura/assets/images/assets_send.png'),
+                                      'packages/polkawallet_plugin_acala/assets/images/assets_send.png'),
                                 ),
                                 text: dic['transfer'],
                                 color: colorOut,

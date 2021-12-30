@@ -1,12 +1,12 @@
-import 'package:polkawallet_plugin_karura/store/accounts.dart';
-import 'package:polkawallet_plugin_karura/store/assets.dart';
-import 'package:polkawallet_plugin_karura/store/cache/storeCache.dart';
-import 'package:polkawallet_plugin_karura/store/earn.dart';
-import 'package:polkawallet_plugin_karura/store/gov/governance.dart';
-import 'package:polkawallet_plugin_karura/store/homa.dart';
-import 'package:polkawallet_plugin_karura/store/loan.dart';
-import 'package:polkawallet_plugin_karura/store/setting.dart';
-import 'package:polkawallet_plugin_karura/store/swap.dart';
+import 'package:polkawallet_plugin_acala/store/accounts.dart';
+import 'package:polkawallet_plugin_acala/store/assets.dart';
+import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
+import 'package:polkawallet_plugin_acala/store/earn.dart';
+import 'package:polkawallet_plugin_acala/store/gov/governance.dart';
+import 'package:polkawallet_plugin_acala/store/homa.dart';
+import 'package:polkawallet_plugin_acala/store/loan.dart';
+import 'package:polkawallet_plugin_acala/store/setting.dart';
+import 'package:polkawallet_plugin_acala/store/swap.dart';
 
 class PluginStore {
   PluginStore(StoreCache cache)

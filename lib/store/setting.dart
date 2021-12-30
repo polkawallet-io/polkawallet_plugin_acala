@@ -1,5 +1,5 @@
 import 'package:mobx/mobx.dart';
-import 'package:polkawallet_plugin_karura/store/cache/storeCache.dart';
+import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
 
 part 'setting.g.dart';
 

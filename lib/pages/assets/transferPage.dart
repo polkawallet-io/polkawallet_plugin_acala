@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:polkawallet_plugin_karura/common/components/insufficientKARWarn.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/pages/currencySelectPage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/common/components/insufficientKARWarn.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/currencySelectPage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
@@ -31,7 +31,7 @@ import 'package:polkawallet_ui/utils/index.dart';
 
 class TransferPage extends StatefulWidget {
   TransferPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
   static final String route = '/assets/token/transfer';
@@ -150,7 +150,7 @@ class _TransferPageState extends State<TransferPage> {
 
   /// XCM only support KSM transfer back to Kusama.
   void _onSelectChain(Map<String, Widget> crossChainIcons) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
 
     final List tokenXcmConfig =
         widget.plugin.store.setting.tokensConfig['xcm'] != null
@@ -213,8 +213,8 @@ class _TransferPageState extends State<TransferPage> {
           );
         }).toList(),
         cancelButton: CupertinoActionSheetAction(
-          child: Text(I18n.of(context)
-              .getDic(i18n_full_dic_karura, 'common')['cancel']),
+          child: Text(
+              I18n.of(context).getDic(i18n_full_dic_acala, 'common')['cancel']),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -231,7 +231,7 @@ class _TransferPageState extends State<TransferPage> {
 
       /// send XCM tx if cross chain
       if (chainTo != widget.plugin.basic.name) {
-        final dicAcala = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+        final dicAcala = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
         final isToParent = _chainTo == relay_chain_name;
 
         String destPubKey = _accountTo.pubKey;
@@ -314,7 +314,7 @@ class _TransferPageState extends State<TransferPage> {
         module: 'currencies',
         call: 'transfer',
         txTitle:
-            '${I18n.of(context).getDic(i18n_full_dic_karura, 'acala')['transfer']} $tokenView',
+            '${I18n.of(context).getDic(i18n_full_dic_acala, 'acala')['transfer']} $tokenView',
         txDisplay: {
           "destination": _accountTo.address,
           "currency": tokenView,
@@ -375,8 +375,8 @@ class _TransferPageState extends State<TransferPage> {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
-        final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'common');
-        final dicAcala = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+        final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
+        final dicAcala = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
         final TokenBalanceData args = ModalRoute.of(context).settings.arguments;
         final token = _token ?? args;
         final tokenSymbol = token.symbol.toUpperCase();
@@ -808,15 +808,15 @@ class _CrossChainTransferWarning extends StatelessWidget {
 
   String getWarnInfo(BuildContext context) {
     return I18n.of(context).locale.toString().contains('zh')
-        ? '交易所当前不支持 Karura 网络跨链转账充提 $token，请先使用跨链转账将 $token 转回 $chain，再从 $chain 网络转账至交易所地址。'
-        : 'Exchanges do not currently support direct transfers of $token to/from Karura. In order to successfully send $token to an exchange address, it is required that you first complete an Cross-Chain-Transfer of the token(s) from Karura to $chain.';
+        ? '交易所当前不支持 Acala 网络跨链转账充提 $token，请先使用跨链转账将 $token 转回 $chain，再从 $chain 网络转账至交易所地址。'
+        : 'Exchanges do not currently support direct transfers of $token to/from Acala. In order to successfully send $token to an exchange address, it is required that you first complete an Cross-Chain-Transfer of the token(s) from Acala to $chain.';
   }
 
   @override
   Widget build(BuildContext context) {
     if (chain == null || chain.isEmpty) return Container();
 
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     return Container(
       margin: EdgeInsets.only(top: 16, bottom: 24),
       padding: EdgeInsets.all(8),

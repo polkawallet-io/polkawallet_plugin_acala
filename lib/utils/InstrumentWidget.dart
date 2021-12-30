@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:polkawallet_plugin_karura/utils/InstrumentItemWidget.dart';
+import 'package:polkawallet_plugin_acala/utils/InstrumentItemWidget.dart';
 import 'package:polkawallet_ui/components/v3/roundedCard.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/components/SkaletonList.dart';

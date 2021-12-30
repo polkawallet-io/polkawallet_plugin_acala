@@ -1,16 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:polkawallet_plugin_karura/api/types/loanType.dart';
-import 'package:polkawallet_plugin_karura/api/types/swapOutputData.dart';
-import 'package:polkawallet_plugin_karura/common/constants/index.dart';
-import 'package:polkawallet_plugin_karura/pages/loan/loanCard.dart';
-import 'package:polkawallet_plugin_karura/pages/loan/loanChart.dart';
-import 'package:polkawallet_plugin_karura/pages/loan/loanPage.dart';
-import 'package:polkawallet_plugin_karura/polkawallet_plugin_karura.dart';
-import 'package:polkawallet_plugin_karura/utils/assets.dart';
-import 'package:polkawallet_plugin_karura/utils/format.dart';
-import 'package:polkawallet_plugin_karura/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
+import 'package:polkawallet_plugin_acala/api/types/swapOutputData.dart';
+import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanCard.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanChart.dart';
+import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
+import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
+import 'package:polkawallet_plugin_acala/utils/format.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
@@ -24,10 +24,10 @@ import 'package:polkawallet_ui/utils/i18n.dart';
 
 class LoanDetailPage extends StatefulWidget {
   LoanDetailPage(this.plugin, this.keyring);
-  final PluginKarura plugin;
+  final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/loan/detail';
+  static const String route = '/acala/loan/detail';
 
   @override
   _LoanDetailPageState createState() => _LoanDetailPageState();
@@ -42,9 +42,9 @@ class _LoanDetailPageState extends State<LoanDetailPage> {
       [
         {...collateral.currencyId, 'decimals': collateral.decimals},
         {
-          'Token': karura_stable_coin,
+          'Token': acala_stable_coin,
           'decimals': AssetsUtils.getBalanceFromTokenNameId(
-                  widget.plugin, karura_stable_coin)
+                  widget.plugin, acala_stable_coin)
               .decimals
         }
       ],
@@ -54,7 +54,7 @@ class _LoanDetailPageState extends State<LoanDetailPage> {
 
   Future<void> _closeVault(
       LoanData loan, int collateralDecimal, double debit) async {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
     final dicCommon = I18n.of(context).getDic(i18n_full_dic_ui, 'common');
     SwapOutputData output;
     final confirmed = await showCupertinoDialog(
@@ -120,7 +120,7 @@ class _LoanDetailPageState extends State<LoanDetailPage> {
             txTitle: dic['loan.close'],
             txDisplay: {
               'collateral': loan.token.symbol,
-              'payback': Fmt.priceCeil(debit) + karura_stable_coin_view,
+              'payback': Fmt.priceCeil(debit) + acala_stable_coin_view,
             },
             params: isRuntimeOld ? params : params.sublist(0, 2)),
       );
@@ -132,14 +132,14 @@ class _LoanDetailPageState extends State<LoanDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_karura, 'acala');
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
 
     return Observer(
       builder: (_) {
         final LoanData loan = ModalRoute.of(context).settings.arguments;
 
         final balancePair = AssetsUtils.getBalancePairFromTokenNameId(
-            widget.plugin, [loan.token.tokenNameId, karura_stable_coin]);
+            widget.plugin, [loan.token.tokenNameId, acala_stable_coin]);
 
         final dataChartDebit = [
           Fmt.bigIntToDouble(loan.debitInUSD, balancePair[1].decimals),
@@ -221,7 +221,7 @@ class _LoanDetailPageState extends State<LoanDetailPage> {
                                                   balancePair[1].decimals),
                                               style: titleStyle),
                                           Text(
-                                              '${dic['borrow.limit']}($karura_stable_coin_view)',
+                                              '${dic['borrow.limit']}($acala_stable_coin_view)',
                                               style: subtitleStyle)
                                         ],
                                       ))),
@@ -260,7 +260,7 @@ class _LoanDetailPageState extends State<LoanDetailPage> {
                             Fmt.priceFloorBigInt(
                                 Fmt.balanceInt(balancePair[1].amount),
                                 balancePair[1].decimals),
-                            karura_stable_coin,
+                            acala_stable_coin,
                             balancePair[1].decimals,
                             balancePair[0].decimals,
                             widget.plugin.tokenIcons),
