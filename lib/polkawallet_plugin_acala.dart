@@ -79,9 +79,9 @@ class PluginAcala extends PolkawalletPlugin {
           backgroundImage: AssetImage(
               'packages/polkawallet_plugin_acala/assets/images/bg.png'),
           icon: SvgPicture.asset(
-              'packages/polkawallet_plugin_acala/assets/images/logo.svg'),
+              'packages/polkawallet_plugin_acala/assets/images/logo1.svg'),
           iconDisabled: SvgPicture.asset(
-            'packages/polkawallet_plugin_acala/assets/images/logo.svg',
+            'packages/polkawallet_plugin_acala/assets/images/logo1.svg',
             color: Color(0xFF9E9E9E),
             width: 24,
           ),
