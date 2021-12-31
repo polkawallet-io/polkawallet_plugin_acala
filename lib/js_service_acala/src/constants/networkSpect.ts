@@ -37,7 +37,8 @@ export const UnknownNetworkKeys = Object.freeze({
 
 // genesisHash is used as Network key for Substrate networks
 export const SubstrateNetworkKeys = Object.freeze({
-  KARURA: "0xbaf5aabe40646d11f0ee8abbdc64f4a4b7674925cba08e4a05ff9ebed6e2126b",
+  ACALA: "0xfc41b9bd8ef8fe53d58c7ea67c794c7ec9a73daf05e6d54b14ff6342c99ba64c",
+  ACALA_MANDALA: "0x5fad1818cb637f0737771f27db0c28e7f669305ea71d84299291370d6723809c",
 });
 
 const unknownNetworkBase = {
@@ -53,15 +54,25 @@ const unknownNetworkBase = {
 };
 
 const substrateNetworkBase = {
-  [SubstrateNetworkKeys.KARURA]: {
+  [SubstrateNetworkKeys.ACALA]: {
     color: "#173DC9",
     decimals: 12,
-    genesisHash: SubstrateNetworkKeys.KARURA,
+    genesisHash: SubstrateNetworkKeys.ACALA,
     order: 8,
-    pathId: "karura",
+    pathId: "Acala",
     prefix: 8,
-    title: "Acala Karura",
-    unit: "KAR",
+    title: "Acala",
+    unit: "ACA",
+  },
+  [SubstrateNetworkKeys.ACALA_MANDALA]: {
+    color: "#173DC9",
+    decimals: 12,
+    genesisHash: SubstrateNetworkKeys.ACALA_MANDALA,
+    order: 8,
+    pathId: "Acala Mandala",
+    prefix: 8,
+    title: "Acala Mandala",
+    unit: "ACA",
   },
 };
 

@@ -8,10 +8,7 @@ export const nft_image_config = {
 };
 
 export const existential_deposit = {
-  KSM: "100000000",
-  KUSD: "10000000000",
-  LKSM: "500000000",
-  BNC: "8000000000",
-  VSKSM: "100000000",
-  PHA: "40000000000",
+  DOT: "100000000",
+  AUSD: "10000000000",
+  LDOT: "500000000",
 };

@@ -16,7 +16,7 @@ send("log", "acala main js loaded");
 (<any>window).send = send;
 
 async function connectAll(nodes: string[]) {
-  return Promise.race(nodes.map(node => connect([node])));
+  return Promise.race(nodes.map((node) => connect([node])));
 }
 
 async function connect(nodes: string[]) {
@@ -51,7 +51,10 @@ async function connect(nodes: string[]) {
   });
 }
 
+async function test() {}
+
 (<any>window).settings = {
+  test,
   connectAll,
   connect,
   getNetworkConst,

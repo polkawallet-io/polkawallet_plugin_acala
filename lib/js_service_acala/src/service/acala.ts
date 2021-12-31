@@ -5,22 +5,19 @@ import { hexToString } from "@polkadot/util";
 import { existential_deposit, nft_image_config } from "../constants/acala";
 import { BN } from "@polkadot/util/bn/bn";
 import { WalletPromise } from "@acala-network/sdk-wallet";
-import { HomaLite } from "./homaLite";
 import { Homa } from "@acala-network/sdk";
 import axios from "axios";
 import { IncentiveResult } from "../types/acalaTypes";
-import { HomaLiteMintResult, HomaLiteRedeemResult } from "./homaLite/types";
 import { lastValueFrom, of } from "rxjs";
 import { HomaEnvironment } from "@acala-network/sdk/homa/types";
 
 const ONE = FixedPointNumber.ONE;
 const ACA_SYS_BLOCK_TIME = new BN(12000);
 const SECONDS_OF_YEAR = new BN(365 * 24 * 3600);
-const KSM_DECIMAL = 12;
-const native_token = "KAR";
+const DOT_DECIMAL = 10;
+const native_token = "ACA";
 
 let walletPromise: WalletPromise;
-let homaApi: HomaLite;
 let homa: Homa;
 
 function _computeExchangeFee(path: Token[], fee: FixedPointNumber) {
@@ -123,7 +120,21 @@ async function getAllTokens(api: ApiPromise) {
       minBalance: json["minimalBalance"].toString(),
     };
   });
-  return [...res, ...res2];
+  const lcDotCurrencyId = {
+    LiquidCroadloan: "13",
+  };
+  return [
+    {
+      type: "LiquidCroadloan",
+      id: "13",
+      tokenNameId: forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, lcDotCurrencyId)),
+      currencyId: lcDotCurrencyId,
+      decimals: DOT_DECIMAL,
+      minBalance: existential_deposit["DOT"],
+    },
+    ...res,
+    ...res2,
+  ];
 }
 
 /**
@@ -544,12 +555,7 @@ async function queryAggregatedAssets(api: ApiPromise, address: string) {
     api.query.system.account(address),
     api.query.tokens.accounts.entries(address),
     Promise.all(dexPools.map((e) => fetchDexPoolInfo(api, { DEXShare: e.tokens }, address))),
-    Promise.all(
-      loanTypes.map((e) => {
-        const tokenNameId = forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, e.currency));
-        return fetchCollateralRewards(api, e.currency, address, _getTokenDecimal(allTokens, tokenNameId));
-      })
-    ),
+    Promise.all(loanTypes.map((e) => fetchCollateralRewards(api, e.currency, address))),
     queryIncentives(api),
   ]);
   const [loansMap, loanRewardsMap] = _calcLoanAssets(api, allTokens, loanTypes, loans, loanRewards, incentives);
@@ -677,57 +683,6 @@ function _calcLPAssets(api: ApiPromise, allTokens: any[], poolInfos: any[], lpTo
   return [res, lpTokensFree, lpRewards];
 }
 
-async function calcHomaMintAmount(api: ApiPromise, amount: number) {
-  if (!walletPromise || !homaApi) {
-    walletPromise = new WalletPromise(api);
-    homaApi = new HomaLite(api, walletPromise);
-  }
-
-  const res: HomaLiteMintResult = await homaApi.mint(new FixedPointNumber(amount, KSM_DECIMAL));
-  return {
-    fee: res.fee.toNumber().toFixed(8),
-    received: res.received.toNumber().toFixed(8),
-    suggestRedeemRequests: res.suggestRedeemRequests,
-  };
-}
-
-async function calcHomaRedeemAmount(api: ApiPromise, address: string, amount: number, isByDex: boolean = false) {
-  if (!walletPromise || !homaApi) {
-    walletPromise = new WalletPromise(api);
-    homaApi = new HomaLite(api, walletPromise);
-  }
-
-  if (isByDex) {
-    const swapper = new SwapPromise(api);
-    const res: HomaLiteRedeemResult = await homaApi.redeemFromDex(
-      swapper,
-      new FixedPointNumber(amount, KSM_DECIMAL),
-      new FixedPointNumber(0.005)
-    );
-    return {
-      fee: res.fee.toNumber().toFixed(8),
-      expected: res.expected.toNumber().toFixed(8),
-    };
-  }
-
-  const res: HomaLiteRedeemResult = await homaApi.redeem(address, new FixedPointNumber(amount, KSM_DECIMAL));
-  return {
-    fee: res.fee.toNumber().toFixed(8),
-    expected: res.expected.toNumber().toFixed(8),
-    newRedeemBalance: res.newRedeemBalance?.toChainData(),
-  };
-}
-
-async function queryRedeemRequest(api: ApiPromise, address: string) {
-  if (!walletPromise || !homaApi) {
-    walletPromise = new WalletPromise(api);
-    homaApi = new HomaLite(api, walletPromise);
-  }
-
-  const data = await homaApi.queryUserUnbondingStakingToken(address);
-  return (data[0] || FixedPointNumber.ZERO).toNumber().toFixed(8);
-}
-
 function _formatHomaEnv(env: HomaEnvironment) {
   return {
     totalStaking: env.totalStaking.toNumber(),
@@ -738,6 +693,7 @@ function _formatHomaEnv(env: HomaEnvironment) {
     mintThreshold: env.mintThreshold.toNumber(),
     redeemThreshold: env.redeemThreshold.toNumber(),
     stakingSoftCap: env.stakingSoftCap.toNumber(),
+    eraFrequency: env.eraFrequency,
   };
 }
 
@@ -767,7 +723,7 @@ async function calcHomaNewMintAmount(api: ApiPromise, amount: number) {
     homa = new Homa(api, walletAdapter);
   }
 
-  const result = await lastValueFrom(homa.subscribeEstimateMintResult(new FixedPointNumber(amount, KSM_DECIMAL)));
+  const result = await lastValueFrom(homa.subscribeEstimateMintResult(new FixedPointNumber(amount, DOT_DECIMAL)));
   return {
     pay: result.pay.toNumber(),
     receive: result.receive.toNumber(),
@@ -786,11 +742,12 @@ async function calcHomaNewRedeemAmount(api: ApiPromise, amount: number, isFastRe
     homa = new Homa(api, walletAdapter);
   }
 
-  const result = await lastValueFrom(homa.subscribeEstimateRedeemResult(new FixedPointNumber(amount, KSM_DECIMAL), isFastRedeem));
+  const result = await lastValueFrom(homa.subscribeEstimateRedeemResult(new FixedPointNumber(amount, DOT_DECIMAL), isFastRedeem));
   return {
     request: result.request.toNumber(),
     receive: result.receive.toNumber(),
     fee: result.fee.toNumber(),
+    canTryFastReddem: result.canTryFastReddem,
     env: _formatHomaEnv(result.env),
   };
 }
@@ -871,11 +828,7 @@ export default {
   queryIncentives,
   queryAggregatedAssets,
 
-  // homaLite
-  calcHomaMintAmount,
-  calcHomaRedeemAmount,
-  queryRedeemRequest,
-  // homa new
+  // homa
   queryHomaNewEnv,
   calcHomaNewMintAmount,
   calcHomaNewRedeemAmount,
