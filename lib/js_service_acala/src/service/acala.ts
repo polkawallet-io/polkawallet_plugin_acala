@@ -127,6 +127,7 @@ async function getAllTokens(api: ApiPromise) {
     {
       type: "LiquidCroadloan",
       id: "13",
+      symbol: "lcDOT",
       tokenNameId: forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, lcDotCurrencyId)),
       currencyId: lcDotCurrencyId,
       decimals: DOT_DECIMAL,

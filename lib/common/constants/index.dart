@@ -66,6 +66,7 @@ const acala_token_ids = [
   'AUSD',
   'DOT',
   'LDOT',
+  'LCDOT',
   'RENBTC',
   'XBTC',
   'POLKABTC',
