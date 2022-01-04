@@ -3,7 +3,7 @@ import 'package:polkawallet_plugin_acala/common/constants/base.dart';
 const plugin_cache_key = 'plugin_acala';
 
 const plugin_genesis_hash =
-    '0x5fad1818cb637f0737771f27db0c28e7f669305ea71d84299291370d6723809c';
+    '0xfc41b9bd8ef8fe53d58c7ea67c794c7ec9a73daf05e6d54b14ff6342c99ba64c';
 const acala_price_decimals = 18;
 const acala_stable_coin = 'AUSD';
 const acala_stable_coin_view = 'aUSD';
