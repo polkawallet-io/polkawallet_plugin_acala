@@ -1,7 +1,7 @@
 import 'package:polkawallet_plugin_acala/api/homa/acalaServiceHoma.dart';
-import 'package:polkawallet_plugin_acala/api/types/calcHomaMintAmountData.dart';
 import 'package:polkawallet_plugin_acala/api/types/calcHomaRedeemAmount.dart';
-import 'package:polkawallet_plugin_acala/api/types/homaRedeemAmountData.dart';
+import 'package:polkawallet_plugin_acala/api/types/homaNewEnvData.dart';
+import 'package:polkawallet_plugin_acala/api/types/homaPendingRedeemData.dart';
 import 'package:polkawallet_plugin_acala/api/types/stakingPoolInfoData.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
@@ -19,20 +19,14 @@ class AcalaApiHoma {
     );
   }
 
-  // Future<HomaUserInfoData> queryHomaUserInfo(String address) async {
-  //   final Map res = await service.queryHomaUserInfo(address);
-  //   return HomaUserInfoData.fromJson(Map<String, dynamic>.of(res));
-  // }
-
-  Future<HomaRedeemAmountData> queryHomaRedeemAmount(
-      double input, int redeemType, era) async {
-    final Map res = await service.queryHomaRedeemAmount(input, redeemType, era);
-    return HomaRedeemAmountData.fromJson(res);
+  Future<Map> calcHomaMintAmount(double input) async {
+    final Map res = await service.calcHomaMintAmount(input);
+    return res;
   }
 
-  Future<CalcHomaMintAmountData> calcHomaMintAmount(double input) async {
-    final Map res = await service.calcHomaMintAmount(input);
-    return CalcHomaMintAmountData.fromJson(res);
+  Future<Map> calcHomaNewMintAmount(double input) async {
+    final Map res = await service.calcHomaNewMintAmount(input);
+    return res;
   }
 
   Future<CalcHomaRedeemAmount> calcHomaRedeemAmount(
@@ -41,8 +35,26 @@ class AcalaApiHoma {
     return CalcHomaRedeemAmount.fromJson(res);
   }
 
+  Future<Map> calcHomaNewRedeemAmount(double input, bool isFastRedeem) async {
+    return service.calcHomaNewRedeemAmount(input, isFastRedeem: isFastRedeem);
+  }
+
   Future<dynamic> redeemRequested(String address) async {
     final dynamic res = await service.redeemRequested(address);
     return res;
+  }
+
+  Future<bool> isHomaAlive() async {
+    return service.isHomaAlive();
+  }
+
+  Future<HomaNewEnvData> queryHomaNewEnv() async {
+    final dynamic res = await service.queryHomaNewEnv();
+    return HomaNewEnvData.fromJson(res);
+  }
+
+  Future<HomaPendingRedeemData> queryHomaPendingRedeem(String address) async {
+    final res = await service.queryHomaPendingRedeem(address);
+    return HomaPendingRedeemData.fromJson(res);
   }
 }

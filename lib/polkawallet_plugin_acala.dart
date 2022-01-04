@@ -1,11 +1,8 @@
 library polkawallet_plugin_acala;
 
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_plugin_acala/api/acalaApi.dart';
@@ -53,18 +50,12 @@ import 'package:polkawallet_plugin_acala/service/graphql.dart';
 import 'package:polkawallet_plugin_acala/service/index.dart';
 import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
 import 'package:polkawallet_plugin_acala/store/index.dart';
-import 'package:polkawallet_plugin_acala/utils/InstrumentItemWidget.dart';
-import 'package:polkawallet_plugin_acala/utils/InstrumentWidget.dart';
-import 'package:polkawallet_plugin_acala/utils/assets.dart';
-import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
-import 'package:polkawallet_plugin_acala/utils/types/aggregatedAssetsData.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 
@@ -373,6 +364,7 @@ class PluginAcala extends PolkawalletPlugin {
       _store.swap.loadCache(acc.pubKey);
       _store.earn.setDexPoolInfo({}, reset: true);
       _store.earn.setBootstraps([]);
+      _store.homa.setUserInfo(null);
       print('acala plugin cache data loaded');
     } catch (err) {
       print(err);

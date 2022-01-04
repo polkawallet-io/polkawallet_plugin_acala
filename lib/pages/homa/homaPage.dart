@@ -4,6 +4,8 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:polkawallet_plugin_acala/api/types/homaNewEnvData.dart';
+import 'package:polkawallet_plugin_acala/api/types/homaPendingRedeemData.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/homa/homaHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homa/mintPage.dart';
@@ -27,7 +29,7 @@ class HomaPage extends StatefulWidget {
   final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/acala/homa';
+  static const String route = '/karura/homa';
 
   @override
   _HomaPageState createState() => _HomaPageState();
@@ -40,6 +42,8 @@ class _HomaPageState extends State<HomaPage> {
   Future<void> _refreshRedeem() async {
     var data = await widget.plugin.api.homa
         .redeemRequested(widget.keyring.current.address);
+    if (!mounted) return;
+
     if (data != null && data.length > 0) {
       setState(() {
         _unlockingKsm = data;
@@ -51,14 +55,12 @@ class _HomaPageState extends State<HomaPage> {
     }
   }
 
-  Future<void> _refreshAllData() async {
-    _refreshData();
-    _refreshRedeem();
-  }
-
   Future<void> _refreshData() async {
     widget.plugin.service.assets.queryMarketPrices([relay_chain_token_symbol]);
-    await widget.plugin.service.homa.queryHomaLiteStakingPool();
+    widget.plugin.service.gov.updateBestNumber();
+    widget.plugin.service.homa.queryHomaPendingRedeem();
+
+    await widget.plugin.service.homa.queryHomaEnv();
 
     if (_timer == null) {
       _timer = Timer.periodic(Duration(seconds: 20), (timer) {
@@ -123,8 +125,8 @@ class _HomaPageState extends State<HomaPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _refreshAllData();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _refreshData();
     });
   }
 
@@ -142,14 +144,21 @@ class _HomaPageState extends State<HomaPage> {
     return Observer(
       builder: (BuildContext context) {
         final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+        final dicAssets =
+            I18n.of(context).getDic(i18n_full_dic_acala, 'common');
         final symbols = widget.plugin.networkState.tokenSymbol;
         final decimals = widget.plugin.networkState.tokenDecimals;
 
         final stakeSymbol = relay_chain_token_symbol;
 
         final poolInfo = widget.plugin.store.homa.poolInfo;
-        final staked = poolInfo.staked ?? BigInt.zero;
-        final cap = poolInfo.cap ?? BigInt.zero;
+        final env = widget.plugin.store.homa.env;
+        final staked = env != null
+            ? BigInt.from(env.totalStaking)
+            : poolInfo.staked ?? BigInt.zero;
+        final cap = env != null
+            ? BigInt.from(env.stakingSoftCap)
+            : poolInfo.cap ?? BigInt.zero;
         final amountLeft = cap - staked;
         final liquidTokenIssuance = poolInfo.liquidTokenIssuance ?? BigInt.zero;
 
@@ -159,11 +168,14 @@ class _HomaPageState extends State<HomaPage> {
             Fmt.balanceDouble(balances[0].amount, balances[0].decimals);
         final balanceLiquidToken =
             Fmt.balanceDouble(balances[1].amount, balances[1].decimals);
-        final exchangeRate = staked > BigInt.zero
-            ? (liquidTokenIssuance / staked)
-            : Fmt.balanceDouble(
-                widget.plugin.networkConst['homaLite']['defaultExchangeRate'],
-                acala_price_decimals);
+        final exchangeRate = env != null
+            ? 1 / env.exchangeRate
+            : staked > BigInt.zero
+                ? ((poolInfo.liquidTokenIssuance ?? BigInt.zero) / staked)
+                : Fmt.balanceDouble(
+                    widget.plugin.networkConst['homaLite']
+                        ['defaultExchangeRate'],
+                    acala_price_decimals);
 
         final List<charts.Series> seriesList = [
           new charts.Series<num, int>(
@@ -182,11 +194,13 @@ class _HomaPageState extends State<HomaPage> {
 
         final nativeDecimal = decimals[symbols.indexOf(stakeSymbol)];
 
-        final minStake = Fmt.balanceInt(widget
-                .plugin.networkConst['homaLite']['minimumMintThreshold']
-                .toString()) +
-            Fmt.balanceInt(
-                widget.plugin.networkConst['homaLite']['mintFee'].toString());
+        final minStake = env != null
+            ? env.mintThreshold
+            : (Fmt.balanceInt(widget
+                    .plugin.networkConst['homaLite']['minimumMintThreshold']
+                    .toString()) +
+                Fmt.balanceInt(widget.plugin.networkConst['homaLite']['mintFee']
+                    .toString()));
 
         final primary = Theme.of(context).primaryColor;
         final white = Theme.of(context).cardColor;
@@ -266,7 +280,11 @@ class _HomaPageState extends State<HomaPage> {
                                             style: TextStyle(fontSize: 12),
                                           ),
                                           Text(
-                                            Fmt.token(staked, nativeDecimal),
+                                            env != null
+                                                ? Fmt.doubleFormat(
+                                                    env.totalStaking)
+                                                : Fmt.token(
+                                                    staked, nativeDecimal),
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .headline4,
@@ -279,7 +297,10 @@ class _HomaPageState extends State<HomaPage> {
                                             ),
                                           ),
                                           Text(
-                                            Fmt.token(cap, nativeDecimal),
+                                            env != null
+                                                ? Fmt.doubleFormat(
+                                                    env.stakingSoftCap * 1.0)
+                                                : Fmt.token(cap, nativeDecimal),
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .headline4,
@@ -301,18 +322,27 @@ class _HomaPageState extends State<HomaPage> {
                                           CrossAxisAlignment.center,
                                       title: dic['homa.pool.min'],
                                       content:
-                                          '> ${Fmt.token(minStake, nativeDecimal)}',
+                                          '> ${env != null ? env.mintThreshold : Fmt.token(minStake, nativeDecimal)}',
                                     ),
                                     InfoItem(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       title: 'APR',
-                                      content: '≈ 16%',
+                                      content: env != null
+                                          ? "≈ ${Fmt.priceFloor(env.apy * 100)}%"
+                                          : '≈ 20%',
                                     ),
                                   ],
                                 )
                               ],
                             ),
+                          ),
+                          _HomaUserInfoCard(
+                            env: widget.plugin.store.homa.env,
+                            userInfo: widget.plugin.store.homa.userInfo,
+                            address: widget.keyring.current.address,
+                            bestNumber: widget.plugin.store.gov.bestNumber,
+                            onClaimed: _refreshData,
                           ),
                           RoundedCard(
                             margin: EdgeInsets.fromLTRB(16, 0, 16, 32),
@@ -321,101 +351,11 @@ class _HomaPageState extends State<HomaPage> {
                               children: [
                                 Container(
                                   margin: EdgeInsets.only(bottom: 24),
-                                  child: Text(dic['homa.user.stats']),
+                                  child: Text(
+                                      '$relay_chain_token_symbol/L$relay_chain_token_symbol ${dicAssets['balance']}'),
                                 ),
-                                Visibility(
-                                    visible: _unlockingKsm != null &&
-                                        double.tryParse(_unlockingKsm ?? '0') !=
-                                            0,
-                                    child: Column(children: [
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                              child: Container(
-                                            padding: EdgeInsets.only(left: 50),
-                                            child: Text(
-                                              dic['homa.user.unlocking'],
-                                              style: TextStyle(
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w400),
-                                            ),
-                                          )),
-                                          Expanded(
-                                              child: Row(
-                                            children: [
-                                              Container(
-                                                margin:
-                                                    EdgeInsets.only(right: 8),
-                                                child: TokenIcon(stakeSymbol,
-                                                    widget.plugin.tokenIcons),
-                                              ),
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Text(
-                                                        '${Fmt.priceFloor(double.tryParse(_unlockingKsm ?? '0'), lengthMax: 4)}',
-                                                        style: TextStyle(
-                                                          fontSize: 14,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: Theme.of(
-                                                                  context)
-                                                              .unselectedWidgetColor,
-                                                        ),
-                                                      ),
-                                                      GestureDetector(
-                                                        child: Container(
-                                                            margin:
-                                                                EdgeInsets.only(
-                                                                    left: 4),
-                                                            child: Text(
-                                                              dic['homa.redeem.cancel'],
-                                                              style: TextStyle(
-                                                                fontSize: 12,
-                                                                fontStyle:
-                                                                    FontStyle
-                                                                        .italic,
-                                                                decoration:
-                                                                    TextDecoration
-                                                                        .underline,
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .primaryColor,
-                                                              ),
-                                                            )),
-                                                        onTap: _onCancelRedeem,
-                                                      )
-                                                    ],
-                                                  ),
-                                                  Text(
-                                                      '≈ \$${Fmt.priceFloor((widget.plugin.store.assets.marketPrices[stakeSymbol] ?? 0) * double.tryParse(_unlockingKsm ?? '0'), lengthMax: 2)}',
-                                                      style: TextStyle(
-                                                          fontSize: 12)),
-                                                ],
-                                              )
-                                            ],
-                                          ))
-                                        ],
-                                      ),
-                                      Container(
-                                        child: Divider(height: 24),
-                                      )
-                                    ])),
                                 Row(
                                   children: [
-                                    Expanded(
-                                        child: Container(
-                                      padding: EdgeInsets.only(left: 50),
-                                      child: Text(
-                                        dic['homa.user.ksm'],
-                                        style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w400),
-                                      ),
-                                    )),
                                     Expanded(
                                         child: Row(
                                       children: [
@@ -433,23 +373,6 @@ class _HomaPageState extends State<HomaPage> {
                                           lowTitle: true,
                                         ),
                                       ],
-                                    ))
-                                  ],
-                                ),
-                                Container(
-                                  child: Divider(height: 24),
-                                ),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                        child: Container(
-                                      padding: EdgeInsets.only(left: 50),
-                                      child: Text(
-                                        dic['homa.user.lksm'],
-                                        style: TextStyle(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w400),
-                                      ),
                                     )),
                                     Expanded(
                                         child: Row(
@@ -472,7 +395,7 @@ class _HomaPageState extends State<HomaPage> {
                                       ],
                                     ))
                                   ],
-                                ),
+                                )
                               ],
                             ),
                           ),
@@ -495,7 +418,7 @@ class _HomaPageState extends State<HomaPage> {
                                       .pushNamed(RedeemPage.route)
                                       .then((value) {
                                     if (value != null) {
-                                      _refreshAllData();
+                                      _refreshData();
                                     }
                                   }),
                                 ),
@@ -519,7 +442,7 @@ class _HomaPageState extends State<HomaPage> {
                                               .pushNamed(MintPage.route)
                                               .then((value) {
                                             if (value != null) {
-                                              _refreshAllData();
+                                              _refreshData();
                                             }
                                           });
                                         }
@@ -536,6 +459,194 @@ class _HomaPageState extends State<HomaPage> {
           ),
         );
       },
+    );
+  }
+}
+
+class _HomaUserInfoCard extends StatelessWidget {
+  _HomaUserInfoCard({
+    this.userInfo,
+    this.address,
+    this.env,
+    this.bestNumber,
+    this.onClaimed,
+  });
+
+  String address;
+  HomaPendingRedeemData userInfo;
+  HomaNewEnvData env;
+  BigInt bestNumber;
+  Function() onClaimed;
+
+  Future<void> _claimRedeem(BuildContext context, num claimable) async {
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+    final res = await Navigator.of(context).pushNamed(
+      TxConfirmPage.route,
+      arguments: TxConfirmParams(
+        module: 'homa',
+        call: 'claimRedemption',
+        txTitle: '${dic['homa.claim']} $relay_chain_token_symbol',
+        txDisplay: {},
+        txDisplayBold: {
+          dic['loan.amount']: Text(
+            '${Fmt.priceFloor(claimable, lengthMax: 4)} $relay_chain_token_symbol',
+            style: Theme.of(context).textTheme.headline1,
+          ),
+        },
+        params: [address],
+      ),
+    );
+    if (res != null) {
+      onClaimed();
+    }
+  }
+
+  void _showUnbondings(BuildContext context, List unbundings) {
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+    showCupertinoModalPopup(
+      context: context,
+      builder: (_) {
+        return CupertinoActionSheet(
+          title: Text(dic['homa.unbonding']),
+          message: Column(
+            children: unbundings.map((e) {
+              return Container(
+                margin: EdgeInsets.only(bottom: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '${Fmt.priceFloor(e['amount'], lengthMax: 4)} $relay_chain_token_symbol',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).unselectedWidgetColor),
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(left: 16),
+                      child:
+                          Text('${(e['era'] - userInfo.currentRelayEra)} Eras'),
+                    )
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+          cancelButton: CupertinoButton(
+            child: Text(
+                I18n.of(context).getDic(i18n_full_dic_acala, 'common')['ok']),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+    final redeemRequest = double.parse(
+        ((userInfo?.redeemRequest ?? {})['amount'] ?? 0).toString());
+    double unbonding = 0;
+    (userInfo?.unbondings ?? []).forEach((e) {
+      unbonding += e['amount'];
+    });
+    final claimable = (userInfo?.claimable ?? 0).toDouble();
+    final labelStyle = TextStyle(fontSize: 12);
+    final contentStyle = TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+        color: Theme.of(context).unselectedWidgetColor);
+    final linkStyle = TextStyle(
+      fontSize: 12,
+      color: Theme.of(context).primaryColor,
+      fontStyle: FontStyle.italic,
+      decoration: TextDecoration.underline,
+    );
+    return RoundedCard(
+      margin: EdgeInsets.fromLTRB(16, 0, 16, 16),
+      padding: EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.only(bottom: 24),
+            child: Text(dic['homa.user.stats']),
+          ),
+          Container(
+            margin: EdgeInsets.only(bottom: 16),
+            child: Row(
+              children: [
+                InfoItem(
+                  title: dic['homa.RedeemRequest'] +
+                      ' (L$relay_chain_token_symbol)',
+                  content: Fmt.priceFloor(redeemRequest, lengthMax: 4),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                              dic['homa.unbonding'] +
+                                  ' ($relay_chain_token_symbol)',
+                              style: labelStyle),
+                          Visibility(
+                            visible: userInfo?.unbondings != null &&
+                                ((userInfo?.unbondings?.length ?? 0) > 0),
+                            child: GestureDetector(
+                              child: Text(
+                                I18n.of(context).getDic(
+                                    i18n_full_dic_acala, 'common')['detail'],
+                                style: linkStyle,
+                              ),
+                              onTap: () => _showUnbondings(
+                                  context, userInfo?.unbondings),
+                            ),
+                          )
+                        ],
+                      ),
+                      Text(
+                        Fmt.priceFloor(unbonding, lengthMax: 4),
+                        style: contentStyle,
+                      )
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                              dic['homa.claimable'] +
+                                  ' ($relay_chain_token_symbol)',
+                              style: labelStyle),
+                          Visibility(
+                            visible: claimable > 0,
+                            child: GestureDetector(
+                              child: Text(
+                                dic['homa.claim'],
+                                style: linkStyle,
+                              ),
+                              onTap: () => _claimRedeem(context, claimable),
+                            ),
+                          )
+                        ],
+                      ),
+                      Text(
+                        Fmt.priceFloor(claimable, lengthMax: 4),
+                        style: contentStyle,
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }

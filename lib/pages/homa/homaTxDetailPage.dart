@@ -15,7 +15,7 @@ class HomaTxDetailPage extends StatelessWidget {
   final PluginAcala plugin;
   final Keyring keyring;
 
-  static final String route = '/acala/homa/tx';
+  static final String route = '/karura/homa/tx';
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +60,22 @@ class HomaTxDetailPage extends StatelessWidget {
           )
         ]);
         break;
+      case TxHomaData.actionRedeemedByFastMatch:
+        infoItems.addAll([
+          TxDetailInfoItem(
+            label: dic['dex.pay'],
+            content: Text(
+                '${Fmt.priceFloorBigInt(tx.amountPay, liquidDecimal)} $symbol',
+                style: amountStyle),
+          ),
+          TxDetailInfoItem(
+            label: dic['dex.receive'],
+            content: Text(
+                '${Fmt.priceFloorBigInt(tx.amountReceive, nativeDecimal)} L$symbol',
+                style: amountStyle),
+          )
+        ]);
+        break;
       case TxHomaData.actionRedeem:
         infoItems.add(TxDetailInfoItem(
           label: dic['dex.pay'],
@@ -69,6 +85,8 @@ class HomaTxDetailPage extends StatelessWidget {
         ));
         break;
       case TxHomaData.actionRedeemed:
+      case TxHomaData.actionRedeemedByUnbond:
+      case TxHomaData.actionWithdrawRedemption:
         infoItems.add(TxDetailInfoItem(
           label: dic['dex.receive'],
           content: Text(

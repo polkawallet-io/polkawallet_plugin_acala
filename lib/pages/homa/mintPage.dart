@@ -22,7 +22,7 @@ class MintPage extends StatefulWidget {
   final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/acala/homa/mint';
+  static const String route = '/karura/homa/mint';
 
   @override
   _MintPageState createState() => _MintPageState();
@@ -38,11 +38,11 @@ class _MintPageState extends State<MintPage> {
 
   Future<void> _updateReceiveAmount(double input) async {
     if (mounted) {
-      var data = await widget.plugin.api.homa.calcHomaMintAmount(input);
+      var data = await widget.plugin.api.homa.calcHomaNewMintAmount(input);
 
       setState(() {
-        _amountReceive = data?.received ?? '';
-        _data = data;
+        _amountReceive = data['receive'];
+        _data = CalcHomaMintAmountData("", "", null);
       });
     }
   }
@@ -134,7 +134,7 @@ class _MintPageState extends State<MintPage> {
     }
     final res = (await Navigator.of(context).pushNamed(TxConfirmPage.route,
         arguments: TxConfirmParams(
-          module: 'homaLite',
+          module: 'homa',
           call: call,
           txTitle: '${dic['homa.mint']} L$relay_chain_token_symbol',
           txDisplay: {},
@@ -144,7 +144,7 @@ class _MintPageState extends State<MintPage> {
               style: Theme.of(context).textTheme.headline1,
             ),
             dic['dex.receive']: Text(
-              '≈ $_amountReceive L$relay_chain_token_symbol',
+              '≈ ${Fmt.priceFloor(double.tryParse(_amountReceive), lengthMax: 4)} L$relay_chain_token_symbol',
               style: Theme.of(context).textTheme.headline1,
             ),
           },
@@ -182,13 +182,17 @@ class _MintPageState extends State<MintPage> {
         final balanceDouble =
             Fmt.balanceDouble(balanceData.amount, stakeDecimal);
 
-        final minStake = Fmt.balanceDouble(
-                widget.plugin.networkConst['homaLite']['minimumMintThreshold']
-                    .toString(),
-                stakeDecimal) +
-            Fmt.balanceDouble(
-                widget.plugin.networkConst['homaLite']['mintFee'].toString(),
-                stakeDecimal);
+        final minStake = widget.plugin.store.homa.env != null
+            ? widget.plugin.store.homa.env.mintThreshold
+            : (Fmt.balanceDouble(
+                    widget
+                        .plugin.networkConst['homaLite']['minimumMintThreshold']
+                        .toString(),
+                    stakeDecimal) +
+                Fmt.balanceDouble(
+                    widget.plugin.networkConst['homaLite']['mintFee']
+                        .toString(),
+                    stakeDecimal));
 
         return Scaffold(
           appBar: AppBar(

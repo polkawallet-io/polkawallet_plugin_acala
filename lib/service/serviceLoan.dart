@@ -1,4 +1,5 @@
 import 'package:polkawallet_plugin_acala/api/acalaApi.dart';
+import 'package:polkawallet_plugin_acala/api/types/homaNewEnvData.dart';
 import 'package:polkawallet_plugin_acala/api/types/loanType.dart';
 import 'package:polkawallet_plugin_acala/api/types/stakingPoolInfoData.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
@@ -18,7 +19,7 @@ class ServiceLoan {
   final AcalaApi api;
   final PluginStore store;
 
-  void _calcLiquidTokenPrice(
+  void _calcLiquidTokenPriceOld(
       Map<String, BigInt> prices, HomaLitePoolInfoData poolInfo) {
     // LDOT price may lost precision here
     final relayToken = relay_chain_token_symbol;
@@ -35,11 +36,17 @@ class ServiceLoan {
         plugin.networkState.tokenDecimals[0]);
   }
 
-  // Future<double> _fetchNativeTokenPrice() async {
-  //   final output = await api.swap.queryTokenSwapAmount('1', null,
-  //       [plugin.networkState.tokenSymbol[0], acala_stable_coin], '0.1');
-  //   return output.amount;
-  // }
+  void _calcLiquidTokenPrice(
+      Map<String, BigInt> prices, HomaNewEnvData homaEnv) {
+    // LDOT price may lost precision here
+    final relayToken = relay_chain_token_symbol;
+    prices['L$relayToken'] = Fmt.tokenInt(
+        (Fmt.bigIntToDouble(
+                    prices[relayToken], plugin.networkState.tokenDecimals[0]) *
+                (homaEnv.exchangeRate ?? 1))
+            .toString(),
+        plugin.networkState.tokenDecimals[0]);
+  }
 
   Map<String, LoanData> _calcLoanData(
     List loans,
@@ -77,17 +84,21 @@ class ServiceLoan {
     // 1. subscribe all token prices, callback triggers per 5s.
     api.assets.subscribeTokenPrices((Map<String, BigInt> prices) async {
       // 2. we need homa staking pool info to calculate price of LDOT
-      final stakingPoolInfo = await api.homa.queryHomaLiteStakingPool();
-      store.homa.setHomaLitePoolInfoData(stakingPoolInfo);
+      if (await api.homa.isHomaAlive()) {
+        final homaEnv = await plugin.service.homa.queryHomaEnv();
+        _calcLiquidTokenPrice(prices, homaEnv);
+      } else {
+        final stakingPoolInfo =
+            await plugin.service.homa.queryHomaLiteStakingPool();
+        _calcLiquidTokenPriceOld(prices, stakingPoolInfo);
+      }
 
-      // 3. set prices
-      _calcLiquidTokenPrice(prices, stakingPoolInfo);
       // we may not need ACA/KAR prices
       // prices['ACA'] = Fmt.tokenInt(data[1].toString(), acala_price_decimals);
 
       store.assets.setPrices(prices);
 
-      // 4. update collateral incentive rewards
+      // 3. update collateral incentive rewards
       queryCollateralRewards(address);
 
       // 4. we need loanTypes & prices to get account loans
