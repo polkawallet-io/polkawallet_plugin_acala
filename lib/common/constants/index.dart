@@ -21,10 +21,8 @@ const para_chain_ids = {
 };
 
 const network_ss58_format = {
-  plugin_name_acala: 42,
-  relay_chain_name: 2,
-  para_chain_name_bifrost: 6,
-  para_chain_name_khala: 30,
+  plugin_name_acala: 10,
+  relay_chain_name: 0,
 };
 const relay_chain_token_symbol = 'DOT';
 const para_chain_token_symbol_bifrost = 'BNC';
