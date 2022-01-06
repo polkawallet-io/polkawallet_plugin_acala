@@ -151,16 +151,10 @@ class _HomaPageState extends State<HomaPage> {
 
         final stakeSymbol = relay_chain_token_symbol;
 
-        final poolInfo = widget.plugin.store.homa.poolInfo;
         final env = widget.plugin.store.homa.env;
-        final staked = env != null
-            ? BigInt.from(env.totalStaking)
-            : poolInfo.staked ?? BigInt.zero;
-        final cap = env != null
-            ? BigInt.from(env.stakingSoftCap)
-            : poolInfo.cap ?? BigInt.zero;
+        final staked = BigInt.from(env.totalStaking);
+        final cap = BigInt.from(env.stakingSoftCap);
         final amountLeft = cap - staked;
-        final liquidTokenIssuance = poolInfo.liquidTokenIssuance ?? BigInt.zero;
 
         final balances = AssetsUtils.getBalancePairFromTokenNameId(
             widget.plugin, [stakeSymbol, 'L$stakeSymbol']);
@@ -168,14 +162,6 @@ class _HomaPageState extends State<HomaPage> {
             Fmt.balanceDouble(balances[0].amount, balances[0].decimals);
         final balanceLiquidToken =
             Fmt.balanceDouble(balances[1].amount, balances[1].decimals);
-        final exchangeRate = env != null
-            ? 1 / env.exchangeRate
-            : staked > BigInt.zero
-                ? ((poolInfo.liquidTokenIssuance ?? BigInt.zero) / staked)
-                : Fmt.balanceDouble(
-                    widget.plugin.networkConst['homaLite']
-                        ['defaultExchangeRate'],
-                    acala_price_decimals);
 
         final List<charts.Series> seriesList = [
           new charts.Series<num, int>(
@@ -311,7 +297,7 @@ class _HomaPageState extends State<HomaPage> {
                                   ],
                                 ),
                                 Text(
-                                  '1 KSM ≈ ${Fmt.priceFloor(exchangeRate, lengthMax: 4)} LKSM',
+                                  '1 KSM ≈ ${Fmt.priceFloor(1 / env.exchangeRate, lengthMax: 4)} LKSM',
                                   style: TextStyle(fontSize: 12),
                                 ),
                                 Divider(height: 24),
@@ -342,6 +328,7 @@ class _HomaPageState extends State<HomaPage> {
                             userInfo: widget.plugin.store.homa.userInfo,
                             address: widget.keyring.current.address,
                             bestNumber: widget.plugin.store.gov.bestNumber,
+                            stakeTokenDecimals: balances[0].decimals,
                             onClaimed: _refreshData,
                           ),
                           RoundedCard(
@@ -386,7 +373,7 @@ class _HomaPageState extends State<HomaPage> {
                                         ),
                                         InfoItem(
                                           title:
-                                              '≈ ${Fmt.priceFloor(balanceLiquidToken / exchangeRate, lengthMax: 4)} $stakeSymbol',
+                                              '≈ ${Fmt.priceFloor(balanceLiquidToken * env.exchangeRate, lengthMax: 4)} $stakeSymbol',
                                           content: Fmt.priceFloor(
                                               balanceLiquidToken,
                                               lengthMax: 4),
@@ -403,7 +390,7 @@ class _HomaPageState extends State<HomaPage> {
                       ),
                     ),
                     Visibility(
-                        visible: liquidTokenIssuance >= BigInt.zero,
+                        visible: env.totalLiquidity >= 0,
                         child: Row(
                           children: <Widget>[
                             Expanded(
@@ -469,6 +456,7 @@ class _HomaUserInfoCard extends StatelessWidget {
     this.address,
     this.env,
     this.bestNumber,
+    this.stakeTokenDecimals,
     this.onClaimed,
   });
 
@@ -476,6 +464,7 @@ class _HomaUserInfoCard extends StatelessWidget {
   HomaPendingRedeemData userInfo;
   HomaNewEnvData env;
   BigInt bestNumber;
+  int stakeTokenDecimals;
   Function() onClaimed;
 
   Future<void> _claimRedeem(BuildContext context, num claimable) async {
@@ -545,8 +534,8 @@ class _HomaUserInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
-    final redeemRequest = double.parse(
-        ((userInfo?.redeemRequest ?? {})['amount'] ?? 0).toString());
+    final redeemRequest = Fmt.balanceDouble(
+        (userInfo?.redeemRequest ?? {})['amount'] ?? '0', stakeTokenDecimals);
     double unbonding = 0;
     (userInfo?.unbondings ?? []).forEach((e) {
       unbonding += e['amount'];

@@ -7,7 +7,6 @@ import 'package:polkawallet_plugin_acala/service/walletApi.dart';
 import 'package:polkawallet_plugin_acala/store/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
-import 'package:polkawallet_ui/utils/format.dart';
 
 class ServiceAssets {
   ServiceAssets(this.plugin, this.keyring)
@@ -38,14 +37,9 @@ class ServiceAssets {
 
     if (prices[relay_chain_token_symbol] != null) {
       await plugin.service.homa.queryHomaLiteStakingPool();
-      final poolInfo = plugin.store.homa.poolInfo;
-      final exchangeRate = (poolInfo.staked ?? BigInt.zero) > BigInt.zero
-          ? (poolInfo.liquidTokenIssuance / poolInfo.staked)
-          : Fmt.balanceDouble(
-              plugin.networkConst['homaLite']['defaultExchangeRate'],
-              acala_price_decimals);
+      final homaEnv = plugin.store.homa.env;
       prices['L$relay_chain_token_symbol'] =
-          prices[relay_chain_token_symbol] / exchangeRate;
+          prices[relay_chain_token_symbol] * homaEnv.exchangeRate;
     }
     if (tokens.contains(para_chain_token_symbol_bifrost) &&
         prices[para_chain_token_symbol_bifrost] == null) {

@@ -704,7 +704,7 @@ async function queryHomaNewEnv(api: ApiPromise) {
   }
   if (!homa) {
     const walletAdapter = {
-      subscribeToken: (token: any) => of(walletPromise.getToken(token))
+      subscribeToken: (token: any) => of(walletPromise.getToken(token)),
     };
     homa = new Homa(api, walletAdapter);
   }
@@ -719,7 +719,7 @@ async function calcHomaNewMintAmount(api: ApiPromise, amount: number) {
   }
   if (!homa) {
     const walletAdapter = {
-      subscribeToken: (token: any) => of(walletPromise.getToken(token))
+      subscribeToken: (token: any) => of(walletPromise.getToken(token)),
     };
     homa = new Homa(api, walletAdapter);
   }
@@ -738,7 +738,7 @@ async function calcHomaNewRedeemAmount(api: ApiPromise, amount: number, isFastRe
   }
   if (!homa) {
     const walletAdapter = {
-      subscribeToken: (token: any) => of(walletPromise.getToken(token))
+      subscribeToken: (token: any) => of(walletPromise.getToken(token)),
     };
     homa = new Homa(api, walletAdapter);
   }
@@ -759,7 +759,7 @@ async function queryHomaPendingRedeem(api: ApiPromise, address: string) {
   }
   if (!homa) {
     const walletAdapter = {
-      subscribeToken: (token: any) => of(walletPromise.getToken(token))
+      subscribeToken: (token: any) => of(walletPromise.getToken(token)),
     };
     homa = new Homa(api, walletAdapter);
   }
@@ -770,7 +770,7 @@ async function queryHomaPendingRedeem(api: ApiPromise, address: string) {
     claimable: result.claimable.toNumber(),
     unbondings: result.unbondings.map((e) => ({ era: e.era, amount: e.amount.toNumber() })),
     redeemRequest: {
-      amount: result.redeemRequest.amount.toNumber(),
+      amount: result.redeemRequest.amount.toChainData(),
       fastRedeem: result.redeemRequest.fastRedeem,
     },
     currentRelayEra: result.currentRelayEra,

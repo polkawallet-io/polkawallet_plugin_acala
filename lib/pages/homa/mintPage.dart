@@ -83,11 +83,9 @@ class _MintPageState extends State<MintPage> {
       return '$minLabel > ${minStake.toStringAsFixed(4)}';
     }
 
-    final symbols = widget.plugin.networkState.tokenSymbol;
-    final decimals = widget.plugin.networkState.tokenDecimals;
-    final stakeDecimal = decimals[symbols.indexOf(relay_chain_token_symbol)];
-    final poolInfo = widget.plugin.store.homa.poolInfo;
-    if (Fmt.tokenInt(supply, stakeDecimal) + poolInfo.staked > poolInfo.cap) {
+    final homaEnv = widget.plugin.store.homa.env;
+    if (double.tryParse(supply) + homaEnv.totalStaking >
+        homaEnv.stakingSoftCap) {
       return I18n.of(context)
           .getDic(i18n_full_dic_acala, 'acala')['homa.pool.cap.error'];
     }
@@ -96,9 +94,11 @@ class _MintPageState extends State<MintPage> {
   }
 
   void _onSetMax(BigInt max, int decimals, double balance, double minStake) {
-    final poolInfo = widget.plugin.store.homa.poolInfo;
-    if (poolInfo.staked + max > poolInfo.cap) {
-      max = poolInfo.cap - poolInfo.staked;
+    final homaEnv = widget.plugin.store.homa.env;
+    final staked = Fmt.tokenInt(homaEnv.totalStaking.toString(), decimals);
+    final cap = Fmt.tokenInt(homaEnv.stakingSoftCap.toString(), decimals);
+    if (staked + max > cap) {
+      max = cap - staked;
     }
 
     final amount = Fmt.bigIntToDouble(max, decimals);

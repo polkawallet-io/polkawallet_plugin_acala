@@ -51,10 +51,8 @@ class _RedeemPageState extends State<RedeemPage> {
   List<int> decimals;
 
   double karBalance;
-  TokenBalanceData balanceData;
 
   int stakeDecimal;
-  double balanceDouble;
 
   double minRedeem;
 
@@ -70,10 +68,8 @@ class _RedeemPageState extends State<RedeemPage> {
     karBalance = Fmt.balanceDouble(
         widget.plugin.balances.native.availableBalance.toString(),
         decimals[symbols.indexOf("L$stakeToken")]);
-    balanceData = widget.plugin.store.assets.tokenBalanceMap["L$stakeToken"];
 
     stakeDecimal = decimals[symbols.indexOf("L$stakeToken")];
-    balanceDouble = Fmt.balanceDouble(balanceData.amount, stakeDecimal);
 
     minRedeem = widget.plugin.store.homa.env != null
         ? widget.plugin.store.homa.env.redeemThreshold
@@ -83,7 +79,7 @@ class _RedeemPageState extends State<RedeemPage> {
             stakeDecimal);
   }
 
-  Future<void> _updateReceiveAmount(double input) async {
+  Future<void> _updateReceiveAmount(double input, BigInt max) async {
     if (mounted && input != null) {
       final data = await widget.plugin.api.homa
           .calcHomaNewRedeemAmount(input, _isFastRedeem);
@@ -126,13 +122,13 @@ class _RedeemPageState extends State<RedeemPage> {
     }
   }
 
-  void _onSupplyAmountChange(String v) {
+  void _onSupplyAmountChange(String v, BigInt max) {
     final supply = v.trim();
     setState(() {
       _maxInput = null;
     });
 
-    final error = _validateInput(supply);
+    final error = _validateInput(supply, max);
     setState(() {
       _error = error;
       if (error != null) {
@@ -143,10 +139,10 @@ class _RedeemPageState extends State<RedeemPage> {
     if (error != null) {
       return;
     }
-    _updateReceiveAmount(double.tryParse(supply));
+    _updateReceiveAmount(double.tryParse(supply), max);
   }
 
-  String _validateInput(String supply) {
+  String _validateInput(String supply, BigInt max) {
     final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
     final error = Fmt.validatePrice(supply, context);
     if (error != null) {
@@ -154,41 +150,31 @@ class _RedeemPageState extends State<RedeemPage> {
     }
 
     final pay = double.parse(supply);
-    if (_maxInput == null && pay > balanceDouble) {
+    if (_maxInput == null &&
+        Fmt.tokenInt(supply,
+                decimals[symbols.indexOf('L$relay_chain_token_symbol')]) >
+            max) {
       return dic['amount.low'];
     }
 
-    if (pay <= minRedeem && !_isFastRedeem) {
+    if (pay <= minRedeem) {
       final minLabel = I18n.of(context)
           .getDic(i18n_full_dic_acala, 'acala')['homa.pool.redeem'];
       return '$minLabel > ${minRedeem.toStringAsFixed(4)}';
     }
 
-    final symbols = widget.plugin.networkState.tokenSymbol;
-    final decimals = widget.plugin.networkState.tokenDecimals;
-    final stakeDecimal = decimals[symbols.indexOf(relay_chain_token_symbol)];
-    final poolInfo = widget.plugin.store.homa.poolInfo;
-    if (Fmt.tokenInt(supply, stakeDecimal) + poolInfo.staked > poolInfo.cap) {
-      return I18n.of(context)
-          .getDic(i18n_full_dic_acala, 'acala')['homa.pool.cap.error'];
-    }
     return error;
   }
 
   void _onSetMax(BigInt max) {
-    final poolInfo = widget.plugin.store.homa.poolInfo;
-    if (poolInfo.staked + max > poolInfo.cap) {
-      max = poolInfo.cap - poolInfo.staked;
-    }
-
     final amount = Fmt.bigIntToDouble(max, stakeDecimal);
     setState(() {
       _amountPayCtrl.text = amount.toStringAsFixed(6);
       _maxInput = max;
-      _error = _validateInput(amount.toString());
+      _error = _validateInput(amount.toString(), max);
     });
 
-    _updateReceiveAmount(amount);
+    _updateReceiveAmount(amount, max);
   }
 
   Future<void> _onSubmit() async {
@@ -217,27 +203,14 @@ class _RedeemPageState extends State<RedeemPage> {
       _isFastRedeem,
     ];
     String paramsRaw;
-    if (_isFastRedeem) {
-      if (_canFastRedeem) {
-        module = 'utility';
-        call = 'batch';
-        paramsRaw = '[['
-            'api.tx.homa.requestRedeem(...${jsonEncode(params)}),'
-            'api.tx.homa.fastMatchRedeems(["${widget.keyring.current.address}"])'
-            ']]';
-        params = [];
-      } else {
-        module = 'dex';
-        call = 'swapWithExactSupply';
-        params = [
-          [
-            {'Token': 'L$stakeToken'},
-            {'Token': stakeToken}
-          ],
-          Fmt.tokenInt(pay, stakeDecimal).toString(),
-          "0",
-        ];
-      }
+    if (_isFastRedeem && _canFastRedeem) {
+      module = 'utility';
+      call = 'batch';
+      paramsRaw = '[['
+          'api.tx.homa.requestRedeem(...${jsonEncode(params)}),'
+          'api.tx.homa.fastMatchRedeems(["${widget.keyring.current.address}"])'
+          ']]';
+      params = [];
     }
 
     final res = (await Navigator.of(context).pushNamed(TxConfirmPage.route,
@@ -260,7 +233,7 @@ class _RedeemPageState extends State<RedeemPage> {
     }
   }
 
-  void _switchFast(bool value) {
+  void _switchFast(bool value, BigInt max) {
     setState(() {
       _isFastRedeem = value;
     });
@@ -269,20 +242,8 @@ class _RedeemPageState extends State<RedeemPage> {
     if (_maxInput != null) {
       _onSetMax(_maxInput);
     } else {
-      _updateReceiveAmount(double.tryParse(_amountPayCtrl.text.trim()));
+      _onSupplyAmountChange(_amountPayCtrl.text.trim(), max);
     }
-    // if (_isFastRedeem) {
-    //   if (_timer == null) {
-    //     _timer = Timer.periodic(Duration(seconds: 20), (timer) {
-    //       _updateReceiveAmount(double.tryParse(_amountPayCtrl.text.trim()));
-    //     });
-    //   }
-    // } else {
-    //   if (_timer != null) {
-    //     _timer.cancel();
-    //     _timer = null;
-    //   }
-    // }
   }
 
   @override
@@ -303,11 +264,18 @@ class _RedeemPageState extends State<RedeemPage> {
       builder: (BuildContext context) {
         final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
 
-        final pendingRedeemReq =
-            (widget.plugin.store.homa.userInfo?.redeemRequest ?? {})['amount'];
+        final pendingRedeemReq = Fmt.balanceInt(
+            (widget.plugin.store.homa.userInfo?.redeemRequest ??
+                    {})['amount'] ??
+                '0');
+        final pendingRedeemReqView = Fmt.priceFloorBigInt(pendingRedeemReq,
+            decimals[symbols.indexOf('L$relay_chain_token_symbol')],
+            lengthMax: 4);
 
         final lTokenBalance =
             widget.plugin.store.assets.tokenBalanceMap["L$stakeToken"];
+        final max = Fmt.balanceInt(lTokenBalance.amount) + pendingRedeemReq;
+
         int unbondEras = 28;
         if (widget.plugin.networkConst['homa'] != null) {
           unbondEras =
@@ -329,9 +297,7 @@ class _RedeemPageState extends State<RedeemPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Visibility(
-                          visible: pendingRedeemReq != null &&
-                              pendingRedeemReq > 0 &&
-                              !_isFastRedeem,
+                          visible: pendingRedeemReq > BigInt.zero,
                           child: Container(
                             margin: EdgeInsets.only(bottom: 8),
                             child: Row(
@@ -339,7 +305,7 @@ class _RedeemPageState extends State<RedeemPage> {
                                 Expanded(
                                     child: TextTag(
                                   dic['homa.redeem.pending'] +
-                                      ' $pendingRedeemReq L$relay_chain_token_symbol' +
+                                      ' $pendingRedeemReqView L$relay_chain_token_symbol' +
                                       '\n${dic['homa.redeem.replace']}',
                                   padding: EdgeInsets.symmetric(
                                       vertical: 4, horizontal: 8),
@@ -350,24 +316,18 @@ class _RedeemPageState extends State<RedeemPage> {
                       SwapTokenInput(
                         title: dic['dex.pay'],
                         inputCtrl: _amountPayCtrl,
-                        balance: _isFastRedeem
-                            ? lTokenBalance
-                            : TokenBalanceData(
-                                symbol: lTokenBalance.symbol,
-                                amount: (Fmt.balanceInt(lTokenBalance.amount) +
-                                        Fmt.tokenInt(
-                                            (pendingRedeemReq ?? 0).toString(),
-                                            lTokenBalance.decimals))
-                                    .toString(),
-                                decimals: lTokenBalance.decimals),
+                        balance: TokenBalanceData(
+                            symbol: lTokenBalance.symbol,
+                            amount: max.toString(),
+                            decimals: lTokenBalance.decimals),
                         tokenIconsMap: widget.plugin.tokenIcons,
-                        onInputChange: (v) => _onSupplyAmountChange(v),
+                        onInputChange: (v) => _onSupplyAmountChange(v, max),
                         onSetMax: karBalance > 0.1 ? (v) => _onSetMax(v) : null,
                         onClear: () {
                           setState(() {
                             _amountPayCtrl.text = '';
                           });
-                          _onSupplyAmountChange('');
+                          _onSupplyAmountChange('', max);
                         },
                       ),
                       ErrorMessage(_error),
@@ -388,7 +348,7 @@ class _RedeemPageState extends State<RedeemPage> {
                               margin: EdgeInsets.only(left: 5),
                               child: CupertinoSwitch(
                                 value: _isFastRedeem,
-                                onChanged: (res) => _switchFast(res),
+                                onChanged: (res) => _switchFast(res, max),
                               ),
                             )
                           ],
