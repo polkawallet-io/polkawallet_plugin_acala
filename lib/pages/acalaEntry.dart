@@ -1,21 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/earn/earnPage.dart';
-import 'package:polkawallet_plugin_acala/pages/gov/democracyPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homa/homaPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftPage.dart';
 import 'package:polkawallet_plugin_acala/pages/swap/swapPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
-import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
-import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/SkaletonList.dart';
-import 'package:polkawallet_ui/components/entryPageCard.dart';
 
 class AcalaEntry extends StatefulWidget {
   AcalaEntry(this.plugin, this.keyring);
