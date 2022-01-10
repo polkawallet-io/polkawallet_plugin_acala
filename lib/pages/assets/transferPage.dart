@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/common/components/insufficientKARWarn.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
@@ -16,14 +17,17 @@ import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
-import 'package:polkawallet_ui/components/addressInputField.dart';
 import 'package:polkawallet_ui/components/currencyWithIcon.dart';
 import 'package:polkawallet_ui/components/tapTooltip.dart';
 import 'package:polkawallet_ui/components/textTag.dart';
 import 'package:polkawallet_ui/components/tokenIcon.dart';
-import 'package:polkawallet_ui/components/txButton.dart';
+import 'package:polkawallet_ui/components/v3/addressFormItem.dart';
+import 'package:polkawallet_ui/components/v3/addressIcon.dart';
+import 'package:polkawallet_ui/components/v3/addressTextFormField.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
-import 'package:polkawallet_ui/components/v3/iconButton.dart' as v3;
+import 'package:polkawallet_ui/components/v3/index.dart' as v3;
+import 'package:polkawallet_ui/components/v3/roundedCard.dart';
+import 'package:polkawallet_ui/components/v3/txButton.dart';
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/i18n.dart';
@@ -49,6 +53,7 @@ class _TransferPageState extends State<TransferPage> {
   List<KeyPairData> _accountOptions = [];
   TokenBalanceData _token;
   String _chainTo;
+  bool _accountToEditable = false;
 
   String _accountToError;
 
@@ -86,7 +91,7 @@ class _TransferPageState extends State<TransferPage> {
   }
 
   Future<String> _getTxFee({bool isXCM = false, bool reload = false}) async {
-    if (_fee?.partialFee != null && !reload) {
+    if (_fee.partialFee != null && !reload) {
       return _fee.partialFee.toString();
     }
 
@@ -137,13 +142,13 @@ class _TransferPageState extends State<TransferPage> {
       widget.plugin.sdk.api.account.getAddressIcons([acc.address]),
       _checkAccountTo(acc),
     ]);
-    if (res != null && res[0] != null) {
-      final List icon = res[0];
+    if (res[0] != null) {
+      final List icon = res[0] as List<dynamic>;
       acc.icon = icon[0][1];
     }
     setState(() {
       _accountTo = acc;
-      _accountToError = res[1];
+      _accountToError = res[1] as String;
     });
     print(_accountTo.address);
   }
@@ -194,19 +199,15 @@ class _TransferPageState extends State<TransferPage> {
                   _chainTo = e;
                   _accountOptions = options;
 
-                  final isInAccountList = options
-                          .indexWhere((e) => e.pubKey == _accountTo.pubKey) >=
-                      0;
-                  if (isInAccountList) {
-                    _accountTo = options
-                        .firstWhere((e) => e.pubKey == _accountTo.pubKey);
+                  if (e != widget.plugin.basic.name) {
+                    _accountTo = widget.keyring.current;
                   }
                 });
 
                 _validateAccountTo(_accountTo);
 
                 // update estimated tx fee if switch ToChain
-                _getTxFee(isXCM: e == relay_chain_name, reload: true);
+                _getTxFee(isXCM: e != widget.plugin.basic.name, reload: true);
               }
               Navigator.of(context).pop();
             },
@@ -223,10 +224,46 @@ class _TransferPageState extends State<TransferPage> {
     );
   }
 
+  Future<void> _onSwitchEditable(bool v) async {
+    if (v) {
+      final confirm = await showCupertinoDialog(
+          context: context,
+          builder: (_) {
+            final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+            final dicCommon =
+                I18n.of(context).getDic(i18n_full_dic_acala, 'common');
+            return CupertinoAlertDialog(
+              title: Text(dic['cross.warn']),
+              content: Text(dic['cross.warn.info']),
+              actions: [
+                CupertinoButton(
+                    child: Text(dicCommon['cancel']),
+                    onPressed: () {
+                      Navigator.of(context).pop(false);
+                    }),
+                CupertinoButton(
+                    child: Text(dicCommon['ok']),
+                    onPressed: () {
+                      Navigator.of(context).pop(true);
+                    }),
+              ],
+            );
+          });
+      if (!confirm) return;
+    }
+    setState(() {
+      _accountToEditable = v;
+      if (!v) {
+        _accountTo = widget.keyring.current;
+      }
+    });
+  }
+
   Future<TxConfirmParams> _getTxParams(String chainTo) async {
     if (_accountToError == null &&
         _formKey.currentState.validate() &&
         !_submitting) {
+      final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
       final tokenView = PluginFmt.tokenView(_token.symbol);
 
       /// send XCM tx if cross chain
@@ -276,10 +313,29 @@ class _TransferPageState extends State<TransferPage> {
           module: 'xTokens',
           call: 'transfer',
           txDisplay: {
-            "chain": chainTo,
-            "destination": _accountTo.address,
-            "currency": tokenView,
-            "amount": _amountCtrl.text.trim(),
+            dicAcala['cross.chain']: chainTo.toUpperCase(),
+          },
+          txDisplayBold: {
+            dic['amount']: Text(
+              Fmt.priceFloor(double.tryParse(_amountCtrl.text.trim()),
+                      lengthMax: 8) +
+                  ' $tokenView',
+              style: Theme.of(context).textTheme.headline1,
+            ),
+            dic['address']: Row(
+              children: [
+                AddressIcon(_accountTo.address, svg: _accountTo.icon),
+                Expanded(
+                  child: Container(
+                    margin: EdgeInsets.fromLTRB(8, 16, 0, 16),
+                    child: Text(
+                      Fmt.address(_accountTo?.address, pad: 8) ?? '',
+                      style: Theme.of(context).textTheme.headline4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           },
           params: [
             // params.currencyId
@@ -315,10 +371,28 @@ class _TransferPageState extends State<TransferPage> {
         call: 'transfer',
         txTitle:
             '${I18n.of(context).getDic(i18n_full_dic_acala, 'acala')['transfer']} $tokenView',
-        txDisplay: {
-          "destination": _accountTo.address,
-          "currency": tokenView,
-          "amount": _amountCtrl.text.trim(),
+        txDisplay: {},
+        txDisplayBold: {
+          dic['amount']: Text(
+            Fmt.priceFloor(double.tryParse(_amountCtrl.text.trim()),
+                    lengthMax: 8) +
+                ' $tokenView',
+            style: Theme.of(context).textTheme.headline1,
+          ),
+          dic['address']: Row(
+            children: [
+              AddressIcon(_accountTo.address, svg: _accountTo.icon),
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.fromLTRB(8, 16, 0, 16),
+                  child: Text(
+                    Fmt.address(_accountTo?.address, pad: 8) ?? '',
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
+                ),
+              ),
+            ],
+          ),
         },
         params: params,
       );
@@ -326,42 +400,20 @@ class _TransferPageState extends State<TransferPage> {
     return null;
   }
 
-  Future<void> _initAccountTo(KeyPairData acc) async {
-    final to = KeyPairData();
-    to.address = acc.address;
-    to.pubKey = acc.pubKey;
-    setState(() {
-      _accountTo = to;
-    });
-    final icon =
-        await widget.plugin.sdk.api.account.getAddressIcons([acc.address]);
-    if (icon != null) {
-      final accWithIcon = KeyPairData();
-      accWithIcon.address = acc.address;
-      accWithIcon.pubKey = acc.pubKey;
-      accWithIcon.icon = icon[0][1];
-      setState(() {
-        _accountTo = accWithIcon;
-      });
-    }
-  }
-
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final TokenBalanceData token = ModalRoute.of(context).settings.arguments;
+      final TokenBalanceData token =
+          ModalRoute.of(context).settings.arguments as TokenBalanceData;
       setState(() {
         _token = token;
         _accountOptions = widget.keyring.allWithContacts.toList();
+        _accountTo = widget.keyring.current;
       });
 
       _getTxFee();
-
-      if (widget.keyring.allWithContacts.length > 0) {
-        _initAccountTo(widget.keyring.allWithContacts[0]);
-      }
     });
   }
 
@@ -377,7 +429,8 @@ class _TransferPageState extends State<TransferPage> {
       builder: (_) {
         final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
         final dicAcala = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
-        final TokenBalanceData args = ModalRoute.of(context).settings.arguments;
+        final TokenBalanceData args =
+            ModalRoute.of(context).settings.arguments as TokenBalanceData;
         final token = _token ?? args;
         final tokenSymbol = token.symbol.toUpperCase();
         final tokenView = PluginFmt.tokenView(token.symbol);
@@ -425,21 +478,26 @@ class _TransferPageState extends State<TransferPage> {
         final crossChainIcons = cross_chain_icons
             .map((k, v) => MapEntry(k.toUpperCase(), Image.asset(v)));
 
+        final labelStyle = Theme.of(context).textTheme.headline4;
+
         return Scaffold(
           appBar: AppBar(
             title: Text(dic['transfer']),
             centerTitle: true,
             leading: BackBtn(),
             actions: <Widget>[
-              v3.IconButton(
-                  margin: EdgeInsets.only(right: 12),
-                  icon: SvgPicture.asset(
-                    'assets/images/scan.svg',
-                    color: Theme.of(context).cardColor,
-                    width: 18,
-                  ),
-                  onPressed: _onScan,
-                  isBlueBg: true)
+              Visibility(
+                visible: !isCrossChain,
+                child: v3.IconButton(
+                    margin: EdgeInsets.only(right: 12),
+                    icon: SvgPicture.asset(
+                      'assets/images/scan.svg',
+                      color: Theme.of(context).cardColor,
+                      width: 18,
+                    ),
+                    onPressed: _onScan,
+                    isBlueBg: true),
+              )
             ],
           ),
           body: SafeArea(
@@ -447,23 +505,39 @@ class _TransferPageState extends State<TransferPage> {
               children: <Widget>[
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: EdgeInsets.all(16),
+                    physics: BouncingScrollPhysics(),
+                    padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        AddressInputField(
-                          widget.plugin.sdk.api,
-                          _accountOptions,
-                          label: dic['address'],
-                          initialValue: _accountTo,
-                          onChanged: (KeyPairData acc) async {
-                            final error = await _checkAccountTo(acc);
-                            setState(() {
-                              _accountTo = acc;
-                              _accountToError = error;
-                            });
-                          },
-                          key: ValueKey<KeyPairData>(_accountTo),
+                        Text(dic['address.from'] ?? '', style: labelStyle),
+                        AddressFormItem(widget.keyring.current),
+                        Container(height: 8.h),
+                        Visibility(
+                            visible: !(!isCrossChain || _accountToEditable),
+                            child:
+                                Text(dic['address'] ?? '', style: labelStyle)),
+                        Visibility(
+                            visible: !(!isCrossChain || _accountToEditable),
+                            child: AddressFormItem(widget.keyring.current)),
+                        Visibility(
+                          visible: !isCrossChain || _accountToEditable,
+                          child: AddressTextFormField(
+                            widget.plugin.sdk.api,
+                            _accountOptions,
+                            labelText: dic['address'],
+                            labelStyle: labelStyle,
+                            hintText: dic['address'],
+                            initialValue: _accountTo,
+                            onChanged: (KeyPairData acc) async {
+                              final error = await _checkAccountTo(acc);
+                              setState(() {
+                                _accountTo = acc;
+                                _accountToError = error;
+                              });
+                            },
+                            key: ValueKey<KeyPairData>(_accountTo),
+                          ),
                         ),
                         Visibility(
                             visible: _accountToError != null,
@@ -473,64 +547,90 @@ class _TransferPageState extends State<TransferPage> {
                                   style: TextStyle(
                                       fontSize: 12, color: Colors.red)),
                             )),
-                        Form(
-                          key: _formKey,
-                          child: TextFormField(
-                            decoration: InputDecoration(
-                              hintText: dic['amount.hint'],
-                              labelText:
-                                  '${dic['amount']} (${dic['asset.transferable']}: ${Fmt.priceFloorBigInt(
-                                available,
-                                decimals,
-                                lengthMax: 6,
-                              )})',
-                              suffix: !isNativeTokenLow
-                                  ? GestureDetector(
-                                      child: Text(dic['amount.max'],
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor)),
-                                      onTap: () {
-                                        setState(() {
-                                          _amountMax = available;
-                                          _amountCtrl.text = Fmt.bigIntToDouble(
-                                                  available, decimals)
-                                              .toStringAsFixed(8);
-                                        });
-                                      },
-                                    )
-                                  : null,
+                        Visibility(
+                          visible: isCrossChain,
+                          child: GestureDetector(
+                            child: Container(
+                              child: Row(
+                                children: [
+                                  v3.Checkbox(
+                                    padding: EdgeInsets.fromLTRB(0, 8, 8, 0),
+                                    value: _accountToEditable,
+                                    onChanged: _onSwitchEditable,
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.only(top: 8),
+                                    child: Text(
+                                      dicAcala['cross.edit'],
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            inputFormatters: [
-                              UI.decimalInputFormatter(decimals)
-                            ],
-                            controller: _amountCtrl,
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            onChanged: (_) {
-                              setState(() {
-                                _amountMax = null;
-                              });
-                            },
-                            validator: (v) {
-                              final error = Fmt.validatePrice(v, context);
-                              if (error != null) {
-                                return error;
-                              }
-
-                              final input = Fmt.tokenInt(v.trim(), decimals);
-                              if (_amountMax == null &&
-                                  Fmt.bigIntToDouble(input, decimals) >
-                                      available /
-                                          BigInt.from(pow(10, decimals))) {
-                                return dic['amount.low'];
-                              }
-                              return null;
-                            },
+                            onTap: () => _onSwitchEditable(!_accountToEditable),
                           ),
                         ),
+                        Container(height: 10.h),
+                        Form(
+                            key: _formKey,
+                            child: v3.TextInputWidget(
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              decoration: v3.InputDecorationV3(
+                                hintText: dic['amount.hint'],
+                                labelText:
+                                    '${dic['amount']} (${dic['balance']}: ${Fmt.priceFloorBigInt(
+                                  available,
+                                  decimals,
+                                  lengthMax: 6,
+                                )})',
+                                labelStyle: labelStyle,
+                                suffix: GestureDetector(
+                                  child: Text(dic['amount.max'],
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Theme.of(context)
+                                              .toggleableActiveColor)),
+                                  onTap: () {
+                                    setState(() {
+                                      _amountMax = available;
+                                      _amountCtrl.text = Fmt.bigIntToDouble(
+                                              available, decimals)
+                                          .toStringAsFixed(8);
+                                    });
+                                  },
+                                ),
+                              ),
+                              inputFormatters: [
+                                UI.decimalInputFormatter(decimals)
+                              ],
+                              controller: _amountCtrl,
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
+                              onChanged: (_) {
+                                setState(() {
+                                  _amountMax = null;
+                                });
+                              },
+                              validator: (v) {
+                                final error = Fmt.validatePrice(v, context);
+                                if (error != null) {
+                                  return error;
+                                }
+
+                                final input = Fmt.tokenInt(v.trim(), decimals);
+                                if (_amountMax == null &&
+                                    Fmt.bigIntToDouble(input, decimals) >
+                                        available /
+                                            BigInt.from(pow(10, decimals))) {
+                                  return dic['amount.low'];
+                                }
+                                return null;
+                              },
+                            )),
                         Container(
-                          margin: EdgeInsets.only(top: 16, bottom: 16),
+                          margin: EdgeInsets.only(top: 8, bottom: 8),
                           child: GestureDetector(
                             behavior: HitTestBehavior.opaque,
                             child: Container(
@@ -539,27 +639,27 @@ class _TransferPageState extends State<TransferPage> {
                                 children: <Widget>[
                                   Container(
                                     margin: EdgeInsets.only(bottom: 4),
-                                    child: Text(
-                                      dic['currency'],
-                                      style: TextStyle(
-                                          color: colorGrey, fontSize: 12),
-                                    ),
+                                    child: Text(dic['currency'],
+                                        style: labelStyle),
                                   ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      CurrencyWithIcon(
-                                        tokenView,
-                                        TokenIcon(tokenSymbol,
-                                            widget.plugin.tokenIcons),
-                                      ),
-                                      Icon(
-                                        Icons.arrow_forward_ios,
-                                        size: 18,
-                                        color: colorGrey,
-                                      )
-                                    ],
+                                  RoundedCard(
+                                    padding: EdgeInsets.all(8),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        CurrencyWithIcon(
+                                          tokenView,
+                                          TokenIcon(tokenSymbol,
+                                              widget.plugin.tokenIcons),
+                                        ),
+                                        Icon(
+                                          Icons.arrow_forward_ios,
+                                          size: 18,
+                                          color: colorGrey,
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -606,7 +706,7 @@ class _TransferPageState extends State<TransferPage> {
                             child: GestureDetector(
                               behavior: HitTestBehavior.opaque,
                               child: Container(
-                                margin: EdgeInsets.only(bottom: 16),
+                                margin: EdgeInsets.only(bottom: 4),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
@@ -614,49 +714,54 @@ class _TransferPageState extends State<TransferPage> {
                                       padding: EdgeInsets.only(bottom: 4),
                                       child: Text(
                                         dicAcala['cross.chain'],
-                                        style: TextStyle(
-                                            color: colorGrey, fontSize: 12),
+                                        style: labelStyle,
                                       ),
                                     ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Row(
-                                          children: <Widget>[
-                                            Container(
-                                              margin: EdgeInsets.only(right: 8),
-                                              width: 32,
-                                              height: 32,
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(32),
-                                                child: isCrossChain
-                                                    ? TokenIcon(_chainTo,
-                                                        crossChainIcons)
-                                                    : widget.plugin.basic.icon,
+                                    RoundedCard(
+                                      padding: EdgeInsets.all(8),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Row(
+                                            children: <Widget>[
+                                              Container(
+                                                margin:
+                                                    EdgeInsets.only(right: 8),
+                                                width: 32,
+                                                height: 32,
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(32),
+                                                  child: isCrossChain
+                                                      ? TokenIcon(_chainTo,
+                                                          crossChainIcons)
+                                                      : widget
+                                                          .plugin.basic.icon,
+                                                ),
                                               ),
-                                            ),
-                                            Text(chainTo.toUpperCase())
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            Visibility(
-                                                visible: isCrossChain,
-                                                child: TextTag(
-                                                    dicAcala['cross.xcm'],
-                                                    margin: EdgeInsets.only(
-                                                        right: 8),
-                                                    color: Colors.red)),
-                                            Icon(
-                                              Icons.arrow_forward_ios,
-                                              size: 18,
-                                              color: colorGrey,
-                                            )
-                                          ],
-                                        )
-                                      ],
+                                              Text(chainTo.toUpperCase())
+                                            ],
+                                          ),
+                                          Row(
+                                            children: [
+                                              Visibility(
+                                                  visible: isCrossChain,
+                                                  child: TextTag(
+                                                      dicAcala['cross.xcm'],
+                                                      margin: EdgeInsets.only(
+                                                          right: 8),
+                                                      color: Theme.of(context)
+                                                          .errorColor)),
+                                              Icon(
+                                                Icons.arrow_forward_ios,
+                                                size: 18,
+                                                color: colorGrey,
+                                              )
+                                            ],
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -670,7 +775,7 @@ class _TransferPageState extends State<TransferPage> {
                         Visibility(
                             visible: isCrossChain,
                             child: Padding(
-                              padding: EdgeInsets.only(top: 16),
+                              padding: EdgeInsets.only(top: 8),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
@@ -705,7 +810,7 @@ class _TransferPageState extends State<TransferPage> {
                         Visibility(
                             visible: isCrossChain,
                             child: Padding(
-                              padding: EdgeInsets.only(top: 16),
+                              padding: EdgeInsets.only(top: 8),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
@@ -721,7 +826,7 @@ class _TransferPageState extends State<TransferPage> {
                               ),
                             )),
                         Padding(
-                          padding: EdgeInsets.only(top: 16),
+                          padding: EdgeInsets.only(top: 8),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
@@ -752,7 +857,7 @@ class _TransferPageState extends State<TransferPage> {
                         Visibility(
                           visible: _fee?.partialFee != null,
                           child: Padding(
-                            padding: EdgeInsets.only(top: 16),
+                            padding: EdgeInsets.only(top: 8),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
@@ -769,7 +874,7 @@ class _TransferPageState extends State<TransferPage> {
                           ),
                         ),
                         Visibility(
-                            visible: canCrossChain,
+                            visible: isCrossChain,
                             child: _CrossChainTransferWarning(
                               token: tokenSymbol,
                               chain: (widget.plugin.store.setting
@@ -781,10 +886,10 @@ class _TransferPageState extends State<TransferPage> {
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.all(16),
+                  padding: EdgeInsets.fromLTRB(16.w, 4.h, 14.w, 16.h),
                   child: TxButton(
                     text: dic['make'],
-                    getTxParams: () async => _getTxParams(chainTo),
+                    getTxParams: () => _getTxParams(chainTo),
                     onFinish: (res) {
                       if (res != null) {
                         Navigator.of(context).pop(res);
@@ -808,8 +913,8 @@ class _CrossChainTransferWarning extends StatelessWidget {
 
   String getWarnInfo(BuildContext context) {
     return I18n.of(context).locale.toString().contains('zh')
-        ? '交易所当前不支持 Acala 网络跨链转账充提 $token，请先使用跨链转账将 $token 转回 $chain，再从 $chain 网络转账至交易所地址。'
-        : 'Exchanges do not currently support direct transfers of $token to/from Acala. In order to successfully send $token to an exchange address, it is required that you first complete an Cross-Chain-Transfer of the token(s) from Acala to $chain.';
+        ? '交易所当前不支持 Karura 网络跨链转账充提 $token，请先使用跨链转账将 $token 转回 $chain，再从 $chain 网络转账至交易所地址。'
+        : 'Exchanges do not currently support direct transfers of $token to/from Karura. In order to successfully send $token to an exchange address, it is required that you first complete an Cross-Chain-Transfer of the token(s) from Karura to $chain.';
   }
 
   @override
@@ -829,7 +934,9 @@ class _CrossChainTransferWarning extends StatelessWidget {
         children: [
           Text(
             dic['cross.warn'],
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).errorColor),
           ),
           Text(getWarnInfo(context), style: TextStyle(fontSize: 12))
         ],
