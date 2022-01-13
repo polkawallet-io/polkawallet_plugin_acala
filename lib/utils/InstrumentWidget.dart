@@ -7,7 +7,7 @@ import 'package:polkawallet_ui/components/SkaletonList.dart';
 
 class InstrumentWidget extends StatefulWidget {
   InstrumentWidget(this.datas, this.onSwitchChange, this.onSwitchHideBalance,
-      {Key key, this.hideBalance = false, this.enabled = true})
+      {Key? key, this.hideBalance = false, this.enabled = true})
       : super(key: key);
   final List<InstrumentData> datas;
   final Function onSwitchChange;
@@ -25,7 +25,7 @@ class _InstrumentWidgetState extends State<InstrumentWidget> {
 
   @override
   void initState() {
-    WidgetsBinding.instance
+    WidgetsBinding.instance!
         .addPostFrameCallback((_) => controller.switchAction(isOnClick: false));
     // TODO: implement initState
     super.initState();

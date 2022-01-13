@@ -38,6 +38,7 @@ import 'package:polkawallet_plugin_acala/pages/loan/loanDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanTxDetailPage.dart';
+import 'package:polkawallet_plugin_acala/pages/newUIRoutes.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftBurnPage.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftPage.dart';
@@ -50,12 +51,14 @@ import 'package:polkawallet_plugin_acala/service/graphql.dart';
 import 'package:polkawallet_plugin_acala/service/index.dart';
 import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
 import 'package:polkawallet_plugin_acala/store/index.dart';
+import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/storage/types/keyPairData.dart';
+import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/pages/accountQrCodePage.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 
@@ -104,11 +107,12 @@ class PluginAcala extends PolkawalletPlugin {
 
   @override
   List<TokenBalanceData> get noneNativeTokensAll {
-    return store?.assets?.tokenBalanceMap?.values?.toList();
+    return store?.assets.tokenBalanceMap.values.toList() ?? [];
   }
 
   @override
   List<HomeNavItem> getNavItems(BuildContext context, Keyring keyring) {
+    // final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common')!;
     return [
       HomeNavItem(
         text: 'Acala',
@@ -119,7 +123,28 @@ class PluginAcala extends PolkawalletPlugin {
         iconActive: SvgPicture.asset(
             'packages/polkawallet_plugin_acala/assets/images/logo.svg'),
         content: AcalaEntry(this, keyring),
-      )
+      ),
+      // HomeNavItem(
+      //   text: "Defi",
+      //   icon: Container(),
+      //   iconActive: Container(),
+      //   isAdapter: true,
+      //   content: DefiWidget(this),
+      // ),
+      // HomeNavItem(
+      //   text: "NFT",
+      //   icon: Container(),
+      //   iconActive: Container(),
+      //   isAdapter: true,
+      //   content: NFTWidget(this),
+      // ),
+      // HomeNavItem(
+      //   text: dic['governance']!,
+      //   icon: Container(),
+      //   iconActive: Container(),
+      //   isAdapter: true,
+      //   content: GovernanceWidget(this),
+      // )
     ];
   }
 
@@ -233,8 +258,11 @@ class PluginAcala extends PolkawalletPlugin {
   @override
   Map<String, WidgetBuilder> getRoutes(Keyring keyring) {
     return {
-      TxConfirmPage.route: (_) =>
-          TxConfirmPage(this, keyring, _service.getPassword),
+      TxConfirmPage.route: (_) => TxConfirmPage(
+          this,
+          keyring,
+          _service!.getPassword as Future<String> Function(
+              BuildContext, KeyPairData)),
       CurrencySelectPage.route: (_) => CurrencySelectPage(this),
       AccountQrCodePage.route: (_) => AccountQrCodePage(this, keyring),
 
@@ -242,7 +270,7 @@ class PluginAcala extends PolkawalletPlugin {
             child: Builder(
               builder: (_) => TokenDetailPage(this, keyring),
             ),
-            uri: GraphQLConfig['httpUri'],
+            uri: GraphQLConfig['httpUri']!,
           ),
       TransferPage.route: (_) => TransferPage(this, keyring),
       TransferDetailPage.route: (_) => TransferDetailPage(this, keyring),
@@ -258,7 +286,7 @@ class PluginAcala extends PolkawalletPlugin {
             child: Builder(
               builder: (_) => LoanHistoryPage(this, keyring),
             ),
-            uri: GraphQLConfig['httpUri'],
+            uri: GraphQLConfig['httpUri']!,
           ),
       // swap pages
       SwapPage.route: (_) => SwapPage(this, keyring),
@@ -266,7 +294,7 @@ class PluginAcala extends PolkawalletPlugin {
             child: Builder(
               builder: (_) => SwapHistoryPage(this, keyring),
             ),
-            uri: GraphQLConfig['httpUri'],
+            uri: GraphQLConfig['httpUri']!,
           ),
       SwapDetailPage.route: (_) => SwapDetailPage(this, keyring),
       BootstrapPage.route: (_) => BootstrapPage(this, keyring),
@@ -277,7 +305,7 @@ class PluginAcala extends PolkawalletPlugin {
             child: Builder(
               builder: (_) => EarnHistoryPage(this, keyring),
             ),
-            uri: GraphQLConfig['httpUri'],
+            uri: GraphQLConfig['httpUri']!,
           ),
       EarnLiquidityDetailPage.route: (_) =>
           EarnLiquidityDetailPage(this, keyring),
@@ -293,7 +321,7 @@ class PluginAcala extends PolkawalletPlugin {
             child: Builder(
               builder: (_) => HomaHistoryPage(this, keyring),
             ),
-            uri: GraphQLConfig['httpUri'],
+            uri: GraphQLConfig['httpUri']!,
           ),
       HomaTxDetailPage.route: (_) => HomaTxDetailPage(this, keyring),
       // NFT pages
@@ -305,6 +333,9 @@ class PluginAcala extends PolkawalletPlugin {
       DemocracyPage.route: (_) => DemocracyPage(this, keyring),
       ReferendumVotePage.route: (_) => ReferendumVotePage(this, keyring),
       ProposalDetailPage.route: (_) => ProposalDetailPage(this, keyring),
+
+      //new ui
+      ...getNewUiRoutes(this, keyring)
     };
   }
 
@@ -312,47 +343,47 @@ class PluginAcala extends PolkawalletPlugin {
   Future<String> loadJSCode() => rootBundle.loadString(
       'packages/polkawallet_plugin_acala/lib/js_service_acala/dist/main.js');
 
-  AcalaApi _api;
-  AcalaApi get api => _api;
+  AcalaApi? _api;
+  AcalaApi? get api => _api;
 
-  StoreCache _cache;
-  PluginStore _store;
-  PluginService _service;
-  PluginStore get store => _store;
-  PluginService get service => _service;
+  StoreCache? _cache;
+  PluginStore? _store;
+  PluginService? _service;
+  PluginStore? get store => _store;
+  PluginService? get service => _service;
 
   Future<void> _subscribeTokenBalances(KeyPairData acc) async {
     // todo: fix this after new acala online
     final enabled = basic.name == 'acala'
-        ? _store.setting.liveModules['assets']['enabled']
+        ? _store!.setting.liveModules['assets']['enabled']
         : true;
 
-    _api.assets.subscribeTokenBalances(acc.address, (data) {
-      _store.assets.setTokenBalanceMap(data, acc.pubKey);
+    _api!.assets.subscribeTokenBalances(acc.address, (data) {
+      _store!.assets.setTokenBalanceMap(data, acc.pubKey);
 
       balances.setTokens(data);
     }, transferEnabled: enabled);
 
-    _service.assets.queryAggregatedAssets();
+    _service!.assets.queryAggregatedAssets();
 
-    final nft = await _api.assets.queryNFTs(acc.address);
+    final nft = await _api!.assets.queryNFTs(acc.address);
     if (nft != null) {
-      _store.assets.setNFTs(nft);
+      _store!.assets.setNFTs(nft);
     }
   }
 
   void _loadCacheData(KeyPairData acc) {
     balances.setExtraTokens([]);
-    _store.assets.setNFTs([]);
+    _store!.assets.setNFTs([]);
 
     try {
       loadBalances(acc);
 
-      _store.assets.loadCache(acc.pubKey);
-      final tokens = _store.assets.tokenBalanceMap.values.toList();
-      if (service.plugin.store.setting.tokensConfig['invisible'] != null) {
+      _store!.assets.loadCache(acc.pubKey);
+      final tokens = _store!.assets.tokenBalanceMap.values.toList();
+      if (service!.plugin.store!.setting.tokensConfig['invisible'] != null) {
         final invisible =
-            List.of(service.plugin.store.setting.tokensConfig['invisible']);
+            List.of(service!.plugin.store!.setting.tokensConfig['invisible']);
         if (invisible.length > 0) {
           tokens.removeWhere(
               (token) => invisible.contains(token.symbol?.toUpperCase()));
@@ -360,11 +391,11 @@ class PluginAcala extends PolkawalletPlugin {
       }
       balances.setTokens(tokens, isFromCache: true);
 
-      _store.loan.loadCache(acc.pubKey);
-      _store.swap.loadCache(acc.pubKey);
-      _store.earn.setDexPoolInfo({}, reset: true);
-      _store.earn.setBootstraps([]);
-      _store.homa.setUserInfo(null);
+      _store!.loan.loadCache(acc.pubKey);
+      _store!.swap.loadCache(acc.pubKey);
+      _store!.earn.setDexPoolInfo({}, reset: true);
+      _store!.earn.setBootstraps([]);
+      _store!.homa.setUserInfo(null);
       print('acala plugin cache data loaded');
     } catch (err) {
       print(err);
@@ -384,15 +415,15 @@ class PluginAcala extends PolkawalletPlugin {
 
     _loadCacheData(keyring.current);
 
-    _service.fetchLiveModules();
+    _service!.fetchLiveModules();
 
     // wait tokens config here for subscribe all tokens balances
-    await _service.fetchTokensConfig();
+    await _service!.fetchTokensConfig();
   }
 
   @override
   Future<void> onStarted(Keyring keyring) async {
-    _service.connected = true;
+    _service!.connected = true;
 
     if (keyring.current.address != null) {
       _subscribeTokenBalances(keyring.current);
@@ -403,8 +434,8 @@ class PluginAcala extends PolkawalletPlugin {
   Future<void> onAccountChanged(KeyPairData acc) async {
     _loadCacheData(acc);
 
-    if (_service.connected) {
-      _api.assets.unsubscribeTokenBalances(acc.address);
+    if (_service!.connected) {
+      _api!.assets.unsubscribeTokenBalances(acc.address);
       _subscribeTokenBalances(acc);
     }
   }

@@ -199,4 +199,13 @@ const Map<String, String> zhDex = {
   'v3.switchBack': '切换回来',
   'v3.totalBalance': '总资产',
   'v3.myDefi': '我的Defi',
+  'v3.totalStaked': '总质押',
+  'v3.total': '总发行',
+  'v3.myStats': '我的数据',
+  'v3.unnonding': '正在解绑',
+  'v3.claim': '可领取',
+  'v3.createVaultText': '创建一个债仓开始你的DeFi之旅',
+  'v3.loan.canMint': '可铸造',
+  'v3.loan.loanRatio': '借贷率',
+  'v3.loan.submit': '提交',
 };

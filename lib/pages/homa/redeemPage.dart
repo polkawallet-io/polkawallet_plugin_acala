@@ -39,24 +39,24 @@ class _RedeemPageState extends State<RedeemPage> {
   bool _isFastRedeem = false;
   bool _canFastRedeem = false;
 
-  String _error;
-  BigInt _maxInput;
+  String? _error;
+  BigInt? _maxInput;
 
-  CalcHomaRedeemAmount _data;
-  num _receiveAmount = 0;
+  CalcHomaRedeemAmount? _data;
+  num? _receiveAmount = 0;
   num _fastFee = 0;
 
-  List<String> symbols;
+  List<String>? symbols;
   final stakeToken = relay_chain_token_symbol;
-  List<int> decimals;
+  List<int>? decimals;
 
-  double karBalance;
+  late double karBalance;
 
-  int stakeDecimal;
+  late int stakeDecimal;
 
-  double minRedeem;
+  late double minRedeem;
 
-  Timer _timer;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -66,23 +66,23 @@ class _RedeemPageState extends State<RedeemPage> {
     decimals = widget.plugin.networkState.tokenDecimals;
 
     karBalance = Fmt.balanceDouble(
-        widget.plugin.balances.native.availableBalance.toString(),
-        decimals[symbols.indexOf("L$stakeToken")]);
+        widget.plugin.balances.native!.availableBalance.toString(),
+        decimals![symbols!.indexOf("L$stakeToken")]);
 
-    stakeDecimal = decimals[symbols.indexOf("L$stakeToken")];
+    stakeDecimal = decimals![symbols!.indexOf("L$stakeToken")];
 
-    minRedeem = widget.plugin.store.homa.env != null
-        ? widget.plugin.store.homa.env.redeemThreshold
+    minRedeem = widget.plugin.store!.homa.env != null
+        ? widget.plugin.store!.homa.env!.redeemThreshold
         : Fmt.balanceDouble(
             widget.plugin.networkConst['homaLite']['minimumRedeemThreshold']
                 .toString(),
             stakeDecimal);
   }
 
-  Future<void> _updateReceiveAmount(double input, BigInt max) async {
+  Future<void> _updateReceiveAmount(double? input) async {
     if (mounted && input != null) {
-      final data = await widget.plugin.api.homa
-          .calcHomaNewRedeemAmount(input, _isFastRedeem);
+      final data = await (widget.plugin.api!.homa.calcHomaNewRedeemAmount(
+          input, _isFastRedeem) as FutureOr<Map<dynamic, dynamic>>);
       final canFast = data['canTryFastReddem'] ?? false;
       if (canFast) {
         setState(() {
@@ -97,18 +97,18 @@ class _RedeemPageState extends State<RedeemPage> {
               widget.plugin, 'L$stakeToken');
           final token =
               AssetsUtils.getBalanceFromTokenNameId(widget.plugin, stakeToken);
-          final swapRes = await widget.plugin.api.swap.queryTokenSwapAmount(
+          final swapRes = await widget.plugin.api!.swap.queryTokenSwapAmount(
               input.toString(),
               null,
               [
-                {...lToken.currencyId, 'decimals': lToken.decimals},
-                {...token.currencyId, 'decimals': token.decimals},
+                {...lToken!.currencyId!, 'decimals': lToken.decimals},
+                {...token!.currencyId!, 'decimals': token.decimals},
               ],
               '0.1');
           setState(() {
             _canFastRedeem = false;
             _receiveAmount = swapRes.amount;
-            _fastFee = swapRes.fee;
+            _fastFee = swapRes.fee!;
           });
         } else {
           // or we use normal redeem request
@@ -139,11 +139,11 @@ class _RedeemPageState extends State<RedeemPage> {
     if (error != null) {
       return;
     }
-    _updateReceiveAmount(double.tryParse(supply), max);
+    _updateReceiveAmount(double.tryParse(supply));
   }
 
-  String _validateInput(String supply, BigInt max) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
+  String? _validateInput(String supply, BigInt? max) {
+    final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common');
     final error = Fmt.validatePrice(supply, context);
     if (error != null) {
       return error;
@@ -152,21 +152,21 @@ class _RedeemPageState extends State<RedeemPage> {
     final pay = double.parse(supply);
     if (_maxInput == null &&
         Fmt.tokenInt(supply,
-                decimals[symbols.indexOf('L$relay_chain_token_symbol')]) >
-            max) {
-      return dic['amount.low'];
+                decimals![symbols!.indexOf('L$relay_chain_token_symbol')]) >
+            max!) {
+      return dic!['amount.low'];
     }
 
     if (pay <= minRedeem) {
-      final minLabel = I18n.of(context)
-          .getDic(i18n_full_dic_acala, 'acala')['homa.pool.redeem'];
+      final minLabel = I18n.of(context)!
+          .getDic(i18n_full_dic_acala, 'acala')!['homa.pool.redeem'];
       return '$minLabel > ${minRedeem.toStringAsFixed(4)}';
     }
 
     return error;
   }
 
-  void _onSetMax(BigInt max) {
+  void _onSetMax(BigInt? max) {
     final amount = Fmt.bigIntToDouble(max, stakeDecimal);
     setState(() {
       _amountPayCtrl.text = amount.toStringAsFixed(6);
@@ -174,7 +174,17 @@ class _RedeemPageState extends State<RedeemPage> {
       _error = _validateInput(amount.toString(), max);
     });
 
-    _updateReceiveAmount(amount, max);
+    _updateReceiveAmount(amount);
+  }
+
+  BigInt _getMaxAmount() {
+    final pendingRedeemReq = Fmt.balanceInt(
+        (widget.plugin.store!.homa.userInfo?.redeemRequest ?? {})['amount'] ??
+            '0');
+    final lTokenBalance =
+        widget.plugin.store!.assets.tokenBalanceMap["L$stakeToken"]!;
+    return Fmt.balanceInt(lTokenBalance.amount) +
+        (_isFastRedeem ? BigInt.zero : pendingRedeemReq);
   }
 
   Future<void> _onSubmit() async {
@@ -183,15 +193,15 @@ class _RedeemPageState extends State<RedeemPage> {
     if (_error != null || pay.isEmpty || (_data == null && _receiveAmount == 0))
       return;
 
-    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+    final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
 
     final txDisplay = {
-      dic['dex.pay']: Text(
+      dic['dex.pay']!: Text(
         '$pay L$stakeToken',
         style: Theme.of(context).textTheme.headline1,
       ),
-      dic['dex.receive']: Text(
-        '≈ ${Fmt.priceFloor(_receiveAmount)} $stakeToken',
+      dic['dex.receive']!: Text(
+        '≈ ${Fmt.priceFloor(_receiveAmount as double?)} $stakeToken',
         style: Theme.of(context).textTheme.headline1,
       ),
     };
@@ -199,18 +209,31 @@ class _RedeemPageState extends State<RedeemPage> {
     String module = 'homa';
     String call = 'requestRedeem';
     List params = [
-      Fmt.tokenInt(pay, stakeDecimal).toString(),
+      (_maxInput ?? Fmt.tokenInt(pay, stakeDecimal)).toString(),
       _isFastRedeem,
     ];
-    String paramsRaw;
-    if (_isFastRedeem && _canFastRedeem) {
-      module = 'utility';
-      call = 'batch';
-      paramsRaw = '[['
-          'api.tx.homa.requestRedeem(...${jsonEncode(params)}),'
-          'api.tx.homa.fastMatchRedeems(["${widget.keyring.current.address}"])'
-          ']]';
-      params = [];
+    String? paramsRaw;
+    if (_isFastRedeem) {
+      if (_canFastRedeem) {
+        module = 'utility';
+        call = 'batch';
+        paramsRaw = '[['
+            'api.tx.homa.requestRedeem(...${jsonEncode(params)}),'
+            'api.tx.homa.fastMatchRedeems(["${widget.keyring.current.address}"])'
+            ']]';
+        params = [];
+      } else {
+        module = 'dex';
+        call = 'swapWithExactSupply';
+        params = [
+          [
+            {'Token': 'L$stakeToken'},
+            {'Token': stakeToken}
+          ],
+          (_maxInput ?? Fmt.tokenInt(pay, stakeDecimal)).toString(),
+          "0",
+        ];
+      }
     }
 
     final res = (await Navigator.of(context).pushNamed(TxConfirmPage.route,
@@ -226,31 +249,45 @@ class _RedeemPageState extends State<RedeemPage> {
           txDisplayBold: txDisplay,
           params: params,
           rawParams: paramsRaw,
-        ))) as Map;
+        ))) as Map?;
 
     if (res != null) {
       Navigator.of(context).pop('1');
     }
   }
 
-  void _switchFast(bool value, BigInt max) {
+  void _switchFast(bool value) {
     setState(() {
       _isFastRedeem = value;
     });
     if (_amountPayCtrl.text.trim().isEmpty) return;
 
+    final max = _getMaxAmount();
     if (_maxInput != null) {
-      _onSetMax(_maxInput);
+      _onSetMax(max);
     } else {
       _onSupplyAmountChange(_amountPayCtrl.text.trim(), max);
+      // _updateReceiveAmount(double.tryParse(_amountPayCtrl.text.trim()));
     }
+    // if (_isFastRedeem) {
+    //   if (_timer == null) {
+    //     _timer = Timer.periodic(Duration(seconds: 20), (timer) {
+    //       _updateReceiveAmount(double.tryParse(_amountPayCtrl.text.trim()));
+    //     });
+    //   }
+    // } else {
+    //   if (_timer != null) {
+    //     _timer.cancel();
+    //     _timer = null;
+    //   }
+    // }
   }
 
   @override
   void dispose() {
     _amountPayCtrl.dispose();
     if (_timer != null) {
-      _timer.cancel();
+      _timer!.cancel();
       _timer = null;
     }
     super.dispose();
@@ -262,25 +299,25 @@ class _RedeemPageState extends State<RedeemPage> {
     final labelStyle = TextStyle(color: grey, fontSize: 13);
     return Observer(
       builder: (BuildContext context) {
-        final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+        final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
 
         final pendingRedeemReq = Fmt.balanceInt(
-            (widget.plugin.store.homa.userInfo?.redeemRequest ??
+            (widget.plugin.store!.homa.userInfo?.redeemRequest ??
                     {})['amount'] ??
                 '0');
         final pendingRedeemReqView = Fmt.priceFloorBigInt(pendingRedeemReq,
-            decimals[symbols.indexOf('L$relay_chain_token_symbol')],
+            decimals![symbols!.indexOf('L$relay_chain_token_symbol')],
             lengthMax: 4);
 
         final lTokenBalance =
-            widget.plugin.store.assets.tokenBalanceMap["L$stakeToken"];
-        final max = Fmt.balanceInt(lTokenBalance.amount) + pendingRedeemReq;
+            widget.plugin.store!.assets.tokenBalanceMap["L$stakeToken"]!;
+        final max = _getMaxAmount();
 
-        int unbondEras = 28;
-        if (widget.plugin.networkConst['homa'] != null) {
-          unbondEras =
-              int.parse(widget.plugin.networkConst['homa']['bondingDuration']);
-        }
+        // int unbondEras = 28;
+        // if (widget.plugin.networkConst['homa'] != null) {
+        //   unbondEras =
+        //       int.parse(widget.plugin.networkConst['homa']['bondingDuration']);
+        // }
         return Scaffold(
           appBar: AppBar(
             title: Text('${dic['homa.redeem']} $stakeToken'),
@@ -297,14 +334,15 @@ class _RedeemPageState extends State<RedeemPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Visibility(
-                          visible: pendingRedeemReq > BigInt.zero,
+                          visible:
+                              pendingRedeemReq > BigInt.zero && !_isFastRedeem,
                           child: Container(
                             margin: EdgeInsets.only(bottom: 8),
                             child: Row(
                               children: [
                                 Expanded(
                                     child: TextTag(
-                                  dic['homa.redeem.pending'] +
+                                  dic['homa.redeem.pending']! +
                                       ' $pendingRedeemReqView L$relay_chain_token_symbol' +
                                       '\n${dic['homa.redeem.replace']}',
                                   padding: EdgeInsets.symmetric(
@@ -342,13 +380,13 @@ class _RedeemPageState extends State<RedeemPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Text(dic['homa.fast'],
+                            Text(dic['homa.fast']!,
                                 style: TextStyle(fontSize: 13)),
                             Container(
                               margin: EdgeInsets.only(left: 5),
                               child: CupertinoSwitch(
                                 value: _isFastRedeem,
-                                onChanged: (res) => _switchFast(res, max),
+                                onChanged: _switchFast,
                               ),
                             )
                           ],
@@ -365,26 +403,21 @@ class _RedeemPageState extends State<RedeemPage> {
                         ),
                         child: Column(
                           children: [
-                            Visibility(
-                              visible: (!_isFastRedeem ||
-                                  (_isFastRedeem && _canFastRedeem)),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(dic['homa.redeem.unbonding'],
-                                      style: labelStyle),
-                                  Text("$unbondEras Kusama Eras")
-                                ],
-                              ),
-                            ),
+                            // Row(
+                            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            //   children: [
+                            //     Text(dic['homa.redeem.unbonding']!,
+                            //         style: labelStyle),
+                            //     Text("$unbondEras Kusama Eras")
+                            //   ],
+                            // ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(dic['homa.redeem.receive'],
+                                Text(dic['homa.redeem.receive']!,
                                     style: labelStyle),
                                 Text(
-                                    "${_data != null ? _data.expected : (_receiveAmount ?? 0)} $stakeToken")
+                                    "${_data != null ? _data!.expected : (_receiveAmount ?? 0)} $stakeToken")
                               ],
                             ),
                             Visibility(
@@ -393,15 +426,43 @@ class _RedeemPageState extends State<RedeemPage> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(dic['homa.redeem.fee'],
+                                    Text(dic['homa.redeem.fee']!,
                                         style: labelStyle),
                                     Text(
-                                        "${_data != null ? _data.fee : (_fastFee ?? 0)} L$stakeToken")
+                                        "${_data != null ? _data!.fee : _fastFee} L$stakeToken")
                                   ],
                                 )),
                           ],
                         ),
                       ),
+                      // Container(
+                      //   margin: EdgeInsets.only(top: 8),
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.end,
+                      //     children: [
+                      //       Text(dic['homa.now']!,
+                      //           style: TextStyle(fontSize: 13)),
+                      //       GestureDetector(
+                      //         child: Container(
+                      //           padding: EdgeInsets.only(left: 5),
+                      //           child: Text(
+                      //             'Swap',
+                      //             style: TextStyle(
+                      //               color: Theme.of(context).primaryColor,
+                      //               fontStyle: FontStyle.italic,
+                      //               decoration: TextDecoration.underline,
+                      //             ),
+                      //           ),
+                      //         ),
+                      //         onTap: () {
+                      //           Navigator.popUntil(
+                      //               context, ModalRoute.withName('/'));
+                      //           Navigator.of(context).pushNamed(SwapPage.route);
+                      //         },
+                      //       )
+                      //     ],
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),

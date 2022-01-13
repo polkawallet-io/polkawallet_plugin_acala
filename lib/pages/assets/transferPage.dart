@@ -49,41 +49,41 @@ class _TransferPageState extends State<TransferPage> {
 
   final TextEditingController _amountCtrl = new TextEditingController();
 
-  KeyPairData _accountTo;
+  KeyPairData? _accountTo;
   List<KeyPairData> _accountOptions = [];
-  TokenBalanceData _token;
-  String _chainTo;
+  TokenBalanceData? _token;
+  String? _chainTo;
   bool _accountToEditable = false;
 
-  String _accountToError;
+  String? _accountToError;
 
-  TxFeeEstimateResult _fee;
-  BigInt _amountMax;
+  TxFeeEstimateResult? _fee;
+  BigInt? _amountMax;
 
   bool _submitting = false;
 
-  Future<String> _checkAccountTo(KeyPairData acc) async {
-    if (widget.keyring.allAccounts.indexWhere((e) => e.pubKey == acc.pubKey) >=
+  Future<String?> _checkAccountTo(KeyPairData? acc) async {
+    if (widget.keyring.allAccounts.indexWhere((e) => e.pubKey == acc!.pubKey) >=
         0) {
       return null;
     }
 
-    final addressCheckValid = await widget.plugin.sdk.webView.evalJavascript(
+    final addressCheckValid = await widget.plugin.sdk.webView!.evalJavascript(
         '(account.checkAddressFormat != undefined ? {}:null)',
         wrapPromise: false);
     if (addressCheckValid != null) {
       final res = await widget.plugin.sdk.api.account.checkAddressFormat(
-          acc.address,
-          network_ss58_format[_chainTo ?? widget.plugin.basic.name]);
+          acc!.address!,
+          network_ss58_format[_chainTo ?? widget.plugin.basic.name!]!);
       if (res != null && !res) {
-        return I18n.of(context)
-            .getDic(i18n_full_dic_ui, 'account')['ss58.mismatch'];
+        return I18n.of(context)!
+            .getDic(i18n_full_dic_ui, 'account')!['ss58.mismatch'];
       }
     }
     return null;
   }
 
-  Future<void> _validateAccountTo(KeyPairData acc) async {
+  Future<void> _validateAccountTo(KeyPairData? acc) async {
     final error = await _checkAccountTo(acc);
     setState(() {
       _accountToError = error;
@@ -91,8 +91,8 @@ class _TransferPageState extends State<TransferPage> {
   }
 
   Future<String> _getTxFee({bool isXCM = false, bool reload = false}) async {
-    if (_fee.partialFee != null && !reload) {
-      return _fee.partialFee.toString();
+    if (_fee?.partialFee != null && !reload) {
+      return _fee!.partialFee.toString();
     }
 
     final sender = TxSenderData(
@@ -103,14 +103,14 @@ class _TransferPageState extends State<TransferPage> {
         txInfo,
         isXCM
             ? [
-                _token.currencyId,
+                _token!.currencyId,
                 '1000000000',
                 [
                   1,
                   {
                     'X1': {
                       'AccountId32': {
-                        'id': _accountTo.address,
+                        'id': _accountTo!.address,
                         'network': 'Any'
                       }
                     }
@@ -121,7 +121,7 @@ class _TransferPageState extends State<TransferPage> {
               ]
             : [
                 widget.keyring.current.address,
-                _token.currencyId,
+                _token!.currencyId,
                 '1000000000'
               ]);
     if (mounted) {
@@ -136,8 +136,8 @@ class _TransferPageState extends State<TransferPage> {
     final to = await Navigator.of(context).pushNamed(ScanPage.route);
     if (to == null) return;
     final acc = KeyPairData();
-    acc.address = (to as QRCodeResult).address.address;
-    acc.name = (to as QRCodeResult).address.name;
+    acc.address = (to as QRCodeResult).address!.address;
+    acc.name = to.address!.name;
     final res = await Future.wait([
       widget.plugin.sdk.api.account.getAddressIcons([acc.address]),
       _checkAccountTo(acc),
@@ -148,19 +148,19 @@ class _TransferPageState extends State<TransferPage> {
     }
     setState(() {
       _accountTo = acc;
-      _accountToError = res[1] as String;
+      _accountToError = res[1] as String?;
     });
-    print(_accountTo.address);
+    print(_accountTo!.address);
   }
 
   /// XCM only support KSM transfer back to Kusama.
   void _onSelectChain(Map<String, Widget> crossChainIcons) {
-    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+    final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala');
 
     final List tokenXcmConfig =
-        widget.plugin.store.setting.tokensConfig['xcm'] != null
-            ? widget.plugin.store.setting.tokensConfig['xcm']
-                    [_token.symbol.toUpperCase()] ??
+        widget.plugin.store!.setting.tokensConfig['xcm'] != null
+            ? widget.plugin.store!.setting.tokensConfig['xcm']
+                    [_token!.symbol!.toUpperCase()] ??
                 []
             : [];
     final options = [widget.plugin.basic.name, ...tokenXcmConfig];
@@ -168,7 +168,7 @@ class _TransferPageState extends State<TransferPage> {
     showCupertinoModalPopup(
       context: context,
       builder: (_) => CupertinoActionSheet(
-        title: Text(dic['cross.chain.select']),
+        title: Text(dic!['cross.chain.select']!),
         actions: options.map((e) {
           return CupertinoActionSheetAction(
             child: Row(
@@ -214,8 +214,8 @@ class _TransferPageState extends State<TransferPage> {
           );
         }).toList(),
         cancelButton: CupertinoActionSheetAction(
-          child: Text(
-              I18n.of(context).getDic(i18n_full_dic_acala, 'common')['cancel']),
+          child: Text(I18n.of(context)!
+              .getDic(i18n_full_dic_acala, 'common')!['cancel']!),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -229,20 +229,20 @@ class _TransferPageState extends State<TransferPage> {
       final confirm = await showCupertinoDialog(
           context: context,
           builder: (_) {
-            final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+            final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
             final dicCommon =
-                I18n.of(context).getDic(i18n_full_dic_acala, 'common');
+                I18n.of(context)!.getDic(i18n_full_dic_acala, 'common')!;
             return CupertinoAlertDialog(
-              title: Text(dic['cross.warn']),
-              content: Text(dic['cross.warn.info']),
+              title: Text(dic['cross.warn']!),
+              content: Text(dic['cross.warn.info']!),
               actions: [
                 CupertinoButton(
-                    child: Text(dicCommon['cancel']),
+                    child: Text(dicCommon['cancel']!),
                     onPressed: () {
                       Navigator.of(context).pop(false);
                     }),
                 CupertinoButton(
-                    child: Text(dicCommon['ok']),
+                    child: Text(dicCommon['ok']!),
                     onPressed: () {
                       Navigator.of(context).pop(true);
                     }),
@@ -259,26 +259,26 @@ class _TransferPageState extends State<TransferPage> {
     });
   }
 
-  Future<TxConfirmParams> _getTxParams(String chainTo) async {
+  Future<TxConfirmParams?> _getTxParams(String chainTo) async {
     if (_accountToError == null &&
-        _formKey.currentState.validate() &&
+        _formKey.currentState!.validate() &&
         !_submitting) {
-      final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
-      final tokenView = PluginFmt.tokenView(_token.symbol);
+      final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common')!;
+      final tokenView = PluginFmt.tokenView(_token!.symbol);
 
       /// send XCM tx if cross chain
       if (chainTo != widget.plugin.basic.name) {
-        final dicAcala = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+        final dicAcala = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala');
         final isToParent = _chainTo == relay_chain_name;
 
-        String destPubKey = _accountTo.pubKey;
+        String? destPubKey = _accountTo!.pubKey;
         // we need to decode address for the pubKey here
         if (destPubKey == null || destPubKey.isEmpty) {
           setState(() {
             _submitting = true;
           });
           final pk = await widget.plugin.sdk.api.account
-              .decodeAddress([_accountTo.address]);
+              .decodeAddress([_accountTo!.address!]);
           setState(() {
             _submitting = false;
           });
@@ -287,7 +287,7 @@ class _TransferPageState extends State<TransferPage> {
           destPubKey = pk.keys.toList()[0];
         }
 
-        final isV2XCM = await widget.plugin.sdk.webView.evalJavascript(
+        final isV2XCM = await widget.plugin.sdk.webView!.evalJavascript(
             'api.createType(api.tx.xTokens.transfer.meta.args[2].toJSON()["type"]).defKeys.includes("V1")',
             wrapPromise: false);
         final dest = {
@@ -300,7 +300,7 @@ class _TransferPageState extends State<TransferPage> {
                 }
               : {
                   'X2': [
-                    {'Parachain': para_chain_ids[_chainTo]},
+                    {'Parachain': para_chain_ids[_chainTo!]},
                     {
                       'AccountId32': {'id': destPubKey, 'network': 'Any'}
                     }
@@ -309,22 +309,22 @@ class _TransferPageState extends State<TransferPage> {
         };
         return TxConfirmParams(
           txTitle:
-              '${dicAcala['transfer']} $tokenView (${dicAcala['cross.xcm']})',
+              '${dicAcala!['transfer']} $tokenView (${dicAcala['cross.xcm']})',
           module: 'xTokens',
           call: 'transfer',
           txDisplay: {
             dicAcala['cross.chain']: chainTo.toUpperCase(),
           },
           txDisplayBold: {
-            dic['amount']: Text(
+            dic['amount']!: Text(
               Fmt.priceFloor(double.tryParse(_amountCtrl.text.trim()),
                       lengthMax: 8) +
                   ' $tokenView',
               style: Theme.of(context).textTheme.headline1,
             ),
-            dic['address']: Row(
+            dic['address']!: Row(
               children: [
-                AddressIcon(_accountTo.address, svg: _accountTo.icon),
+                AddressIcon(_accountTo!.address, svg: _accountTo!.icon),
                 Expanded(
                   child: Container(
                     margin: EdgeInsets.fromLTRB(8, 16, 0, 16),
@@ -339,10 +339,10 @@ class _TransferPageState extends State<TransferPage> {
           },
           params: [
             // params.currencyId
-            _token.currencyId,
+            _token!.currencyId,
             // params.amount
             (_amountMax ??
-                    Fmt.tokenInt(_amountCtrl.text.trim(), _token.decimals))
+                    Fmt.tokenInt(_amountCtrl.text.trim(), _token!.decimals!))
                 .toString(),
             // params.dest
             isV2XCM ? {'V1': dest} : dest,
@@ -359,29 +359,29 @@ class _TransferPageState extends State<TransferPage> {
       /// else return normal transfer
       final params = [
         // params.to
-        _accountTo.address,
+        _accountTo!.address,
         // params.currencyId
-        _token.currencyId,
+        _token!.currencyId,
         // params.amount
-        (_amountMax ?? Fmt.tokenInt(_amountCtrl.text.trim(), _token.decimals))
+        (_amountMax ?? Fmt.tokenInt(_amountCtrl.text.trim(), _token!.decimals!))
             .toString(),
       ];
       return TxConfirmParams(
         module: 'currencies',
         call: 'transfer',
         txTitle:
-            '${I18n.of(context).getDic(i18n_full_dic_acala, 'acala')['transfer']} $tokenView',
+            '${I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!['transfer']} $tokenView',
         txDisplay: {},
         txDisplayBold: {
-          dic['amount']: Text(
+          dic['amount']!: Text(
             Fmt.priceFloor(double.tryParse(_amountCtrl.text.trim()),
                     lengthMax: 8) +
                 ' $tokenView',
             style: Theme.of(context).textTheme.headline1,
           ),
-          dic['address']: Row(
+          dic['address']!: Row(
             children: [
-              AddressIcon(_accountTo.address, svg: _accountTo.icon),
+              AddressIcon(_accountTo!.address, svg: _accountTo!.icon),
               Expanded(
                 child: Container(
                   margin: EdgeInsets.fromLTRB(8, 16, 0, 16),
@@ -404,9 +404,9 @@ class _TransferPageState extends State<TransferPage> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final TokenBalanceData token =
-          ModalRoute.of(context).settings.arguments as TokenBalanceData;
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      final TokenBalanceData? token =
+          ModalRoute.of(context)!.settings.arguments as TokenBalanceData?;
       setState(() {
         _token = token;
         _accountOptions = widget.keyring.allWithContacts.toList();
@@ -427,51 +427,52 @@ class _TransferPageState extends State<TransferPage> {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
-        final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'common');
-        final dicAcala = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
-        final TokenBalanceData args =
-            ModalRoute.of(context).settings.arguments as TokenBalanceData;
-        final token = _token ?? args;
-        final tokenSymbol = token.symbol.toUpperCase();
+        final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common')!;
+        final dicAcala =
+            I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
+        final TokenBalanceData? args =
+            ModalRoute.of(context)!.settings.arguments as TokenBalanceData?;
+        final token = _token ?? args!;
+        final tokenSymbol = token.symbol!.toUpperCase();
         final tokenView = PluginFmt.tokenView(token.symbol);
 
-        final List tokenXcmConfig =
-            widget.plugin.store.setting.tokensConfig['xcm'] != null
-                ? widget.plugin.store.setting.tokensConfig['xcm'][tokenSymbol]
+        final List? tokenXcmConfig =
+            widget.plugin.store!.setting.tokensConfig['xcm'] != null
+                ? widget.plugin.store!.setting.tokensConfig['xcm'][tokenSymbol]
                 : [];
         final canCrossChain =
             tokenXcmConfig != null && tokenXcmConfig.length > 0;
 
         final nativeTokenBalance =
-            Fmt.balanceInt(widget.plugin.balances.native.freeBalance) -
-                Fmt.balanceInt(widget.plugin.balances.native.frozenFee);
+            Fmt.balanceInt(widget.plugin.balances.native!.freeBalance) -
+                Fmt.balanceInt(widget.plugin.balances.native!.frozenFee);
         final accountED = PluginFmt.getAccountED(widget.plugin);
         final isNativeTokenLow = nativeTokenBalance - accountED <
             Fmt.balanceInt((_fee?.partialFee ?? 0).toString()) * BigInt.two;
 
-        final decimals = widget.plugin.store.assets
-                .tokenBalanceMap[token.tokenNameId ?? token.symbol]?.decimals ??
-            12;
-        final balanceData = widget.plugin.store.assets
+        final balanceData = widget.plugin.store!.assets
             .tokenBalanceMap[token.tokenNameId ?? tokenSymbol];
         final available = Fmt.balanceInt(balanceData?.amount) -
             Fmt.balanceInt(balanceData?.locked);
-        final nativeToken = widget.plugin.networkState.tokenSymbol[0];
+        final nativeToken = widget.plugin.networkState.tokenSymbol![0];
+        final nativeTokenDecimals = widget.plugin.networkState.tokenDecimals![
+            widget.plugin.networkState.tokenSymbol!.indexOf(nativeToken)];
         final existDeposit = token.tokenNameId == nativeToken
             ? Fmt.balanceInt(widget
                 .plugin.networkConst['balances']['existentialDeposit']
                 .toString())
-            : Fmt.balanceInt(widget.plugin.store.assets
-                .tokenBalanceMap[token.tokenNameId].minBalance);
+            : Fmt.balanceInt(widget.plugin.store!.assets
+                .tokenBalanceMap[token.tokenNameId]!.minBalance);
 
-        final chainTo = _chainTo ?? widget.plugin.basic.name;
+        final chainTo = _chainTo ?? widget.plugin.basic.name!;
         final isCrossChain = widget.plugin.basic.name != chainTo;
         final destExistDeposit = isCrossChain
-            ? Fmt.balanceInt(cross_chain_xcm_fees[chainTo][tokenSymbol]
-                ['existentialDeposit'])
+            ? Fmt.balanceInt(cross_chain_xcm_fees[chainTo]![tokenSymbol]![
+                'existentialDeposit'])
             : BigInt.zero;
         final destFee = isCrossChain
-            ? Fmt.balanceInt(cross_chain_xcm_fees[chainTo][tokenSymbol]['fee'])
+            ? Fmt.balanceInt(
+                cross_chain_xcm_fees[chainTo]![tokenSymbol]!['fee'])
             : BigInt.zero;
 
         final colorGrey = Theme.of(context).unselectedWidgetColor;
@@ -482,7 +483,7 @@ class _TransferPageState extends State<TransferPage> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(dic['transfer']),
+            title: Text(dic['transfer']!),
             centerTitle: true,
             leading: BackBtn(),
             actions: <Widget>[
@@ -529,14 +530,14 @@ class _TransferPageState extends State<TransferPage> {
                             labelStyle: labelStyle,
                             hintText: dic['address'],
                             initialValue: _accountTo,
-                            onChanged: (KeyPairData acc) async {
+                            onChanged: (KeyPairData? acc) async {
                               final error = await _checkAccountTo(acc);
                               setState(() {
                                 _accountTo = acc;
                                 _accountToError = error;
                               });
                             },
-                            key: ValueKey<KeyPairData>(_accountTo),
+                            key: ValueKey<KeyPairData?>(_accountTo),
                           ),
                         ),
                         Visibility(
@@ -561,7 +562,7 @@ class _TransferPageState extends State<TransferPage> {
                                   Container(
                                     padding: EdgeInsets.only(top: 8),
                                     child: Text(
-                                      dicAcala['cross.edit'],
+                                      dicAcala['cross.edit']!,
                                       style: TextStyle(fontSize: 14),
                                     ),
                                   ),
@@ -582,12 +583,12 @@ class _TransferPageState extends State<TransferPage> {
                                 labelText:
                                     '${dic['amount']} (${dic['balance']}: ${Fmt.priceFloorBigInt(
                                   available,
-                                  decimals,
+                                  token.decimals!,
                                   lengthMax: 6,
                                 )})',
                                 labelStyle: labelStyle,
                                 suffix: GestureDetector(
-                                  child: Text(dic['amount.max'],
+                                  child: Text(dic['amount.max']!,
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: Theme.of(context)
@@ -596,14 +597,14 @@ class _TransferPageState extends State<TransferPage> {
                                     setState(() {
                                       _amountMax = available;
                                       _amountCtrl.text = Fmt.bigIntToDouble(
-                                              available, decimals)
+                                              available, token.decimals!)
                                           .toStringAsFixed(8);
                                     });
                                   },
                                 ),
                               ),
                               inputFormatters: [
-                                UI.decimalInputFormatter(decimals)
+                                UI.decimalInputFormatter(token.decimals!)!
                               ],
                               controller: _amountCtrl,
                               keyboardType: TextInputType.numberWithOptions(
@@ -614,16 +615,18 @@ class _TransferPageState extends State<TransferPage> {
                                 });
                               },
                               validator: (v) {
-                                final error = Fmt.validatePrice(v, context);
+                                final error = Fmt.validatePrice(v!, context);
                                 if (error != null) {
                                   return error;
                                 }
 
-                                final input = Fmt.tokenInt(v.trim(), decimals);
+                                final input =
+                                    Fmt.tokenInt(v.trim(), token.decimals!);
                                 if (_amountMax == null &&
-                                    Fmt.bigIntToDouble(input, decimals) >
+                                    Fmt.bigIntToDouble(input, token.decimals!) >
                                         available /
-                                            BigInt.from(pow(10, decimals))) {
+                                            BigInt.from(
+                                                pow(10, token.decimals!))) {
                                   return dic['amount.low'];
                                 }
                                 return null;
@@ -639,7 +642,7 @@ class _TransferPageState extends State<TransferPage> {
                                 children: <Widget>[
                                   Container(
                                     margin: EdgeInsets.only(bottom: 4),
-                                    child: Text(dic['currency'],
+                                    child: Text(dic['currency']!,
                                         style: labelStyle),
                                   ),
                                   RoundedCard(
@@ -666,26 +669,26 @@ class _TransferPageState extends State<TransferPage> {
                             ),
                             onTap: () async {
                               final tokens = widget
-                                  .plugin.store.assets.tokenBalanceMap.values
+                                  .plugin.store!.assets.tokenBalanceMap.values
                                   .toList();
-                              if (widget.plugin.store.setting
+                              if (widget.plugin.store!.setting
                                           .tokensConfig['invisible'] !=
                                       null &&
-                                  widget.plugin.store.setting
+                                  widget.plugin.store!.setting
                                           .tokensConfig['disabled'] !=
                                       null) {
                                 tokens.removeWhere((e) =>
-                                    List.of(widget.plugin.store.setting
+                                    List.of(widget.plugin.store!.setting
                                             .tokensConfig['invisible'])
                                         .contains(e.symbol) ||
-                                    List.of(widget.plugin.store.setting
+                                    List.of(widget.plugin.store!.setting
                                             .tokensConfig['disabled'])
                                         .contains(e.symbol));
                               }
                               final res = (await Navigator.of(context)
                                   .pushNamed(CurrencySelectPage.route,
-                                      arguments: tokens) as TokenBalanceData);
-                              if (res != null && res.symbol != _token.symbol) {
+                                      arguments: tokens) as TokenBalanceData?);
+                              if (res != null && res.symbol != _token!.symbol) {
                                 // reload tx fee if user switch to normal transfer from XCM
                                 if (isCrossChain) {
                                   _getTxFee(isXCM: false, reload: true);
@@ -713,7 +716,7 @@ class _TransferPageState extends State<TransferPage> {
                                     Padding(
                                       padding: EdgeInsets.only(bottom: 4),
                                       child: Text(
-                                        dicAcala['cross.chain'],
+                                        dicAcala['cross.chain']!,
                                         style: labelStyle,
                                       ),
                                     ),
@@ -734,7 +737,7 @@ class _TransferPageState extends State<TransferPage> {
                                                   borderRadius:
                                                       BorderRadius.circular(32),
                                                   child: isCrossChain
-                                                      ? TokenIcon(_chainTo,
+                                                      ? TokenIcon(_chainTo!,
                                                           crossChainIcons)
                                                       : widget
                                                           .plugin.basic.icon,
@@ -781,13 +784,13 @@ class _TransferPageState extends State<TransferPage> {
                                 children: [
                                   Expanded(
                                     child: TapTooltip(
-                                      message: dicAcala['cross.exist.msg'],
+                                      message: dicAcala['cross.exist.msg']!,
                                       child: Row(
                                         children: [
                                           Padding(
                                             padding: EdgeInsets.only(right: 4),
                                             child:
-                                                Text(dicAcala['cross.exist']),
+                                                Text(dicAcala['cross.exist']!),
                                           ),
                                           Icon(
                                             Icons.info,
@@ -802,7 +805,7 @@ class _TransferPageState extends State<TransferPage> {
                                   Expanded(
                                     flex: 0,
                                     child: Text(
-                                        '${Fmt.priceCeilBigInt(destExistDeposit, decimals, lengthMax: 6)} $tokenView'),
+                                        '${Fmt.priceCeilBigInt(destExistDeposit, token.decimals!, lengthMax: 6)} $tokenView'),
                                   )
                                 ],
                               ),
@@ -817,11 +820,11 @@ class _TransferPageState extends State<TransferPage> {
                                   Expanded(
                                     child: Padding(
                                       padding: EdgeInsets.only(right: 4),
-                                      child: Text(dicAcala['cross.fee']),
+                                      child: Text(dicAcala['cross.fee']!),
                                     ),
                                   ),
                                   Text(
-                                      '${Fmt.priceCeilBigInt(destFee, decimals, lengthMax: 6)} $tokenView'),
+                                      '${Fmt.priceCeilBigInt(destFee, token.decimals!, lengthMax: 6)} $tokenView'),
                                 ],
                               ),
                             )),
@@ -832,12 +835,13 @@ class _TransferPageState extends State<TransferPage> {
                             children: [
                               Expanded(
                                 child: TapTooltip(
-                                  message: dicAcala['cross.exist.msg'],
+                                  message: dicAcala['cross.exist.msg']!,
                                   child: Row(
                                     children: [
                                       Padding(
                                         padding: EdgeInsets.only(right: 4),
-                                        child: Text(dicAcala['transfer.exist']),
+                                        child:
+                                            Text(dicAcala['transfer.exist']!),
                                       ),
                                       Icon(
                                         Icons.info,
@@ -850,7 +854,7 @@ class _TransferPageState extends State<TransferPage> {
                                 ),
                               ),
                               Text(
-                                  '${Fmt.priceCeilBigInt(existDeposit, decimals, lengthMax: 6)} $tokenView'),
+                                  '${Fmt.priceCeilBigInt(existDeposit, token.decimals!, lengthMax: 6)} $tokenView'),
                             ],
                           ),
                         ),
@@ -864,11 +868,11 @@ class _TransferPageState extends State<TransferPage> {
                                 Expanded(
                                   child: Padding(
                                     padding: EdgeInsets.only(right: 4),
-                                    child: Text(dicAcala['transfer.fee']),
+                                    child: Text(dicAcala['transfer.fee']!),
                                   ),
                                 ),
                                 Text(
-                                    '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee ?? 0).toString()), decimals, lengthMax: 6)} $nativeToken'),
+                                    '${Fmt.priceCeilBigInt(Fmt.balanceInt((_fee?.partialFee ?? 0).toString()), nativeTokenDecimals, lengthMax: 6)} $nativeToken'),
                               ],
                             ),
                           ),
@@ -877,7 +881,7 @@ class _TransferPageState extends State<TransferPage> {
                             visible: isCrossChain,
                             child: _CrossChainTransferWarning(
                               token: tokenSymbol,
-                              chain: (widget.plugin.store.setting
+                              chain: (widget.plugin.store!.setting
                                       .tokensConfig['warning'] ??
                                   {})[tokenSymbol],
                             )),
@@ -889,7 +893,8 @@ class _TransferPageState extends State<TransferPage> {
                   padding: EdgeInsets.fromLTRB(16.w, 4.h, 14.w, 16.h),
                   child: TxButton(
                     text: dic['make'],
-                    getTxParams: () => _getTxParams(chainTo),
+                    getTxParams: (() async =>
+                        _getTxParams(chainTo) as Future<TxConfirmParams>),
                     onFinish: (res) {
                       if (res != null) {
                         Navigator.of(context).pop(res);
@@ -908,20 +913,20 @@ class _TransferPageState extends State<TransferPage> {
 
 class _CrossChainTransferWarning extends StatelessWidget {
   _CrossChainTransferWarning({this.token, this.chain});
-  final String token;
-  final String chain;
+  final String? token;
+  final String? chain;
 
   String getWarnInfo(BuildContext context) {
-    return I18n.of(context).locale.toString().contains('zh')
-        ? '交易所当前不支持 Karura 网络跨链转账充提 $token，请先使用跨链转账将 $token 转回 $chain，再从 $chain 网络转账至交易所地址。'
-        : 'Exchanges do not currently support direct transfers of $token to/from Karura. In order to successfully send $token to an exchange address, it is required that you first complete an Cross-Chain-Transfer of the token(s) from Karura to $chain.';
+    return I18n.of(context)!.locale.toString().contains('zh')
+        ? '交易所当前不支持 Acala 网络跨链转账充提 $token，请先使用跨链转账将 $token 转回 $chain，再从 $chain 网络转账至交易所地址。'
+        : 'Exchanges do not currently support direct transfers of $token to/from Acala. In order to successfully send $token to an exchange address, it is required that you first complete an Cross-Chain-Transfer of the token(s) from Acala to $chain.';
   }
 
   @override
   Widget build(BuildContext context) {
-    if (chain == null || chain.isEmpty) return Container();
+    if (chain == null || chain!.isEmpty) return Container();
 
-    final dic = I18n.of(context).getDic(i18n_full_dic_acala, 'acala');
+    final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
     return Container(
       margin: EdgeInsets.only(top: 16, bottom: 24),
       padding: EdgeInsets.all(8),
@@ -933,7 +938,7 @@ class _CrossChainTransferWarning extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            dic['cross.warn'],
+            dic['cross.warn']!,
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).errorColor),

@@ -5,12 +5,12 @@ class InstrumentItemWidget extends StatefulWidget {
   int initializeIndex;
   final Size size;
   InstrumentItemWidgetController controller;
-  Function(int, bool isOnClick) onChanged;
+  Function(int, bool isOnClick)? onChanged;
   InstrumentItemWidget(
-      {Key key,
-      @required this.controller,
-      @required this.datas,
-      @required this.size,
+      {Key? key,
+      required this.controller,
+      required this.datas,
+      required this.size,
       this.onChanged,
       this.initializeIndex = 0})
       : super(key: key);
@@ -23,15 +23,15 @@ class _InstrumentItemWidgetState extends State<InstrumentItemWidget>
     with TickerProviderStateMixin {
   final GlobalKey _containerKey = GlobalKey();
 
-  Animation<double> animation;
+  late Animation<double> animation;
   double animationNumber = 1;
-  AnimationController controller;
+  late AnimationController controller;
 
   bool isSwitching = false;
 
   @override
   void initState() {
-    widget.controller.bindAction(({bool isOnClick}) {
+    widget.controller.bindAction(({bool? isOnClick}) {
       _switchAction(isOnClick: isOnClick ?? true);
     });
     super.initState();
@@ -67,7 +67,7 @@ class _InstrumentItemWidgetState extends State<InstrumentItemWidget>
                     ? 0
                     : widget.initializeIndex + 1;
             if (widget.onChanged != null) {
-              widget.onChanged(widget.initializeIndex, isOnClick);
+              widget.onChanged!(widget.initializeIndex, isOnClick);
             }
           });
         }
@@ -138,9 +138,9 @@ class _InstrumentItemWidgetState extends State<InstrumentItemWidget>
 }
 
 class InstrumentItemWidgetController {
-  Function({bool isOnClick}) switchAction;
+  late Function({bool? isOnClick}) switchAction;
 
-  void bindAction(Function({bool isOnClick}) switchAction) {
+  void bindAction(Function({bool? isOnClick}) switchAction) {
     this.switchAction = switchAction;
   }
 }

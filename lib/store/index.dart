@@ -9,7 +9,7 @@ import 'package:polkawallet_plugin_acala/store/setting.dart';
 import 'package:polkawallet_plugin_acala/store/swap.dart';
 
 class PluginStore {
-  PluginStore(StoreCache cache)
+  PluginStore(StoreCache? cache)
       : setting = SettingStore(cache),
         gov = GovernanceStore(cache),
         assets = AssetsStore(cache),

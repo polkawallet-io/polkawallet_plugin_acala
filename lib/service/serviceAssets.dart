@@ -15,10 +15,10 @@ class ServiceAssets {
 
   final PluginAcala plugin;
   final Keyring keyring;
-  final AcalaApi api;
-  final PluginStore store;
+  final AcalaApi? api;
+  final PluginStore? store;
 
-  Future<void> queryMarketPrices(List<String> tokens) async {
+  Future<void> queryMarketPrices(List<String?> tokens) async {
     final all = tokens.toList();
     all.removeWhere((e) =>
         e == acala_stable_coin ||
@@ -28,7 +28,7 @@ class ServiceAssets {
 
     final List res =
         await Future.wait(all.map((e) => WalletApi.getTokenPrice(e)).toList());
-    final Map<String, double> prices = {acala_stable_coin: 1.0, 'USDT': 1.0};
+    final Map<String?, double> prices = {acala_stable_coin: 1.0, 'USDT': 1.0};
     res.asMap().forEach((k, e) {
       if (e != null && e['data'] != null) {
         prices[all[k]] = double.parse(e['data']['price'][0].toString());
@@ -36,30 +36,29 @@ class ServiceAssets {
     });
 
     if (prices[relay_chain_token_symbol] != null) {
-      await plugin.service.homa.queryHomaLiteStakingPool();
-      final homaEnv = plugin.store.homa.env;
+      final homaEnv = await plugin.service!.homa.queryHomaEnv();
       prices['L$relay_chain_token_symbol'] =
-          prices[relay_chain_token_symbol] * homaEnv.exchangeRate;
+          prices[relay_chain_token_symbol]! * homaEnv.exchangeRate;
     }
     if (tokens.contains(para_chain_token_symbol_bifrost) &&
         prices[para_chain_token_symbol_bifrost] == null) {
-      final dexPool = plugin.store.earn.dexPoolInfoMap[
+      final dexPool = plugin.store!.earn.dexPoolInfoMap[
           'lp://$acala_stable_coin/$para_chain_token_symbol_bifrost'];
       if (dexPool != null) {
-        final priceBNC = dexPool.amountLeft / dexPool.amountRight;
+        final priceBNC = dexPool.amountLeft! / dexPool.amountRight!;
         prices[para_chain_token_symbol_bifrost] = priceBNC;
       }
     }
 
-    store.assets.setMarketPrices(prices);
+    store!.assets.setMarketPrices(prices);
   }
 
   Future<void> updateTokenBalances(TokenBalanceData token) async {
-    final res = await plugin.sdk.webView.evalJavascript(
+    final res = await plugin.sdk.webView!.evalJavascript(
         'api.query.tokens.accounts("${keyring.current.address}", ${jsonEncode(token.currencyId)})');
 
     final balances =
-        Map<String, TokenBalanceData>.from(store.assets.tokenBalanceMap);
+        Map<String?, TokenBalanceData>.from(store!.assets.tokenBalanceMap);
     final data = TokenBalanceData(
         id: token.id,
         name: token.name,
@@ -74,18 +73,18 @@ class ServiceAssets {
         locked: res['frozen'].toString(),
         reserved: res['reserved'].toString(),
         detailPageRoute: token.detailPageRoute,
-        price: store.assets.marketPrices[token.symbol]);
+        price: store!.assets.marketPrices[token.symbol]);
     balances[token.tokenNameId] = data;
 
-    store.assets
+    store!.assets
         .setTokenBalanceMap(balances.values.toList(), keyring.current.pubKey);
     plugin.balances.setTokens([data]);
   }
 
   Future<void> queryAggregatedAssets() async {
-    queryMarketPrices([plugin.networkState.tokenSymbol[0]]);
+    queryMarketPrices([plugin.networkState.tokenSymbol![0]]);
     final data =
-        await plugin.api.assets.queryAggregatedAssets(keyring.current.address);
-    plugin.store.assets.setAggregatedAssets(data, keyring.current.pubKey);
+        await plugin.api!.assets.queryAggregatedAssets(keyring.current.address);
+    plugin.store!.assets.setAggregatedAssets(data, keyring.current.pubKey);
   }
 }
