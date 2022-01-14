@@ -29,7 +29,7 @@ class HomaPage extends StatefulWidget {
   final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/homa';
+  static const String route = '/acala/homa';
 
   @override
   _HomaPageState createState() => _HomaPageState();

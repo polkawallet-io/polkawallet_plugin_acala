@@ -221,4 +221,5 @@ const Map<String, String> enDex = {
   'v3.loan.canMint': 'Can Mint',
   'v3.loan.loanRatio': 'Loan Ratio',
   'v3.loan.submit': 'Submit',
+  'v3.homa.minStakingAmmount': 'Minimum Staking Ammount'
 };

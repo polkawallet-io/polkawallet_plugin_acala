@@ -43,7 +43,7 @@ class LoanPage extends StatefulWidget {
   final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/loan';
+  static const String route = '/acala/loan';
 
   @override
   _LoanPageState createState() => _LoanPageState();

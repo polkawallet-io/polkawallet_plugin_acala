@@ -27,7 +27,7 @@ class RedeemPage extends StatefulWidget {
   final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/homa/redeem';
+  static const String route = '/acala/homa/redeem';
 
   @override
   _RedeemPageState createState() => _RedeemPageState();

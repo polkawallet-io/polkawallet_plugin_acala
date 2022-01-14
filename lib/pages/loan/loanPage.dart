@@ -120,7 +120,7 @@ class _LoanPageState extends State<LoanPage> {
         return Scaffold(
           backgroundColor: Theme.of(context).cardColor,
           appBar: AppBar(
-            title: Text(dic!['loan.title.KSM']!),
+            title: Text(dic!['loan.title']!),
             centerTitle: true,
             leading: BackBtn(),
             actions: <Widget>[
@@ -173,7 +173,7 @@ class _LoanPageState extends State<LoanPage> {
                                             AssetsUtils
                                                     .getBalanceFromTokenNameId(
                                                         widget.plugin,
-                                                        loan!.token!
+                                                        loan.token!
                                                             .tokenNameId)!
                                                 .decimals,
                                             widget.plugin.tokenIcons,

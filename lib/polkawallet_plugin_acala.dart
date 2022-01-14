@@ -112,7 +112,7 @@ class PluginAcala extends PolkawalletPlugin {
 
   @override
   List<HomeNavItem> getNavItems(BuildContext context, Keyring keyring) {
-    // final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common')!;
+    final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common')!;
     return [
       HomeNavItem(
         text: 'Acala',
@@ -335,7 +335,7 @@ class PluginAcala extends PolkawalletPlugin {
       ProposalDetailPage.route: (_) => ProposalDetailPage(this, keyring),
 
       //new ui
-      ...getNewUiRoutes(this, keyring)
+      // ...getNewUiRoutes(this, keyring)
     };
   }
 

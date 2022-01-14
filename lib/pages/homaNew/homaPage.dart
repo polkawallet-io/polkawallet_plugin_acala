@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/homa/homaHistoryPage.dart';
-import 'package:polkawallet_plugin_acala/pages/homa/mintPage.dart';
+import 'package:polkawallet_plugin_acala/pages/homaNew/mintPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homa/redeemPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';
@@ -26,7 +26,7 @@ class HomaPage extends StatefulWidget {
   final PluginAcala plugin;
   final Keyring keyring;
 
-  static const String route = '/karura/homa';
+  static const String route = '/acala/homa';
 
   @override
   _HomaPageState createState() => _HomaPageState();
@@ -292,7 +292,7 @@ class _HomaPageState extends State<HomaPage> {
                           color: Color(0x33FFFFFF),
                           padding: EdgeInsets.symmetric(horizontal: 5),
                           child: Text(
-                            '${Fmt.priceFloor(env?.totalLiquidity, lengthMax: 4)}',
+                            '${Fmt.priceFloor(env?.totalLiquidity, lengthMax: 2)}',
                             style: Theme.of(context)
                                 .appBarTheme
                                 .titleTextStyle
@@ -373,7 +373,7 @@ class _HomaPageState extends State<HomaPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '${Fmt.priceFloor(env?.totalStaking, lengthMax: 4)} KSM',
+                                      '${Fmt.priceFloor(env?.totalStaking, lengthMax: 2)} KSM',
                                       style: Theme.of(context)
                                           .textTheme
                                           .headline5

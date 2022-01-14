@@ -1,3 +1,4 @@
+import 'package:charts_flutter/flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -13,9 +14,12 @@ import 'package:polkawallet_ui/components/infoItemRow.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
-import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginInputBalance.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginLoadingWidget.dart';
 
 class MintPage extends StatefulWidget {
   MintPage(this.plugin, this.keyring);
@@ -35,12 +39,20 @@ class _MintPageState extends State<MintPage> {
   String _amountReceive = '';
   BigInt? _maxInput;
   CalcHomaMintAmountData? _data;
+  bool isLoading = false;
 
   Future<void> _updateReceiveAmount(double input) async {
+    if (input == 0) {
+      return null;
+    }
     if (mounted) {
+      setState(() {
+        isLoading = true;
+      });
       var data = await widget.plugin.api!.homa.calcHomaNewMintAmount(input);
 
       setState(() {
+        isLoading = false;
         _amountReceive = "${data!['receive']}";
         _data = CalcHomaMintAmountData("", "", null);
       });
@@ -194,61 +206,123 @@ class _MintPageState extends State<MintPage> {
                         .toString(),
                     stakeDecimal));
 
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('${dic['homa.mint']} L$stakeToken'),
-            centerTitle: true,
-            leading: BackBtn(),
-          ),
+        final homaEnv = widget.plugin.store!.homa.env!;
+
+        return PluginScaffold(
+          appBar: PluginAppBar(
+              title: Text('${dic['homa.mint']} L$stakeToken'),
+              centerTitle: true),
           body: SafeArea(
-            child: ListView(
-              padding: EdgeInsets.all(16),
-              children: <Widget>[
-                RoundedCard(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      SwapTokenInput(
-                        title: dic['dex.pay'],
-                        inputCtrl: _amountPayCtrl,
-                        balance: widget
-                            .plugin.store!.assets.tokenBalanceMap[stakeToken],
+              child: Column(
+            children: [
+              Expanded(
+                  child: ListView(
+                padding: EdgeInsets.all(16),
+                children: <Widget>[
+                  PluginInputBalance(
+                    inputCtrl: _amountPayCtrl,
+                    margin: EdgeInsets.only(bottom: 2),
+                    titleTag: dic['earn.stake'],
+                    onInputChange: (v) =>
+                        _onSupplyAmountChange(v, balanceDouble, minStake),
+                    onSetMax: karBalance > 0.1
+                        ? (v) =>
+                            _onSetMax(v, stakeDecimal, balanceDouble, minStake)
+                        : null,
+                    onClear: () {
+                      setState(() {
+                        _amountPayCtrl.text = '';
+                      });
+                      _onSupplyAmountChange('', balanceDouble, minStake);
+                    },
+                    balance:
+                        widget.plugin.store!.assets.tokenBalanceMap[stakeToken],
+                    tokenIconsMap: widget.plugin.tokenIcons,
+                  ),
+                  ErrorMessage(_error),
+                  Visibility(visible: isLoading, child: PluginLoadingWidget()),
+                  Visibility(
+                      visible: _amountReceive.isNotEmpty,
+                      child: PluginInputBalance(
+                        enabled: false,
+                        text: _amountReceive,
+                        margin: EdgeInsets.only(bottom: 2),
+                        titleTag: dic['homa.mint'],
+                        balance: widget.plugin.store!.assets
+                            .tokenBalanceMap["L$stakeToken"],
                         tokenIconsMap: widget.plugin.tokenIcons,
-                        onInputChange: (v) =>
-                            _onSupplyAmountChange(v, balanceDouble, minStake),
-                        onSetMax: karBalance > 0.1
-                            ? (v) => _onSetMax(
-                                v, stakeDecimal, balanceDouble, minStake)
-                            : null,
-                        onClear: () {
-                          setState(() {
-                            _amountPayCtrl.text = '';
-                          });
-                          _onSupplyAmountChange('', balanceDouble, minStake);
-                        },
-                      ),
-                      ErrorMessage(_error),
-                      Visibility(
-                          visible: _amountReceive.isNotEmpty,
-                          child: Container(
-                            margin: EdgeInsets.only(top: 16),
-                            child: InfoItemRow(dic['dex.receive']!,
-                                '$_amountReceive L$stakeToken'),
-                          )),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 24),
-                  child: RoundedButton(
-                    text: dic['homa.mint'],
+                      )),
+                  Container(
+                    margin: EdgeInsets.only(top: 24),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          dic['v3.homa.minStakingAmmount']!,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline4
+                              ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600),
+                        ),
+                        Text(
+                          "＞${homaEnv.mintThreshold} $stakeToken",
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline4
+                              ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600),
+                        )
+                      ],
+                    ),
+                  )
+                  // RoundedCard(
+                  //   padding: EdgeInsets.all(16),
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: <Widget>[
+                  //       SwapTokenInput(
+                  //         title: dic['dex.pay'],
+                  //         // inputCtrl: _amountPayCtrl,
+                  //         balance: widget
+                  //             .plugin.store!.assets.tokenBalanceMap[stakeToken],
+                  //         tokenIconsMap: widget.plugin.tokenIcons,
+                  //         onInputChange: (v) =>
+                  //             _onSupplyAmountChange(v, balanceDouble, minStake),
+                  //         onSetMax: karBalance > 0.1
+                  //             ? (v) => _onSetMax(
+                  //                 v, stakeDecimal, balanceDouble, minStake)
+                  //             : null,
+                  //         onClear: () {
+                  //           setState(() {
+                  //             _amountPayCtrl.text = '';
+                  //           });
+                  //           _onSupplyAmountChange('', balanceDouble, minStake);
+                  //         },
+                  //       ),
+                  //       ErrorMessage(_error),
+                  //       Visibility(
+                  //           visible: _amountReceive.isNotEmpty,
+                  //           child: Container(
+                  //             margin: EdgeInsets.only(top: 16),
+                  //             child: InfoItemRow(dic['dex.receive']!,
+                  //                 '$_amountReceive L$stakeToken'),
+                  //           )),
+                  //     ],
+                  //   ),
+                  // )
+                ],
+              )),
+              Padding(
+                  padding: EdgeInsets.only(left: 16, right: 16, bottom: 54),
+                  child: PluginButton(
+                    title: dic['v3.loan.submit']!,
                     onPressed: () => _onSubmit(stakeDecimal),
-                  ),
-                )
-              ],
-            ),
-          ),
+                  ))
+            ],
+          )),
         );
       },
     );
