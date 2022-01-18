@@ -35,7 +35,8 @@ class ServiceAssets {
       }
     });
 
-    if (prices[relay_chain_token_symbol] != null) {
+    if (prices[relay_chain_token_symbol] != null &&
+        await (api!.homa.isHomaAlive() as Future<bool>)) {
       final homaEnv = await plugin.service!.homa.queryHomaEnv();
       prices['L$relay_chain_token_symbol'] =
           prices[relay_chain_token_symbol]! * homaEnv.exchangeRate;
