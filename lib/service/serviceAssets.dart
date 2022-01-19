@@ -35,20 +35,16 @@ class ServiceAssets {
       }
     });
 
-    if (prices[relay_chain_token_symbol] != null &&
-        await (api!.homa.isHomaAlive() as Future<bool>)) {
-      final homaEnv = await plugin.service!.homa.queryHomaEnv();
-      prices['L$relay_chain_token_symbol'] =
-          prices[relay_chain_token_symbol]! * homaEnv.exchangeRate;
-    }
-    if (tokens.contains(para_chain_token_symbol_bifrost) &&
-        prices[para_chain_token_symbol_bifrost] == null) {
-      final dexPool = plugin.store!.earn.dexPoolInfoMap[
-          'lp://$acala_stable_coin/$para_chain_token_symbol_bifrost'];
-      if (dexPool != null) {
-        final priceBNC = dexPool.amountLeft! / dexPool.amountRight!;
-        prices[para_chain_token_symbol_bifrost] = priceBNC;
+    try {
+      if (prices[relay_chain_token_symbol] != null &&
+          await (api!.homa.isHomaAlive() as Future<bool>)) {
+        final homaEnv = await plugin.service!.homa.queryHomaEnv();
+        prices['L$relay_chain_token_symbol'] =
+            prices[relay_chain_token_symbol]! * homaEnv.exchangeRate;
       }
+    } catch (err) {
+      print(err);
+      // ignore
     }
 
     store!.assets.setMarketPrices(prices);
