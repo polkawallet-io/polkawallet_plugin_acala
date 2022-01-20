@@ -92,7 +92,7 @@ class _MintPageState extends State<MintPage> {
     if (pay <= minStake) {
       final minLabel = I18n.of(context)!
           .getDic(i18n_full_dic_acala, 'acala')!['homa.pool.min'];
-      return '$minLabel > ${minStake.toStringAsFixed(4)}';
+      return '$minLabel   ${minStake.toStringAsFixed(4)}';
     }
 
     final homaEnv = widget.plugin.store!.homa.env!;
@@ -267,7 +267,7 @@ class _MintPageState extends State<MintPage> {
                                   fontWeight: FontWeight.w600),
                         ),
                         Text(
-                          "＞${homaEnv.mintThreshold} $stakeToken",
+                          "${homaEnv.mintThreshold} $stakeToken",
                           style: Theme.of(context)
                               .textTheme
                               .headline4
