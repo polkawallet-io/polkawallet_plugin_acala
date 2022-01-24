@@ -26,6 +26,7 @@ import 'package:polkawallet_plugin_acala/pages/earn/withdrawLiquidityPage.dart';
 import 'package:polkawallet_plugin_acala/pages/gov/democracy/proposalDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/gov/democracy/referendumVotePage.dart';
 import 'package:polkawallet_plugin_acala/pages/gov/democracyPage.dart';
+import 'package:polkawallet_plugin_acala/pages/gov/governance.dart';
 import 'package:polkawallet_plugin_acala/pages/homa/homaHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homa/homaPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homa/homaTxDetailPage.dart';
@@ -38,7 +39,6 @@ import 'package:polkawallet_plugin_acala/pages/loan/loanDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanTxDetailPage.dart';
-import 'package:polkawallet_plugin_acala/pages/newUIRoutes.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftBurnPage.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftPage.dart';
@@ -67,9 +67,9 @@ class PluginAcala extends PolkawalletPlugin {
       : basic = PluginBasicData(
           name: name,
           genesisHash: plugin_genesis_hash,
-          ss58: ss58_prefix_acala,
-          primaryColor: Colors.red,
-          gradientColor: Color.fromARGB(255, 255, 76, 59),
+          ss58: false ? ss58_prefix_acala : 42,
+          primaryColor: Colors.indigo,
+          gradientColor: Colors.indigoAccent,
           backgroundImage: AssetImage(
               'packages/polkawallet_plugin_acala/assets/images/bg.png'),
           icon: SvgPicture.asset(
@@ -114,23 +114,23 @@ class PluginAcala extends PolkawalletPlugin {
   List<HomeNavItem> getNavItems(BuildContext context, Keyring keyring) {
     final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common')!;
     return [
-      HomeNavItem(
-        text: 'Acala',
-        icon: SvgPicture.asset(
-          'packages/polkawallet_plugin_acala/assets/images/logo.svg',
-          color: Theme.of(context).disabledColor,
-        ),
-        iconActive: SvgPicture.asset(
-            'packages/polkawallet_plugin_acala/assets/images/logo.svg'),
-        content: AcalaEntry(this, keyring),
-      ),
       // HomeNavItem(
-      //   text: "Defi",
-      //   icon: Container(),
-      //   iconActive: Container(),
-      //   isAdapter: true,
-      //   content: DefiWidget(this),
+      //   text: 'Acala',
+      //   icon: SvgPicture.asset(
+      //     'packages/polkawallet_plugin_acala/assets/images/logo.svg',
+      //     color: Theme.of(context).disabledColor,
+      //   ),
+      //   iconActive: SvgPicture.asset(
+      //       'packages/polkawallet_plugin_acala/assets/images/logo.svg'),
+      //   content: AcalaEntry(this, keyring),
       // ),
+      HomeNavItem(
+        text: "Defi",
+        icon: Container(),
+        iconActive: Container(),
+        isAdapter: true,
+        content: DefiWidget(this),
+      ),
       // HomeNavItem(
       //   text: "NFT",
       //   icon: Container(),
@@ -138,13 +138,13 @@ class PluginAcala extends PolkawalletPlugin {
       //   isAdapter: true,
       //   content: NFTWidget(this),
       // ),
-      // HomeNavItem(
-      //   text: dic['governance']!,
-      //   icon: Container(),
-      //   iconActive: Container(),
-      //   isAdapter: true,
-      //   content: GovernanceWidget(this),
-      // )
+      HomeNavItem(
+        text: dic['governance']!,
+        icon: Container(),
+        iconActive: Container(),
+        // content: GovernanceWidget(this),
+        content: Gov(this, keyring),
+      )
     ];
   }
 
@@ -212,47 +212,6 @@ class PluginAcala extends PolkawalletPlugin {
   //   datas.add(totalBalance);
   //   datas.add(totalBalance1);
   //   return datas;
-  // }
-
-  // String currencySymbol(String priceCurrency) {
-  //   switch (priceCurrency) {
-  //     case "USD":
-  //       return "\$";
-  //     case "CNY":
-  //       return "￥";
-  //     default:
-  //       return "\$";
-  //   }
-  // }
-
-  // Color instrumentColor(String category) {
-  //   switch (category) {
-  //     case "Tokens":
-  //       return Color(0xFF5E5C59);
-  //     case "Vaults":
-  //       return Color(0xFFCE623C);
-  //     case "LP Staking":
-  //       return Color(0xFF768FE1);
-  //     case "Rewards":
-  //       return Color(0xFFFFC952);
-  //     default:
-  //       return Color(0xFFFFC952);
-  //   }
-  // }
-
-  // String instrumentIconName(String category) {
-  //   switch (category) {
-  //     case "Tokens":
-  //       return "packages/polkawallet_plugin_acala/assets/images/icon_instrument_black.png";
-  //     case "Vaults":
-  //       return "packages/polkawallet_plugin_acala/assets/images/icon_instrument_orange.png";
-  //     case "LP Staking":
-  //       return "packages/polkawallet_plugin_acala/assets/images/icon_instrument_blue.png";
-  //     case "Rewards":
-  //       return "packages/polkawallet_plugin_acala/assets/images/icon_instrument_yellow.png";
-  //     default:
-  //       return "packages/polkawallet_plugin_acala/assets/images/icon_instrument_yellow.png";
-  //   }
   // }
 
   @override
@@ -335,6 +294,7 @@ class PluginAcala extends PolkawalletPlugin {
       ProposalDetailPage.route: (_) => ProposalDetailPage(this, keyring),
 
       //new ui
+      AcalaEntry.route: (_) => AcalaEntry(this, keyring),
       // ...getNewUiRoutes(this, keyring)
     };
   }
@@ -417,8 +377,8 @@ class PluginAcala extends PolkawalletPlugin {
 
     _service!.fetchLiveModules();
 
-    // wait tokens config here for subscribe all tokens balances
-    await _service!.fetchTokensConfig();
+    // fetch tokens config here for subscribe all tokens balances
+    _service!.fetchTokensConfig();
   }
 
   @override

@@ -1,7 +1,6 @@
 import 'package:polkawallet_plugin_acala/api/acalaApi.dart';
 import 'package:polkawallet_plugin_acala/api/earn/types/incentivesData.dart';
 import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
-import 'package:polkawallet_plugin_acala/common/constants/base.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/store/index.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';
@@ -31,21 +30,22 @@ class ServiceEarn {
           .map((e) => AssetsUtils.tokenDataFromCurrencyId(plugin, e))
           .toList();
 
-      final poolInfo = store!.earn.dexPoolInfoMap[k]!;
+      final poolInfo = store!.earn.dexPoolInfoMap[k];
       final prices = store!.assets.marketPrices;
 
       /// poolValue = LPAmountOfPool / LPIssuance * token0Issuance * token0Price * 2;
-      final stakingPoolValue = poolInfo.sharesTotal! /
-          poolInfo.issuance! *
-          (Fmt.bigIntToDouble(poolInfo.amountLeft, balancePair[0]!.decimals!) *
+      final stakingPoolValue = (poolInfo?.sharesTotal ?? BigInt.zero) /
+          (poolInfo?.issuance ?? BigInt.zero) *
+          (Fmt.bigIntToDouble(poolInfo?.amountLeft, balancePair[0]!.decimals!) *
                   (prices[balancePair[0]!.symbol] ?? 0) +
               Fmt.bigIntToDouble(
-                      poolInfo.amountRight, balancePair[1]!.decimals!) *
+                      poolInfo?.amountRight, balancePair[1]!.decimals!) *
                   (prices[balancePair[1]!.symbol] ?? 0));
 
       v.forEach((e) {
         /// rewardsRate = rewardsAmount * rewardsTokenPrice / poolValue;
-        final rate = e.amount! * (prices[e.tokenNameId] ?? 0) / stakingPoolValue;
+        final rate =
+            e.amount! * (prices[e.tokenNameId] ?? 0) / stakingPoolValue;
         e.apr = rate > 0 ? rate : 0;
       });
     });
