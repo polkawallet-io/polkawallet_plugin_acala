@@ -110,7 +110,8 @@ class _DefiWidgetState extends State<DefiWidget> {
 
       liveModules.retainWhere((e) => modulesConfig[e]['visible'] && e != 'nft');
 
-      return Container(
+      return SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
         child: Column(
           children: liveModules.map((e) {
             final enabled = modulesConfig[e]['enabled'];

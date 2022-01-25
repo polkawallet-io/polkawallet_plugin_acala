@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/homa/homaHistoryPage.dart';
-import 'package:polkawallet_plugin_acala/pages/homaNew/mintPage.dart';
 import 'package:polkawallet_plugin_acala/pages/homa/redeemPage.dart';
+import 'package:polkawallet_plugin_acala/pages/homaNew/mintPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_plugin_acala/utils/format.dart';
@@ -14,9 +14,9 @@ import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
+import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginIconButton.dart';
 import 'package:polkawallet_ui/components/v3/plugin/pluginScaffold.dart';
-import 'package:polkawallet_ui/components/v3/plugin/pluginButton.dart';
 import 'package:polkawallet_ui/pages/txConfirmPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 import 'package:rive/rive.dart';
@@ -35,7 +35,6 @@ class HomaPage extends StatefulWidget {
 class _HomaPageState extends State<HomaPage> {
   Timer? _timer;
   String? _unlockingKsm;
-  bool? _isHomaAlive = false;
 
   Future<void> _refreshRedeem() async {
     var data = await widget.plugin.api!.homa
@@ -57,13 +56,8 @@ class _HomaPageState extends State<HomaPage> {
     widget.plugin.service!.assets.queryMarketPrices([relay_chain_token_symbol]);
     widget.plugin.service!.gov.updateBestNumber();
 
-    if (_isHomaAlive!) {
-      await widget.plugin.service!.homa.queryHomaEnv();
-      widget.plugin.service!.homa.queryHomaPendingRedeem();
-    } else {
-      await widget.plugin.service!.homa.queryHomaLiteStakingPool();
-      _refreshRedeem();
-    }
+    await widget.plugin.service!.homa.queryHomaEnv();
+    widget.plugin.service!.homa.queryHomaPendingRedeem();
 
     if (_timer == null) {
       _timer = Timer.periodic(Duration(seconds: 20), (timer) {
@@ -152,11 +146,6 @@ class _HomaPageState extends State<HomaPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
-      final isHomaAlive = await widget.plugin.api!.homa.isHomaAlive();
-      setState(() {
-        _isHomaAlive = isHomaAlive;
-      });
-
       _refreshData();
     });
   }
@@ -373,7 +362,7 @@ class _HomaPageState extends State<HomaPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '${Fmt.priceFloor(env?.totalStaking, lengthMax: 2)} KSM',
+                                      '${Fmt.priceFloor(env?.totalStaking, lengthMax: 2)} $relay_chain_token_symbol',
                                       style: Theme.of(context)
                                           .textTheme
                                           .headline5
@@ -621,9 +610,8 @@ class _HomaPageState extends State<HomaPage> {
                             child: PluginButton(
                           title: '${dic['homa.redeem']} $stakeSymbol',
                           onPressed: () => Navigator.of(context)
-                              .pushNamed(RedeemPage.route, arguments: {
-                            "isHomaAlive": _isHomaAlive
-                          }).then((value) {
+                              .pushNamed(RedeemPage.route)
+                              .then((value) {
                             if (value != null) {
                               _refreshData();
                             }
@@ -645,9 +633,8 @@ class _HomaPageState extends State<HomaPage> {
                                   // if (!(await _confirmMint())) return;
 
                                   Navigator.of(context)
-                                      .pushNamed(MintPage.route, arguments: {
-                                    "isHomaAlive": _isHomaAlive
-                                  }).then((value) {
+                                      .pushNamed(MintPage.route)
+                                      .then((value) {
                                     if (value != null) {
                                       _refreshData();
                                     }

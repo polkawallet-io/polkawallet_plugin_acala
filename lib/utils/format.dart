@@ -16,9 +16,6 @@ class PluginFmt {
     if (token == acala_token_polka_btc) {
       return acala_token_polka_btc_view;
     }
-    if (token == 'VSKSM') {
-      return 'vsKSM';
-    }
     if (token?.contains('-') ?? false) {
       return '${token!.split('-').map((e) => PluginFmt.tokenView(e)).join('-')} LP';
     }
@@ -49,7 +46,8 @@ class PluginFmt {
     plugin.store!.earn.dexPools.forEach((e) {
       e.tokens!.forEach((currencyId) {
         final token = AssetsUtils.tokenDataFromCurrencyId(plugin, currencyId);
-        if (tokens.indexWhere((i) => i!.tokenNameId == token!.tokenNameId) < 0) {
+        if (tokens.indexWhere((i) => i!.tokenNameId == token!.tokenNameId) <
+            0) {
           tokens.add(token);
         }
       });

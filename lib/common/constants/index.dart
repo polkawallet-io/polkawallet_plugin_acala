@@ -43,10 +43,6 @@ const cross_chain_xcm_fees = {
       'fee': '5120000000',
       'existentialDeposit': '10000000000',
     },
-    'VSKSM': {
-      'fee': '64000000',
-      'existentialDeposit': '100000000',
-    }
   },
   para_chain_name_khala: {
     para_chain_token_symbol_khala: {

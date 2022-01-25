@@ -20,7 +20,7 @@ class ServiceLoan {
   final PluginStore? store;
 
   void _calcLiquidTokenPriceOld(
-      Map<String?, BigInt> prices, HomaLitePoolInfoData poolInfo) {
+      Map<String, BigInt> prices, HomaLitePoolInfoData poolInfo) {
     // LDOT price may lost precision here
     final relayToken = relay_chain_token_symbol;
     final exchangeRate = poolInfo.staked! > BigInt.zero
@@ -37,7 +37,7 @@ class ServiceLoan {
   }
 
   void _calcLiquidTokenPrice(
-      Map<String?, BigInt> prices, HomaNewEnvData homaEnv) {
+      Map<String, BigInt> prices, HomaNewEnvData homaEnv) {
     // LDOT price may lost precision here
     final relayToken = relay_chain_token_symbol;
     prices['L$relayToken'] = Fmt.tokenInt(
@@ -82,16 +82,10 @@ class ServiceLoan {
     store!.loan.setLoansLoading(true);
 
     // 1. subscribe all token prices, callback triggers per 5s.
-    api!.assets.subscribeTokenPrices((Map<String?, BigInt> prices) async {
+    api!.assets.subscribeTokenPrices((Map<String, BigInt> prices) async {
       // 2. we need homa staking pool info to calculate price of LDOT
-      if (await (api!.homa.isHomaAlive() as Future<bool>)) {
-        final homaEnv = await plugin.service!.homa.queryHomaEnv();
-        _calcLiquidTokenPrice(prices, homaEnv);
-      } else {
-        final stakingPoolInfo =
-            await plugin.service!.homa.queryHomaLiteStakingPool();
-        _calcLiquidTokenPriceOld(prices, stakingPoolInfo);
-      }
+      final homaEnv = await plugin.service!.homa.queryHomaEnv();
+      _calcLiquidTokenPrice(prices, homaEnv);
 
       // we may not need ACA/KAR prices
       // prices['ACA'] = Fmt.tokenInt(data[1].toString(), acala_price_decimals);

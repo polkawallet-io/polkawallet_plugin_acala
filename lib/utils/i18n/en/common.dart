@@ -43,9 +43,9 @@ const Map<String, String> enCommon = {
   'earn.title': 'Earn',
   'earn.brief':
       'Earn rewards by staking your LP tokens or collaterizing your assets.',
-  'homa.title': 'Liquid KSM',
+  'homa.title': 'Liquid DOT',
   'homa.brief':
-      'Stake KSM in Karura to earn staking rewards with keeping liquidity of your tokens.',
+      'Stake DOT in Acala to earn staking rewards with keeping liquidity of your tokens.',
   'nft.title': 'NFTs',
   'nft.brief': 'NFT collectables.',
   'coming': 'Await governance activation',

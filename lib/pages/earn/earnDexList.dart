@@ -83,12 +83,12 @@ class _EarnDexListState extends State<EarnDexList> {
 
           if (incentivesV2.dex != null) {
             (incentivesV2.dex![dexPools[i].tokenNameId!] ?? []).forEach((e) {
-              rewards += e.apr;
+              rewards += e.apr ?? 0;
               loyaltyBonus = e.deduction;
             });
             (incentivesV2.dexSaving[dexPools[i].tokenNameId!] ?? [])
                 .forEach((e) {
-              savingRewards += e.apr;
+              savingRewards += e.apr ?? 0;
               savingLoyaltyBonus = e.deduction;
             });
           }
@@ -104,7 +104,8 @@ class _EarnDexListState extends State<EarnDexList> {
           }
         }
 
-        otherDatas.sort((left, right) => right.rewards!.compareTo(left.rewards!));
+        otherDatas
+            .sort((left, right) => right.rewards!.compareTo(left.rewards!));
         datas.addAll(otherDatas);
         dexPools = datas;
       }

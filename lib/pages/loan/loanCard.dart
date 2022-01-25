@@ -188,7 +188,7 @@ class LoanCollateralCard extends StatelessWidget {
                 Column(
                   children: [
                     TapTooltip(
-                      message: dic['loan.ratio.info.KSM']!,
+                      message: dic['loan.ratio.info']!,
                       child: Row(
                         children: [
                           Icon(Icons.info,

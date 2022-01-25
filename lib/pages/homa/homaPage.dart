@@ -237,7 +237,7 @@ class _HomaPageState extends State<HomaPage> {
                                   ],
                                 ),
                                 Text(
-                                  '1 KSM ≈ ${Fmt.priceFloor(exchangeRate, lengthMax: 4)} LKSM',
+                                  '1 $relay_chain_token_symbol ≈ ${Fmt.priceFloor(exchangeRate, lengthMax: 4)} L$relay_chain_token_symbol',
                                   style: TextStyle(fontSize: 12),
                                 ),
                                 Divider(height: 24),
@@ -278,8 +278,8 @@ class _HomaPageState extends State<HomaPage> {
                               children: [
                                 Container(
                                   margin: EdgeInsets.only(bottom: 24),
-                                  child:
-                                      Text('KSM/LKSM ${dicAssets!['balance']}'),
+                                  child: Text(
+                                      '$relay_chain_token_symbol/L$relay_chain_token_symbol ${dicAssets!['balance']}'),
                                 ),
                                 Row(
                                   children: [
