@@ -8,6 +8,7 @@ import 'package:polkawallet_plugin_acala/api/types/dexPoolInfoData.dart';
 import 'package:polkawallet_plugin_acala/common/components/connectionChecker.dart';
 import 'package:polkawallet_plugin_acala/common/components/insufficientKARWarn.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/swapPage.dart';
 import 'package:polkawallet_plugin_acala/pages/swap/swapTokenInput.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';
@@ -16,6 +17,7 @@ import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/api/types/txInfoData.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
 import 'package:polkawallet_sdk/utils/i18n.dart';
+import 'package:polkawallet_ui/components/listTail.dart';
 import 'package:polkawallet_ui/components/roundedButton.dart';
 import 'package:polkawallet_ui/components/roundedCard.dart';
 import 'package:polkawallet_ui/components/tapTooltip.dart';
@@ -54,25 +56,33 @@ class _AddLiquidityPageState extends State<AddLiquidityPage> {
   TxFeeEstimateResult? _fee;
 
   Future<void> _refreshData() async {
-    final DexPoolData? pool =
-        ModalRoute.of(context)!.settings.arguments as DexPoolData?;
+    if (widget.plugin.sdk.api.connectedNode != null) {
+      _getTxFee();
 
-    await widget.plugin.service!.earn.updateAllDexPoolInfo();
+      await widget.plugin.service!.earn.updateAllDexPoolInfo();
 
-    if (mounted) {
-      final balancePair = pool!.tokens!
-          .map((e) => AssetsUtils.tokenDataFromCurrencyId(widget.plugin, e))
-          .toList();
-      setState(() {
-        final poolInfo =
-            widget.plugin.store!.earn.dexPoolInfoMap[pool.tokenNameId]!;
-        _price = Fmt.bigIntToDouble(
-                poolInfo.amountRight, balancePair[1]!.decimals!) /
-            Fmt.bigIntToDouble(poolInfo.amountLeft, balancePair[0]!.decimals!);
-      });
-      _timer = Timer(Duration(seconds: 30), () {
-        _refreshData();
-      });
+      final args = ModalRoute.of(context)!.settings.arguments as Map?;
+      final poolIndex = widget.plugin.store?.earn.dexPools
+              .indexWhere((e) => e.tokenNameId == args?['poolId']) ??
+          0;
+
+      if (poolIndex > -1 && mounted) {
+        final pool = widget.plugin.store?.earn.dexPools[poolIndex];
+        final balancePair = pool!.tokens!
+            .map((e) => AssetsUtils.tokenDataFromCurrencyId(widget.plugin, e))
+            .toList();
+        setState(() {
+          final poolInfo =
+              widget.plugin.store!.earn.dexPoolInfoMap[pool.tokenNameId];
+          _price = Fmt.bigIntToDouble(
+                  poolInfo?.amountRight, balancePair[1]!.decimals!) /
+              Fmt.bigIntToDouble(
+                  poolInfo?.amountLeft, balancePair[0]!.decimals!);
+        });
+        _timer = Timer(Duration(seconds: 30), () {
+          _refreshData();
+        });
+      }
     }
   }
 
@@ -117,15 +127,16 @@ class _AddLiquidityPageState extends State<AddLiquidityPage> {
     if (index == 1 && _maxInputRight != null) return null;
 
     final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common');
-    final DexPoolData pool =
-        ModalRoute.of(context)!.settings.arguments as DexPoolData;
-    final balancePair = pool.tokens!
+    final args = ModalRoute.of(context)!.settings.arguments as Map?;
+    final pool = widget.plugin.store?.earn.dexPools
+        .firstWhere((e) => e.tokenNameId == args?['poolId']);
+    final balancePair = pool?.tokens!
         .map((e) => AssetsUtils.tokenDataFromCurrencyId(widget.plugin, e))
         .toList();
 
     final v =
         index == 0 ? _amountLeftCtrl.text.trim() : _amountRightCtrl.text.trim();
-    final balance = balancePair[index];
+    final balance = balancePair![index];
 
     String? error = Fmt.validatePrice(v, context);
     if (error == null) {
@@ -147,12 +158,12 @@ class _AddLiquidityPageState extends State<AddLiquidityPage> {
 
     // check if user's lp token balance meet existential deposit.
     final balanceLP =
-        widget.plugin.store!.assets.tokenBalanceMap[pool.tokenNameId];
+        widget.plugin.store!.assets.tokenBalanceMap[pool?.tokenNameId];
     final balanceInt = Fmt.balanceInt(balanceLP?.amount ?? '0');
     if (error == null && index == 0 && balanceInt == BigInt.zero) {
       double min = 0;
       final poolInfo =
-          widget.plugin.store!.earn.dexPoolInfoMap[pool.tokenNameId]!;
+          widget.plugin.store!.earn.dexPoolInfoMap[pool?.tokenNameId]!;
       min = Fmt.balanceInt(balanceLP?.minBalance ?? '0') /
           poolInfo.issuance! *
           Fmt.bigIntToDouble(poolInfo.amountLeft, balancePair[0]!.decimals!);
@@ -215,8 +226,9 @@ class _AddLiquidityPageState extends State<AddLiquidityPage> {
   Future<void> _onSubmit(int? decimalsLeft, int? decimalsRight) async {
     if (_onValidate()) {
       final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala');
-      final DexPoolData pool =
-          ModalRoute.of(context)!.settings.arguments as DexPoolData;
+      final args = ModalRoute.of(context)!.settings.arguments as Map?;
+      final pool = widget.plugin.store!.earn.dexPools
+          .firstWhere((e) => e.tokenNameId == args?['poolId']);
 
       final amountLeft = _amountLeftCtrl.text.trim();
       final amountRight = _amountRightCtrl.text.trim();
@@ -334,16 +346,6 @@ class _AddLiquidityPageState extends State<AddLiquidityPage> {
   }
 
   @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
-      _refreshData();
-      _getTxFee();
-    });
-  }
-
-  @override
   void dispose() {
     if (_timer != null) {
       _timer!.cancel();
@@ -360,9 +362,43 @@ class _AddLiquidityPageState extends State<AddLiquidityPage> {
     return Observer(
       builder: (BuildContext context) {
         final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
+        final args = ModalRoute.of(context)!.settings.arguments as Map?;
 
-        final DexPoolData pool =
-            ModalRoute.of(context)!.settings.arguments as DexPoolData;
+        if (widget.plugin.sdk.api.connectedNode == null ||
+            widget.plugin.store!.earn.dexPools.length == 0) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(dic['earn.add']!),
+              centerTitle: true,
+              leading: BackBtn(),
+            ),
+            body: SafeArea(
+              child: ListView(children: [
+                ConnectionChecker(widget.plugin, onConnected: _refreshData),
+                SwapSkeleton()
+              ]),
+            ),
+          );
+        }
+
+        final poolIndex = widget.plugin.store!.earn.dexPools
+            .indexWhere((e) => e.tokenNameId == args?['poolId']);
+        if (poolIndex < 0) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(dic['earn.add']!),
+              centerTitle: true,
+              leading: BackBtn(),
+            ),
+            body: SafeArea(
+              child: ListView(children: [
+                Center(child: ListTail(isEmpty: true, isLoading: false))
+              ]),
+            ),
+          );
+        }
+
+        final pool = widget.plugin.store!.earn.dexPools[poolIndex];
         final tokenPair = pool.tokens!
             .map((e) => AssetsUtils.tokenDataFromCurrencyId(widget.plugin, e))
             .toList();

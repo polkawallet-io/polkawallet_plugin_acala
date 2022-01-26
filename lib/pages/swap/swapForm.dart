@@ -7,6 +7,7 @@ import 'package:polkawallet_plugin_acala/api/types/swapOutputData.dart';
 import 'package:polkawallet_plugin_acala/common/components/insufficientKARWarn.dart';
 import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/pages/swap/bootstrapPage.dart';
+import 'package:polkawallet_plugin_acala/pages/swap/swapPage.dart';
 import 'package:polkawallet_plugin_acala/pages/swap/swapTokenInput.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/assets.dart';
@@ -24,10 +25,10 @@ import 'package:polkawallet_ui/utils/format.dart';
 import 'package:polkawallet_ui/utils/index.dart';
 
 class SwapForm extends StatefulWidget {
-  SwapForm(this.plugin, this.keyring, this.enabled);
+  SwapForm(this.plugin, this.keyring, {this.initialSwapPair});
   final PluginAcala plugin;
   final Keyring keyring;
-  final bool enabled;
+  final List<String>? initialSwapPair;
 
   @override
   _SwapFormState createState() => _SwapFormState();
@@ -166,31 +167,31 @@ class _SwapFormState extends State<SwapForm> {
     });
   }
 
-  Future<void> _updateSwapAmount({bool init = false}) async {
+  Future<void> _updateSwapAmount() async {
     if (_swapMode == 0) {
-      await _calcSwapAmount(_amountPayCtrl.text.trim(), null, init: init);
+      if (_amountPayCtrl.text.trim().isNotEmpty) {
+        await _calcSwapAmount(_amountPayCtrl.text.trim(), null);
+      }
     } else {
-      await _calcSwapAmount(null, _amountReceiveCtrl.text.trim(), init: init);
+      if (_amountReceiveCtrl.text.trim().isNotEmpty) {
+        await _calcSwapAmount(null, _amountReceiveCtrl.text.trim());
+      }
     }
   }
 
-  void _setUpdateTimer({init = true}) {
-    _updateSwapAmount(init: init);
+  void _setUpdateTimer() {
+    if (widget.plugin.sdk.api.connectedNode != null) {
+      _updateSwapAmount();
+    }
 
     if (mounted) {
       _timer = Timer(Duration(seconds: 10), () {
-        _setUpdateTimer(
-            init: _amountPayCtrl.text.trim().isEmpty &&
-                _amountReceiveCtrl.text.trim().isEmpty);
+        _setUpdateTimer();
       });
     }
   }
 
-  Future<void> _calcSwapAmount(
-    String? supply,
-    String? target, {
-    bool init = false,
-  }) async {
+  Future<void> _calcSwapAmount(String? supply, String? target) async {
     if (_swapPair.length < 2) return;
 
     widget.plugin.service!.assets.queryMarketPrices(_swapPair);
@@ -212,21 +213,17 @@ class _SwapFormState extends State<SwapForm> {
         );
         if (mounted) {
           setState(() {
-            if (!init) {
-              if (target.isNotEmpty) {
-                _amountPayCtrl.text = output.amount.toString();
-              } else {
-                _amountPayCtrl.text = '';
-              }
+            if (target.isNotEmpty) {
+              _amountPayCtrl.text = output.amount.toString();
+            } else {
+              _amountPayCtrl.text = '';
             }
             _swapRatio = target.isEmpty
                 ? output.amount
                 : double.parse(target) / output.amount!;
             _swapOutput = output;
           });
-          if (!init) {
-            _onCheckBalance();
-          }
+          _onCheckBalance();
         }
       } else if (target == null) {
         final inputAmount = double.tryParse(supply);
@@ -244,21 +241,17 @@ class _SwapFormState extends State<SwapForm> {
         );
         if (mounted) {
           setState(() {
-            if (!init) {
-              if (supply.isNotEmpty) {
-                _amountReceiveCtrl.text = output.amount.toString();
-              } else {
-                _amountReceiveCtrl.text = '';
-              }
+            if (supply.isNotEmpty) {
+              _amountReceiveCtrl.text = output.amount.toString();
+            } else {
+              _amountReceiveCtrl.text = '';
             }
             _swapRatio = supply.isEmpty
                 ? output.amount
                 : output.amount! / double.parse(supply);
             _swapOutput = output;
           });
-          if (!init) {
-            _onCheckBalance();
-          }
+          _onCheckBalance();
         }
       }
     } on Exception catch (err) {
@@ -390,7 +383,12 @@ class _SwapFormState extends State<SwapForm> {
 
       final cachedSwapPair =
           widget.plugin.store!.swap.swapPair(widget.keyring.current.pubKey);
-      if (cachedSwapPair.length > 0 &&
+      if (widget.initialSwapPair != null &&
+          widget.initialSwapPair?.length == 2) {
+        setState(() {
+          _swapPair = widget.initialSwapPair!;
+        });
+      } else if (cachedSwapPair.length > 0 &&
           AssetsUtils.getBalanceFromTokenNameId(
                       widget.plugin, cachedSwapPair[0])!
                   .symbol !=
@@ -419,7 +417,7 @@ class _SwapFormState extends State<SwapForm> {
         }
       }
 
-      _setUpdateTimer(init: true);
+      _setUpdateTimer();
     });
   }
 
@@ -453,6 +451,13 @@ class _SwapFormState extends State<SwapForm> {
                     .map((e) => e!.tokenNameId)
                     .toList()
                 : [];
+
+        if (widget.plugin.sdk.api.connectedNode == null ||
+            swapPair.length < 2) {
+          return ListView(
+            children: [SwapSkeleton()],
+          );
+        }
 
         if (swapPair.length > 1) {
           currencyOptionsLeft.retainWhere((i) => i!.tokenNameId != swapPair[0]);
@@ -489,239 +494,218 @@ class _SwapFormState extends State<SwapForm> {
           children: <Widget>[
             RoundedCard(
               padding: EdgeInsets.all(16),
-              child: swapPair.length == 2
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Visibility(
-                          visible: isNativeTokenLow,
-                          child: InsufficientKARWarn(),
-                        ),
-                        SwapTokenInput(
-                          title: dic['dex.pay'],
-                          inputCtrl: _amountPayCtrl,
-                          balance: balancePair[0],
-                          tokenOptions: currencyOptionsLeft,
-                          tokenIconsMap: widget.plugin.tokenIcons,
-                          marketPrice: widget.plugin.store!.assets
-                              .marketPrices[balancePair[0]!.symbol],
-                          onInputChange: _onSupplyAmountChange,
-                          onTokenChange: (token) {
-                            if (token != null) {
-                              setState(() {
-                                _swapPair = token.tokenNameId == swapPair[1]
-                                    ? [token.tokenNameId, swapPair[0]]
-                                    : [token.tokenNameId, swapPair[1]];
-                                _maxInput = null;
-                              });
-                              widget.plugin.store!.swap.setSwapPair(
-                                  _swapPair, widget.keyring.current.pubKey);
-                              _updateSwapAmount();
-                            }
-                          },
-                          onSetMax: Fmt.balanceInt(balancePair[0]!.amount) >
-                                  BigInt.zero
-                              ? (v) => _onSetMax(v, balancePair[0]!.decimals!,
-                                  nativeKeepAlive: nativeKeepAlive)
-                              : null,
-                          onClear: () {
-                            setState(() {
-                              _maxInput = null;
-                              _amountPayCtrl.text = '';
-                            });
-                          },
-                        ),
-                        ErrorMessage(_error),
-                        GestureDetector(
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(8, 10, 8, 0),
-                            child: Icon(
-                              Icons.arrow_downward,
-                              color: Theme.of(context).primaryColor,
-                              size: 18,
-                            ),
-                          ),
-                          onTap:
-                              _swapPair.length > 1 ? () => _switchPair() : null,
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 12),
-                          child: SwapTokenInput(
-                            title: dic['dex.receive'],
-                            inputCtrl: _amountReceiveCtrl,
-                            balance: balancePair[1],
-                            tokenOptions: currencyOptionsRight,
-                            tokenIconsMap: widget.plugin.tokenIcons,
-                            marketPrice: widget.plugin.store!.assets
-                                .marketPrices[balancePair[1]!.symbol],
-                            onInputChange: _onTargetAmountChange,
-                            onTokenChange: (token) {
-                              if (token != null) {
-                                setState(() {
-                                  _swapPair = token.tokenNameId == swapPair[0]
-                                      ? [swapPair[1], token.tokenNameId]
-                                      : [swapPair[0], token.tokenNameId];
-                                  _maxInput = null;
-                                });
-                                widget.plugin.store!.swap.setSwapPair(
-                                    _swapPair, widget.keyring.current.pubKey);
-                                _updateSwapAmount();
-                              }
-                            },
-                            onClear: () {
-                              setState(() {
-                                _maxInput = null;
-                                _amountReceiveCtrl.text = '';
-                              });
-                            },
-                          ),
-                        ),
-                        ErrorMessage(_errorReceive),
-                        Visibility(
-                            visible: showExchangeRate,
-                            child: Container(
-                              margin:
-                                  EdgeInsets.only(left: 16, top: 12, right: 16),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text(dic['dex.rate']!, style: labelStyle),
-                                  Row(children: <Widget>[
-                                    Text(
-                                        '1 ${PluginFmt.tokenView(balancePair[rateReversed ? 1 : 0]!.symbol)} = ${(rateReversed ? 1 / _swapRatio! : _swapRatio)!.toStringAsFixed(6)} ${PluginFmt.tokenView(balancePair[rateReversed ? 0 : 1]!.symbol)}'),
-                                    GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            rateReversed = !rateReversed;
-                                          });
-                                        },
-                                        child: Container(
-                                          margin: EdgeInsets.only(left: 4),
-                                          child: Icon(
-                                            Icons.repeat,
-                                            color: primary,
-                                            size: 16.0,
-                                          ),
-                                        )),
-                                  ])
-                                ],
-                              ),
-                            )),
-                        Container(
-                          margin: EdgeInsets.only(left: 16, top: 12, right: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Expanded(
-                                  child: Text(dic['dex.slippage']!,
-                                      style: labelStyle)),
-                              GestureDetector(
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        Fmt.ratio(_slippage),
-                                        style: TextStyle(color: primary),
-                                      ),
-                                      Icon(Icons.settings_outlined,
-                                          color: primary, size: 16)
-                                    ],
-                                  ),
-                                  onTap: _onSetSlippage),
-                              // GestureDetector(
-                              //     child: ,
-                              //     onTap: _onSetSlippage)
-                            ],
-                          ),
-                        ),
-                        Visibility(
-                            visible: _slippageSettingVisible,
-                            child: Container(
-                              margin:
-                                  EdgeInsets.only(left: 8, right: 8, top: 8),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  OutlinedButtonSmall(
-                                    content: '0.1 %',
-                                    active: _slippage == 0.001,
-                                    onPressed: () => _updateSlippage(0.001),
-                                  ),
-                                  OutlinedButtonSmall(
-                                    content: '0.5 %',
-                                    active: _slippage == 0.005,
-                                    onPressed: () => _updateSlippage(0.005),
-                                  ),
-                                  OutlinedButtonSmall(
-                                    content: '1 %',
-                                    active: _slippage == 0.01,
-                                    onPressed: () => _updateSlippage(0.01),
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      children: <Widget>[
-                                        CupertinoTextField(
-                                          padding:
-                                              EdgeInsets.fromLTRB(12, 4, 12, 2),
-                                          placeholder: I18n.of(context)!.getDic(
-                                              i18n_full_dic_acala,
-                                              'common')!['custom'],
-                                          placeholderStyle: TextStyle(
-                                              fontSize: 12,
-                                              height: 1.5,
-                                              color: grey),
-                                          inputFormatters: [
-                                            UI.decimalInputFormatter(6)!
-                                          ],
-                                          keyboardType:
-                                              TextInputType.numberWithOptions(
-                                                  decimal: true),
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(24)),
-                                            border: Border.all(
-                                                color:
-                                                    _slippageFocusNode.hasFocus
-                                                        ? primary
-                                                        : grey),
-                                          ),
-                                          controller: _amountSlippageCtrl,
-                                          focusNode: _slippageFocusNode,
-                                          onChanged: _onSlippageChange,
-                                          suffix: Container(
-                                            padding: EdgeInsets.only(right: 8),
-                                            child: Text(
-                                              '%',
-                                              style: TextStyle(
-                                                  color: _slippageFocusNode
-                                                          .hasFocus
-                                                      ? primary
-                                                      : grey),
-                                            ),
-                                          ),
-                                        ),
-                                        Visibility(
-                                            visible: _slippageError != null,
-                                            child: Text(
-                                              _slippageError ?? "",
-                                              style: TextStyle(
-                                                  color: Colors.red,
-                                                  fontSize: 10),
-                                            ))
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                            )),
-                      ],
-                    )
-                  : Center(
-                      child: Container(
-                        height: MediaQuery.of(context).size.width / 2,
-                        child: CupertinoActivityIndicator(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Visibility(
+                    visible: isNativeTokenLow,
+                    child: InsufficientKARWarn(),
+                  ),
+                  SwapTokenInput(
+                    title: dic['dex.pay'],
+                    inputCtrl: _amountPayCtrl,
+                    balance: balancePair[0],
+                    tokenOptions: currencyOptionsLeft,
+                    tokenIconsMap: widget.plugin.tokenIcons,
+                    marketPrice: widget.plugin.store!.assets
+                        .marketPrices[balancePair[0]!.symbol],
+                    onInputChange: _onSupplyAmountChange,
+                    onTokenChange: (token) {
+                      setState(() {
+                        _swapPair = token.tokenNameId == swapPair[1]
+                            ? [token.tokenNameId, swapPair[0]]
+                            : [token.tokenNameId, swapPair[1]];
+                        _maxInput = null;
+                      });
+                      widget.plugin.store!.swap.setSwapPair(
+                          _swapPair, widget.keyring.current.pubKey);
+                      _updateSwapAmount();
+                    },
+                    onSetMax:
+                        Fmt.balanceInt(balancePair[0]!.amount) > BigInt.zero
+                            ? (v) => _onSetMax(v, balancePair[0]!.decimals!,
+                                nativeKeepAlive: nativeKeepAlive)
+                            : null,
+                    onClear: () {
+                      setState(() {
+                        _maxInput = null;
+                        _amountPayCtrl.text = '';
+                      });
+                    },
+                  ),
+                  ErrorMessage(_error),
+                  GestureDetector(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(8, 10, 8, 0),
+                      child: Icon(
+                        Icons.arrow_downward,
+                        color: Theme.of(context).primaryColor,
+                        size: 18,
                       ),
                     ),
+                    onTap: _swapPair.length > 1 ? () => _switchPair() : null,
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 12),
+                    child: SwapTokenInput(
+                      title: dic['dex.receive'],
+                      inputCtrl: _amountReceiveCtrl,
+                      balance: balancePair[1],
+                      tokenOptions: currencyOptionsRight,
+                      tokenIconsMap: widget.plugin.tokenIcons,
+                      marketPrice: widget.plugin.store!.assets
+                          .marketPrices[balancePair[1]!.symbol],
+                      onInputChange: _onTargetAmountChange,
+                      onTokenChange: (token) {
+                        setState(() {
+                          _swapPair = token.tokenNameId == swapPair[0]
+                              ? [swapPair[1], token.tokenNameId]
+                              : [swapPair[0], token.tokenNameId];
+                          _maxInput = null;
+                        });
+                        widget.plugin.store!.swap.setSwapPair(
+                            _swapPair, widget.keyring.current.pubKey);
+                        _updateSwapAmount();
+                      },
+                      onClear: () {
+                        setState(() {
+                          _maxInput = null;
+                          _amountReceiveCtrl.text = '';
+                        });
+                      },
+                    ),
+                  ),
+                  ErrorMessage(_errorReceive),
+                  Visibility(
+                      visible: showExchangeRate,
+                      child: Container(
+                        margin: EdgeInsets.only(left: 16, top: 12, right: 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(dic['dex.rate']!, style: labelStyle),
+                            Row(children: <Widget>[
+                              Text(
+                                  '1 ${PluginFmt.tokenView(balancePair[rateReversed ? 1 : 0]!.symbol)} = ${(rateReversed ? 1 / _swapRatio! : _swapRatio)!.toStringAsFixed(6)} ${PluginFmt.tokenView(balancePair[rateReversed ? 0 : 1]!.symbol)}'),
+                              GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      rateReversed = !rateReversed;
+                                    });
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.only(left: 4),
+                                    child: Icon(
+                                      Icons.repeat,
+                                      color: primary,
+                                      size: 16.0,
+                                    ),
+                                  )),
+                            ])
+                          ],
+                        ),
+                      )),
+                  Container(
+                    margin: EdgeInsets.only(left: 16, top: 12, right: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Expanded(
+                            child:
+                                Text(dic['dex.slippage']!, style: labelStyle)),
+                        GestureDetector(
+                            child: Row(
+                              children: [
+                                Text(
+                                  Fmt.ratio(_slippage),
+                                  style: TextStyle(color: primary),
+                                ),
+                                Icon(Icons.settings_outlined,
+                                    color: primary, size: 16)
+                              ],
+                            ),
+                            onTap: _onSetSlippage),
+                        // GestureDetector(
+                        //     child: ,
+                        //     onTap: _onSetSlippage)
+                      ],
+                    ),
+                  ),
+                  Visibility(
+                      visible: _slippageSettingVisible,
+                      child: Container(
+                        margin: EdgeInsets.only(left: 8, right: 8, top: 8),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            OutlinedButtonSmall(
+                              content: '0.1 %',
+                              active: _slippage == 0.001,
+                              onPressed: () => _updateSlippage(0.001),
+                            ),
+                            OutlinedButtonSmall(
+                              content: '0.5 %',
+                              active: _slippage == 0.005,
+                              onPressed: () => _updateSlippage(0.005),
+                            ),
+                            OutlinedButtonSmall(
+                              content: '1 %',
+                              active: _slippage == 0.01,
+                              onPressed: () => _updateSlippage(0.01),
+                            ),
+                            Expanded(
+                              child: Column(
+                                children: <Widget>[
+                                  CupertinoTextField(
+                                    padding: EdgeInsets.fromLTRB(12, 4, 12, 2),
+                                    placeholder: I18n.of(context)!.getDic(
+                                        i18n_full_dic_acala,
+                                        'common')!['custom'],
+                                    placeholderStyle: TextStyle(
+                                        fontSize: 12, height: 1.5, color: grey),
+                                    inputFormatters: [
+                                      UI.decimalInputFormatter(6)!
+                                    ],
+                                    keyboardType:
+                                        TextInputType.numberWithOptions(
+                                            decimal: true),
+                                    decoration: BoxDecoration(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(24)),
+                                      border: Border.all(
+                                          color: _slippageFocusNode.hasFocus
+                                              ? primary
+                                              : grey),
+                                    ),
+                                    controller: _amountSlippageCtrl,
+                                    focusNode: _slippageFocusNode,
+                                    onChanged: _onSlippageChange,
+                                    suffix: Container(
+                                      padding: EdgeInsets.only(right: 8),
+                                      child: Text(
+                                        '%',
+                                        style: TextStyle(
+                                            color: _slippageFocusNode.hasFocus
+                                                ? primary
+                                                : grey),
+                                      ),
+                                    ),
+                                  ),
+                                  Visibility(
+                                      visible: _slippageError != null,
+                                      child: Text(
+                                        _slippageError ?? "",
+                                        style: TextStyle(
+                                            color: Colors.red, fontSize: 10),
+                                      ))
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      )),
+                ],
+              ),
             ),
             Visibility(
                 visible: showExchangeRate && _swapOutput.amount != null,
@@ -801,7 +785,7 @@ class _SwapFormState extends State<SwapForm> {
               padding: EdgeInsets.only(top: 24),
               child: RoundedButton(
                 text: dic['dex.title'],
-                onPressed: !widget.enabled || _swapRatio == 0
+                onPressed: _swapRatio == 0
                     ? null
                     : () => _onSubmit(
                         balancePair.map((e) => e!.decimals).toList(), minMax),

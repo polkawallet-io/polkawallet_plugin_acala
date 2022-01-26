@@ -119,13 +119,18 @@ async function getAllTokens(api: ApiPromise) {
       minBalance: json["minimalBalance"].toString(),
     };
   });
-  const lcDotCurrencyId = {
-    LiquidCroadloan: "13",
-  };
-  if (name.toHuman().toLowerCase() === "acala") {
+  if (
+    !name
+      .toHuman()
+      .toLowerCase()
+      .match("mandala")
+  ) {
+    const lcDotCurrencyId = {
+      LiquidCrowdloan: "13",
+    };
     return [
       {
-        type: "LiquidCroadloan",
+        type: "LiquidCrowdloan",
         id: "13",
         symbol: "lcDOT",
         tokenNameId: forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, lcDotCurrencyId)),

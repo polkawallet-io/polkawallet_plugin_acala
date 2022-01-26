@@ -61,7 +61,8 @@ class EarnHistoryPage extends StatelessWidget {
             nodes.removeWhere(
                 (e) => jsonDecode(e['data'][1]['value'])['loans'] != null);
             final list = nodes
-                .map((i) => TxDexIncentiveData.fromJson((i as Map) as Map<String, dynamic>, plugin))
+                .map((i) => TxDexIncentiveData.fromJson(
+                    (i as Map) as Map<String, dynamic>, plugin))
                 .toList();
 
             return ListView.builder(

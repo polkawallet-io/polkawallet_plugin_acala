@@ -21,7 +21,6 @@ import 'package:polkawallet_plugin_acala/pages/earn/earnDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earn/earnHistoryPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earn/earnPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earn/earnTxDetailPage.dart';
-import 'package:polkawallet_plugin_acala/pages/earn/liquidityDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/earn/withdrawLiquidityPage.dart';
 import 'package:polkawallet_plugin_acala/pages/gov/democracy/proposalDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/gov/democracy/referendumVotePage.dart';
@@ -43,6 +42,7 @@ import 'package:polkawallet_plugin_acala/pages/nft/nftBurnPage.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftPage.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftTransferPage.dart';
+import 'package:polkawallet_plugin_acala/pages/nft/nfts.dart';
 import 'package:polkawallet_plugin_acala/pages/swap/bootstrapPage.dart';
 import 'package:polkawallet_plugin_acala/pages/swap/swapDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/swap/swapHistoryPage.dart';
@@ -67,7 +67,7 @@ class PluginAcala extends PolkawalletPlugin {
       : basic = PluginBasicData(
           name: name,
           genesisHash: plugin_genesis_hash,
-          ss58: false ? ss58_prefix_acala : 42,
+          ss58: true ? ss58_prefix_acala : 42,
           primaryColor: Colors.indigo,
           gradientColor: Colors.indigoAccent,
           backgroundImage: AssetImage(
@@ -113,39 +113,49 @@ class PluginAcala extends PolkawalletPlugin {
   @override
   List<HomeNavItem> getNavItems(BuildContext context, Keyring keyring) {
     final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common')!;
-    return [
-      // HomeNavItem(
-      //   text: 'Acala',
-      //   icon: SvgPicture.asset(
-      //     'packages/polkawallet_plugin_acala/assets/images/logo.svg',
-      //     color: Theme.of(context).disabledColor,
-      //   ),
-      //   iconActive: SvgPicture.asset(
-      //       'packages/polkawallet_plugin_acala/assets/images/logo.svg'),
-      //   content: AcalaEntry(this, keyring),
-      // ),
-      HomeNavItem(
-        text: "Defi",
-        icon: Container(),
-        iconActive: Container(),
-        isAdapter: true,
-        content: DefiWidget(this),
-      ),
-      // HomeNavItem(
-      //   text: "NFT",
-      //   icon: Container(),
-      //   iconActive: Container(),
-      //   isAdapter: true,
-      //   content: NFTWidget(this),
-      // ),
-      HomeNavItem(
-        text: dic['governance']!,
-        icon: Container(),
-        iconActive: Container(),
-        // content: GovernanceWidget(this),
-        content: Gov(this, keyring),
-      )
-    ];
+    final modulesConfig = store?.setting.liveModules;
+    final nftEnabled = (modulesConfig?.keys.length ?? 0) > 0 &&
+        (modulesConfig?['nft'] ?? {})['enabled'] == true;
+    return nftEnabled
+        ? [
+            HomeNavItem(
+              text: "Defi",
+              icon: Container(),
+              iconActive: Container(),
+              isAdapter: true,
+              content: DefiWidget(this),
+            ),
+            HomeNavItem(
+              text: "NFT",
+              icon: Container(),
+              iconActive: Container(),
+              // content: NFTWidget(this),
+              content: NFTs(this, keyring),
+            ),
+            HomeNavItem(
+              text: dic['governance']!,
+              icon: Container(),
+              iconActive: Container(),
+              // content: GovernanceWidget(this),
+              content: Gov(this, keyring),
+            )
+          ]
+        : [
+            HomeNavItem(
+              text: "Defi",
+              icon: Container(),
+              iconActive: Container(),
+              isAdapter: true,
+              content: DefiWidget(this),
+            ),
+            HomeNavItem(
+              text: dic['governance']!,
+              icon: Container(),
+              iconActive: Container(),
+              // content: GovernanceWidget(this),
+              content: Gov(this, keyring),
+            )
+          ];
   }
 
   // @override
@@ -266,8 +276,6 @@ class PluginAcala extends PolkawalletPlugin {
             ),
             uri: GraphQLConfig['httpUri']!,
           ),
-      EarnLiquidityDetailPage.route: (_) =>
-          EarnLiquidityDetailPage(this, keyring),
       EarnTxDetailPage.route: (_) => EarnTxDetailPage(this, keyring),
       LPStakePage.route: (_) => LPStakePage(this, keyring),
       AddLiquidityPage.route: (_) => AddLiquidityPage(this, keyring),

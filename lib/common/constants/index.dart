@@ -97,7 +97,7 @@ const config_modules = {
   },
   module_name_nft: {
     'visible': true,
-    'enabled': true,
+    'enabled': false,
   },
 };
 

@@ -136,7 +136,8 @@ class _SwapTokenInputState extends State<SwapTokenInput> {
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
                         inputFormatters: [
-                          UI.decimalInputFormatter(widget.balance!.decimals!)!
+                          UI.decimalInputFormatter(
+                              widget.balance?.decimals ?? 12)!
                         ],
                         controller: widget.inputCtrl,
                         keyboardType:
@@ -154,8 +155,9 @@ class _SwapTokenInputState extends State<SwapTokenInput> {
                   ),
                   GestureDetector(
                     child: CurrencyWithIcon(
-                      PluginFmt.tokenView(widget.balance!.symbol!),
-                      TokenIcon(widget.balance!.symbol!, widget.tokenIconsMap!,
+                      PluginFmt.tokenView(widget.balance?.symbol),
+                      TokenIcon(
+                          widget.balance?.symbol ?? '', widget.tokenIconsMap!,
                           size: 24),
                       textStyle: Theme.of(context).textTheme.headline4,
                       trailing: widget.onTokenChange != null

@@ -15,7 +15,7 @@ class AcalaServiceLoan {
         .evalJavascript('api.derive.loan.allLoans("$address")');
   }
 
-  Future<List?> queryLoanTypes() async {
+  Future<List> queryLoanTypes() async {
     return await plugin.sdk.webView!
         .evalJavascript('api.derive.loan.allLoanTypes()');
   }

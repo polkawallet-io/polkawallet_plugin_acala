@@ -130,7 +130,7 @@ class _LPStakePage extends State<LPStakePage> {
         .map((e) => AssetsUtils.tokenDataFromCurrencyId(widget.plugin, e))
         .toList();
     final poolTokenSymbol =
-        tokenPair.map((e) => PluginFmt.tokenView(e?.symbol)).toList();
+        tokenPair.map((e) => PluginFmt.tokenView(e?.symbol)).join('-');
 
     return Scaffold(
       appBar: AppBar(
