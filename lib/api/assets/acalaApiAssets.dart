@@ -36,8 +36,7 @@ class AcalaApiAssets {
   }
 
   Future<void> subscribeTokenBalances(
-      String? address, Function(List<TokenBalanceData>) callback,
-      {bool? transferEnabled = true}) async {
+      String? address, Function(List<TokenBalanceData>) callback) async {
     final tokens = await getAllTokenSymbols();
     if (service.plugin.store!.setting.tokensConfig['invisible'] != null) {
       final invisible =
@@ -80,7 +79,7 @@ class AcalaApiAssets {
           locked: e['balance']['frozen'].toString(),
           reserved: e['balance']['reserved'].toString(),
           price: service.plugin.store!.assets.marketPrices[e['symbol']],
-          detailPageRoute: transferEnabled! ? TokenDetailPage.route : null,
+          detailPageRoute: TokenDetailPage.route,
         );
       }).toList());
     });

@@ -6,6 +6,7 @@ import { existential_deposit, nft_image_config } from "../constants/acala";
 import { BN } from "@polkadot/util/bn/bn";
 import { WalletPromise } from "@acala-network/sdk-wallet";
 import { Homa } from "@acala-network/sdk";
+import { OraclePriceProvider } from "@acala-network/sdk/wallet/price-provider/oracle-price-provider";
 import axios from "axios";
 import { IncentiveResult } from "../types/acalaTypes";
 import { firstValueFrom, of } from "rxjs";
@@ -19,6 +20,7 @@ const native_token = "ACA";
 
 let walletPromise: WalletPromise;
 let homa: Homa;
+let oracle: OraclePriceProvider;
 
 function _computeExchangeFee(path: Token[], fee: FixedPointNumber) {
   return ONE.minus(
@@ -103,7 +105,7 @@ async function getAllTokens(api: ApiPromise) {
     ),
     symbol: e,
     currencyId: { Token: e },
-    decimals: tokenDecimals.toJSON()[tokenSymbol.toJSON().indexOf(e)],
+    decimals: tokenDecimals.toJSON()[(tokenSymbol.toJSON() as any[]).indexOf(e)],
     minBalance: existential_deposit[e],
   }));
   const res2 = foreign.map(([args, data]) => {
@@ -565,6 +567,13 @@ async function queryIncentives(api: ApiPromise) {
   return res;
 }
 
+async function queryTokenPriceFromOracle(api: ApiPromise, currencyIds: Object[]) {
+  if (!oracle) {
+    oracle = new OraclePriceProvider(api);
+  }
+  return Promise.all(currencyIds.map((e) => oracle.query(e as any)));
+}
+
 async function queryAggregatedAssets(api: ApiPromise, address: string) {
   const [allTokens, dexPools, loanTypes] = await Promise.all([getAllTokens(api), getTokenPairs(api), api.derive.loan.allLoanTypes()]);
   const [loans, nativeToken, tokens, poolInfos, loanRewards, incentives] = await Promise.all([
@@ -843,6 +852,7 @@ export default {
   queryNFTs,
   checkExistentialDepositForTransfer,
   queryIncentives,
+  queryTokenPriceFromOracle,
   queryAggregatedAssets,
 
   // homa
