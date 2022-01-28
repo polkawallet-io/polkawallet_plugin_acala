@@ -3,6 +3,7 @@ library polkawallet_plugin_acala;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:polkawallet_plugin_acala/api/acalaApi.dart';
@@ -51,7 +52,11 @@ import 'package:polkawallet_plugin_acala/service/graphql.dart';
 import 'package:polkawallet_plugin_acala/service/index.dart';
 import 'package:polkawallet_plugin_acala/store/cache/storeCache.dart';
 import 'package:polkawallet_plugin_acala/store/index.dart';
+import 'package:polkawallet_plugin_acala/utils/InstrumentItemWidget.dart';
+import 'package:polkawallet_plugin_acala/utils/InstrumentWidget.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
+import 'package:polkawallet_plugin_acala/utils/types/aggregatedAssetsData.dart';
 import 'package:polkawallet_sdk/api/types/networkParams.dart';
 import 'package:polkawallet_sdk/plugin/homeNavItem.dart';
 import 'package:polkawallet_sdk/plugin/index.dart';
@@ -158,71 +163,112 @@ class PluginAcala extends PolkawalletPlugin {
           ];
   }
 
-  // @override
-  // Widget getAggregatedAssetsWidget(
-  //     {String priceCurrency = 'USD',
-  //     bool hideBalance = false,
-  //     double rate = 1.0,
-  //     @required Function onSwitchBack,
-  //     @required Function onSwitchHideBalance}) {
-  //   if (store == null) return null;
+  @override
+  Widget? getAggregatedAssetsWidget(
+      {String priceCurrency = 'USD',
+      bool hideBalance = false,
+      double rate = 1.0,
+      Function? onSwitchBack,
+      Function? onSwitchHideBalance}) {
+    if (store == null) return null;
 
-  //   return Observer(builder: (context) {
-  //     if (store.assets.aggregatedAssets.keys.length == 0)
-  //       return InstrumentWidget(
-  //         [InstrumentData(0, []), InstrumentData(0, []), InstrumentData(0, [])],
-  //         onSwitchBack,
-  //         onSwitchHideBalance,
-  //         hideBalance: hideBalance,
-  //       );
-  //     final Map<String, double> marketPrices = Map<String, double>();
-  //     store.assets.marketPrices.forEach((key, value) {
-  //       marketPrices[key] = value * rate;
-  //     });
+    return Observer(builder: (context) {
+      if (store!.assets.aggregatedAssets!.keys.length == 0)
+        return InstrumentWidget(
+          [InstrumentData(0, []), InstrumentData(0, []), InstrumentData(0, [])],
+          onSwitchBack!,
+          onSwitchHideBalance!,
+          hideBalance: hideBalance,
+        );
+      final Map<String, double> marketPrices = Map<String, double>();
+      store!.assets.marketPrices.forEach((key, value) {
+        marketPrices[key] = value * rate;
+      });
 
-  //     final data = AssetsUtils.aggregatedAssetsDataFromJson(
-  //         store.assets.aggregatedAssets, balances, marketPrices);
-  //     // // data.forEach((element) => print(element));
-  //     // final total = data.map((e) => e.value).reduce((a, b) => a + b);
-  //     // return Text('total: ${hideBalance ? '***' : total}');
-  //     return InstrumentWidget(
-  //       instrumentDatas(data, context, priceCurrency: priceCurrency),
-  //       onSwitchBack,
-  //       onSwitchHideBalance,
-  //       hideBalance: hideBalance,
-  //     );
-  //   });
-  // }
+      final data = AssetsUtils.aggregatedAssetsDataFromJson(
+          store!.assets.aggregatedAssets!, balances, marketPrices);
+      // // data.forEach((element) => print(element));
+      // final total = data.map((e) => e.value).reduce((a, b) => a + b);
+      // return Text('total: ${hideBalance ? '***' : total}');
+      return InstrumentWidget(
+        instrumentData(data, context, priceCurrency: priceCurrency),
+        onSwitchBack!,
+        onSwitchHideBalance!,
+        hideBalance: hideBalance,
+      );
+    });
+  }
 
-  // List<InstrumentData> instrumentDatas(
-  //     List<AggregatedAssetsData> data, BuildContext context,
-  //     {String priceCurrency = 'USD'}) {
-  //   final List<InstrumentData> datas = [];
-  //   InstrumentData totalBalance1 = InstrumentData(0, [],
-  //       title:
-  //           I18n.of(context).getDic(i18n_full_dic_acala, 'acala')["v3.myDefi"],
-  //       prompt: I18n.of(context)
-  //           .getDic(i18n_full_dic_acala, 'acala')["v3.switchBack"]);
-  //   datas.add(totalBalance1);
+  List<InstrumentData> instrumentData(
+      List<AggregatedAssetsData> data, BuildContext context,
+      {String priceCurrency = 'USD'}) {
+    final List<InstrumentData> datas = [];
+    InstrumentData totalBalance1 = InstrumentData(0, [],
+        title: I18n.of(context)!
+            .getDic(i18n_full_dic_acala, 'acala')!["v3.myDefi"]!,
+        prompt: I18n.of(context)!
+            .getDic(i18n_full_dic_acala, 'acala')!["v3.switchBack"]!);
+    datas.add(totalBalance1);
 
-  //   final total = data.map((e) => e.value).reduce((a, b) => a + b);
-  //   InstrumentData totalBalance = InstrumentData(total, [],
-  //       currencySymbol: currencySymbol(priceCurrency),
-  //       title:
-  //           I18n.of(context).getDic(i18n_full_dic_acala, 'acala')["v3.myDefi"],
-  //       prompt: I18n.of(context)
-  //           .getDic(i18n_full_dic_acala, 'acala')["v3.switchBack"]);
-  //   data.forEach((element) {
-  //     totalBalance.items.add(InstrumentItemData(
-  //         instrumentColor(element.category),
-  //         element.category,
-  //         element.value,
-  //         instrumentIconName(element.category)));
-  //   });
-  //   datas.add(totalBalance);
-  //   datas.add(totalBalance1);
-  //   return datas;
-  // }
+    final total = data.map((e) => e.value).reduce((a, b) => a! + b!);
+    InstrumentData totalBalance = InstrumentData(total ?? 0, [],
+        currencySymbol: _currencySymbol(priceCurrency),
+        title: I18n.of(context)!
+            .getDic(i18n_full_dic_acala, 'acala')!["v3.myDefi"]!,
+        prompt: I18n.of(context)!
+            .getDic(i18n_full_dic_acala, 'acala')!["v3.switchBack"]!);
+    data.forEach((element) {
+      totalBalance.items.add(InstrumentItemData(
+          _instrumentColor(element.category),
+          element.category!,
+          element.value!,
+          _instrumentIconName(element.category)));
+    });
+    datas.add(totalBalance);
+    datas.add(totalBalance1);
+    return datas;
+  }
+
+  String _currencySymbol(String priceCurrency) {
+    switch (priceCurrency) {
+      case "USD":
+        return "\$";
+      case "CNY":
+        return "￥";
+      default:
+        return "\$";
+    }
+  }
+
+  Color _instrumentColor(String? category) {
+    switch (category) {
+      case "Tokens":
+        return Color(0xFF5E5C59);
+      case "Vaults":
+        return Color(0xFFCE623C);
+      case "LP Staking":
+        return Color(0xFF768FE1);
+      case "Rewards":
+        return Color(0xFFFFC952);
+      default:
+        return Color(0xFFFFC952);
+    }
+  }
+
+  String _instrumentIconName(String? category) {
+    switch (category) {
+      case "Tokens":
+        return "packages/polkawallet_plugin_acala/assets/images/icon_instrument_black.png";
+      case "Vaults":
+        return "packages/polkawallet_plugin_acala/assets/images/icon_instrument_orange.png";
+      case "LP Staking":
+        return "packages/polkawallet_plugin_acala/assets/images/icon_instrument_blue.png";
+      case "Rewards":
+        return "packages/polkawallet_plugin_acala/assets/images/icon_instrument_yellow.png";
+      default:
+        return "packages/polkawallet_plugin_acala/assets/images/icon_instrument_yellow.png";
+    }
+  }
 
   @override
   Map<String, WidgetBuilder> getRoutes(Keyring keyring) {
@@ -329,10 +375,18 @@ class PluginAcala extends PolkawalletPlugin {
 
     _service!.assets.queryAggregatedAssets();
 
+    _subscribeOraclePricesWithLoans(acc);
+
     final nft = await _api!.assets.queryNFTs(acc.address);
     if (nft != null) {
       _store!.assets.setNFTs(nft);
     }
+  }
+
+  // we use this oracle price for lcDOT value calculation
+  Future<void> _subscribeOraclePricesWithLoans(KeyPairData acc) async {
+    await _service?.loan.queryLoanTypes(acc.address);
+    _service?.loan.subscribeAccountLoans(acc.address);
   }
 
   void _loadCacheData(KeyPairData acc) {
@@ -399,6 +453,8 @@ class PluginAcala extends PolkawalletPlugin {
 
     if (_service!.connected) {
       _api!.assets.unsubscribeTokenBalances(acc.address);
+      _service?.loan.unsubscribeAccountLoans();
+
       _subscribeTokenBalances(acc);
     }
   }

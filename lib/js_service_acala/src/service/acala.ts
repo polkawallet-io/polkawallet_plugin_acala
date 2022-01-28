@@ -302,7 +302,7 @@ async function fetchDexPoolInfo(api: ApiPromise, pool: any, address: string) {
           .toNumber() || 0
       ).toString(),
     };
-    if (tokenNameId === "KUSD") {
+    if (tokenNameId === "AUSD") {
       saving = data.amount;
       return;
     }
@@ -558,8 +558,8 @@ async function queryIncentives(api: ApiPromise) {
       res[incentiveType][id] = [];
     }
     res[incentiveType][id].push({
-      tokenNameId: "KUSD",
-      currencyId: { Token: "KUSD" },
+      tokenNameId: "AUSD",
+      currencyId: { Token: "AUSD" },
       amount: FPNum(epochOfYear.mul(new BN(e[1].toString())).div(new BN(2)), 18).toString(),
       deduction: deductions.find((e) => e.idString === id)?.value || "0",
     });
@@ -609,7 +609,7 @@ function _addAsset(assetsMap: object, tokenSymbol: string, value: number) {
   assetsMap[tokenSymbol] += value;
 }
 function _calcLoanAssets(api: ApiPromise, allTokens: any[], loanTypes: any[], loans: any[], loanRewards: any[], incentives: any) {
-  const acala_stable_coin = "KUSD";
+  const acala_stable_coin = "AUSD";
   const res = {};
   const rewardsMap = {};
   loans.forEach((e) => {
@@ -629,7 +629,7 @@ function _calcLoanAssets(api: ApiPromise, allTokens: any[], loanTypes: any[], lo
     if (!!reward && !!incentives.Loans[tokenNameId]) {
       const loyalty = incentives.Loans[tokenNameId][0].deduction;
       reward.reward.forEach((i) => {
-        _addAsset(rewardsMap, "KAR", i.amount * (1 - loyalty));
+        _addAsset(rewardsMap, "ACA", i.amount * (1 - loyalty));
       });
     }
   });
@@ -703,7 +703,7 @@ function _calcLPAssets(api: ApiPromise, allTokens: any[], poolInfos: any[], lpTo
       _addAsset(lpRewards, _getTokenSymbol(allTokens, i.tokenNameId), i.amount * (1 - loyalty));
     });
     if ((e.reward.saving || 0) > 0) {
-      _addAsset(lpRewards, "KUSD", (e.reward.saving || 0) * (1 - savingLoyalty));
+      _addAsset(lpRewards, "AUSD", (e.reward.saving || 0) * (1 - savingLoyalty));
     }
   });
   return [res, lpTokensFree, lpRewards];

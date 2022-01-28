@@ -5,8 +5,10 @@ import 'package:polkawallet_plugin_acala/common/constants/index.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/service/walletApi.dart';
 import 'package:polkawallet_plugin_acala/store/index.dart';
+import 'package:polkawallet_plugin_acala/utils/assets.dart';
 import 'package:polkawallet_sdk/plugin/store/balances.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
+import 'package:polkawallet_ui/utils/format.dart';
 
 class ServiceAssets {
   ServiceAssets(this.plugin, this.keyring)
@@ -81,5 +83,26 @@ class ServiceAssets {
     final data =
         await plugin.api!.assets.queryAggregatedAssets(keyring.current.address);
     plugin.store!.assets.setAggregatedAssets(data, keyring.current.pubKey);
+  }
+
+  void calcLPTokenPrices() {
+    final Map<String, double> prices = {};
+    plugin.store!.earn.dexPoolInfoMap.values.forEach((e) {
+      final pool = plugin.store!.earn.dexPools
+          .firstWhere((i) => i.tokenNameId == e.tokenNameId);
+      final tokenPair = pool.tokens!
+          .map((id) => AssetsUtils.tokenDataFromCurrencyId(plugin, id))
+          .toList();
+
+      prices[tokenPair.map((e) => e!.symbol).join('-')] = (Fmt.bigIntToDouble(
+                      e.amountLeft, tokenPair[0]!.decimals!) *
+                  (plugin.store!.assets.marketPrices[tokenPair[0]!.symbol] ??
+                      0) +
+              Fmt.bigIntToDouble(e.amountRight, tokenPair[1]!.decimals!) *
+                  (plugin.store!.assets.marketPrices[tokenPair[1]!.symbol] ??
+                      0)) /
+          Fmt.bigIntToDouble(e.issuance, tokenPair[0]!.decimals!);
+    });
+    plugin.store!.assets.setMarketPrices(prices);
   }
 }

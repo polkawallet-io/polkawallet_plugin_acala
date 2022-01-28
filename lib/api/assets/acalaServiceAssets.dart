@@ -127,7 +127,7 @@ class AcalaServiceAssets {
     }
 
     _tokenPricesSubscribeTimer =
-        Timer(Duration(seconds: 20), () => subscribeTokenPrices(callback));
+        Timer(Duration(seconds: 30), () => subscribeTokenPrices(callback));
   }
 
   void unsubscribeTokenPrices() {

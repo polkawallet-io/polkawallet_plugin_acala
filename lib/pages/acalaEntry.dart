@@ -122,7 +122,7 @@ class _DefiWidgetState extends State<DefiWidget> {
                 title: dic!['$e.title']!,
                 describe: dic['$e.brief'],
                 icon: Image.asset(
-                    "packages/polkawallet_plugin_karura/assets/images/icon_$e.png",
+                    "packages/polkawallet_plugin_acala/assets/images/icon_$e.png",
                     width: 18),
               ),
               onTap: () {

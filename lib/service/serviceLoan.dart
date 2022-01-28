@@ -96,6 +96,17 @@ class ServiceLoan {
 
       store!.assets.setPrices(prices);
 
+      // we need to set marketPrice of lcDOT from oraclePrice
+      final lcDOTNameId = 'lc://13';
+      if (prices.keys.contains(lcDOTNameId)) {
+        try {
+          store?.assets.setMarketPrices(
+              {'lcDOT': Fmt.bigIntToDouble(prices[lcDOTNameId], 18)});
+        } catch (_) {
+          // ignore
+        }
+      }
+
       // 3. update collateral incentive rewards
       queryCollateralRewards(address);
 
