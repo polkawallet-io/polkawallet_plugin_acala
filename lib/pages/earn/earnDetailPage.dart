@@ -128,7 +128,7 @@ class EarnDetailPage extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: RoundedButton(
-                                    color: Colors.redAccent,
+                                    color: plugin.basic.gradientColor,
                                     text: dic['earn.stake'],
                                     onPressed: balance > BigInt.zero
                                         ? () => _onStake(context,
@@ -184,7 +184,7 @@ class EarnDetailPage extends StatelessWidget {
                       children: <Widget>[
                         Expanded(
                           child: Container(
-                            color: Colors.redAccent,
+                            color: plugin.basic.gradientColor,
                             child: TextButton(
                                 child: Text(
                                   dic['earn.add']!,

@@ -59,7 +59,7 @@ class ServiceLoan {
       data[token.tokenNameId] = LoanData.fromJson(
         Map<String, dynamic>.from(i),
         loanTypes.firstWhere((t) => t.token!.tokenNameId == token.tokenNameId),
-        prices[token.symbol] ?? BigInt.zero,
+        prices[token.tokenNameId] ?? BigInt.zero,
         plugin,
       );
     });
@@ -83,9 +83,13 @@ class ServiceLoan {
 
     // 1. subscribe all token prices, callback triggers per 5s.
     api!.assets.subscribeTokenPrices((Map<String, BigInt> prices) async {
-      // 2. we need homa staking pool info to calculate price of LDOT
-      final homaEnv = await plugin.service!.homa.queryHomaEnv();
-      _calcLiquidTokenPrice(prices, homaEnv);
+      try {
+        // 2. we need homa staking pool info to calculate price of LDOT
+        final homaEnv = await plugin.service!.homa.queryHomaEnv();
+        _calcLiquidTokenPrice(prices, homaEnv);
+      } catch (_) {
+        // ignore
+      }
 
       // we may not need ACA/KAR prices
       // prices['ACA'] = Fmt.tokenInt(data[1].toString(), acala_price_decimals);

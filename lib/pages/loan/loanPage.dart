@@ -113,10 +113,12 @@ class _LoanPageState extends State<LoanPage> {
         loans.retainWhere((loan) =>
             loan.debits > BigInt.zero || loan.collaterals > BigInt.zero);
 
+        // final isDataLoading =
+        //     widget.plugin.store!.loan.loansLoading && loans.length == 0 ||
+        //         // do not show loan card if collateralRatio was not calculated.
+        //         (loans.length > 0 && loans[0].collateralRatio <= 0);
         final isDataLoading =
-            widget.plugin.store!.loan.loansLoading && loans.length == 0 ||
-                // do not show loan card if collateralRatio was not calculated.
-                (loans.length > 0 && loans[0].collateralRatio <= 0);
+            widget.plugin.store!.loan.loansLoading && loans.length == 0;
 
         final incentiveTokenOptions =
             widget.plugin.store!.loan.loanTypes.map((e) => e.token).toList();

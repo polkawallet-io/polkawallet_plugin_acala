@@ -111,14 +111,17 @@ class AcalaServiceAssets {
 
   Future<void> subscribeTokenPrices(
       Function(Map<String, BigInt>) callback) async {
-    final List? res = await plugin.sdk.webView!
-        .evalJavascript('api.rpc.oracle.getAllValues("Aggregated")');
+    final loanTypes = plugin.store?.loan.loanTypes
+        .map((e) => e.token?.tokenNameId ?? '')
+        .toList();
+    loanTypes?.removeWhere((e) => e == 'LDOT');
+
+    final List? res = await plugin.sdk.webView!.evalJavascript(
+        'acala.queryTokenPriceFromOracle(api, ${jsonEncode(loanTypes)})');
     if (res != null) {
       final prices = Map<String, BigInt>();
-      res.forEach((e) {
-        final tokenNameId =
-            AssetsUtils.tokenDataFromCurrencyId(plugin, e[0])!.tokenNameId!;
-        prices[tokenNameId] = Fmt.balanceInt(e[1]['value'].toString());
+      loanTypes?.asMap().forEach((i, e) {
+        prices[e] = Fmt.balanceInt(res[i]);
       });
       callback(prices);
     }

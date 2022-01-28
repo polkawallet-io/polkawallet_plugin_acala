@@ -571,7 +571,7 @@ async function queryTokenPriceFromOracle(api: ApiPromise, currencyIds: Object[])
   if (!oracle) {
     oracle = new OraclePriceProvider(api);
   }
-  return Promise.all(currencyIds.map((e) => oracle.query(e as any)));
+  return Promise.all(currencyIds.map((e) => oracle.query(e as any).then((e) => e.toChainData())));
 }
 
 async function queryAggregatedAssets(api: ApiPromise, address: string) {
