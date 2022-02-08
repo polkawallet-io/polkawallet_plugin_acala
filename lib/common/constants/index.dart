@@ -111,8 +111,6 @@ const module_icons_uri = {
 };
 
 const cross_chain_icons = {
-  plugin_name_acala: '$image_assets_uri/tokens/DOT.png',
-  relay_chain_name: '$image_assets_uri/tokens/KSM.png',
-  para_chain_name_bifrost: '$image_assets_uri/tokens/BNC.png',
-  para_chain_name_khala: '$image_assets_uri/tokens/PHA.png',
+  plugin_name_acala: '$image_assets_uri/tokens/ACA.png',
+  relay_chain_name: '$image_assets_uri/tokens/DOT.png',
 };

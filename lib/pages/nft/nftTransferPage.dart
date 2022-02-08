@@ -12,6 +12,7 @@ import 'package:polkawallet_sdk/utils/i18n.dart';
 import 'package:polkawallet_ui/components/addressInputField.dart';
 import 'package:polkawallet_ui/components/txButton.dart';
 import 'package:polkawallet_ui/components/v3/back.dart';
+import 'package:polkawallet_ui/components/v3/iconButton.dart' as v3;
 import 'package:polkawallet_ui/pages/scanPage.dart';
 import 'package:polkawallet_ui/utils/format.dart';
 
@@ -80,14 +81,15 @@ class _NFTTransferPageState extends State<NFTTransferPage> {
         centerTitle: true,
         leading: BackBtn(),
         actions: [
-          IconButton(
-            padding: EdgeInsets.only(right: 8),
+          v3.IconButton(
+            margin: EdgeInsets.only(right: 12),
             icon: SvgPicture.asset(
               'assets/images/scan.svg',
               color: Theme.of(context).cardColor,
-              width: 28,
+              width: 18,
             ),
             onPressed: _onScan,
+            isBlueBg: true,
           )
         ],
       ),
