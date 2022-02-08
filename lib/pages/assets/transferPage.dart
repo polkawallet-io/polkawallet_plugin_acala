@@ -430,9 +430,9 @@ class _TransferPageState extends State<TransferPage> {
         final dic = I18n.of(context)!.getDic(i18n_full_dic_acala, 'common')!;
         final dicAcala =
             I18n.of(context)!.getDic(i18n_full_dic_acala, 'acala')!;
-        final TokenBalanceData? args =
-            ModalRoute.of(context)!.settings.arguments as TokenBalanceData?;
-        final token = _token ?? args!;
+        final TokenBalanceData args =
+            ModalRoute.of(context)!.settings.arguments as TokenBalanceData;
+        final token = _token ?? args;
         final tokenSymbol = token.symbol!.toUpperCase();
         final tokenView = PluginFmt.tokenView(token.symbol);
 

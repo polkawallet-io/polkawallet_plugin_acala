@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:polkawallet_plugin_acala/api/types/nftData.dart';
+import 'package:polkawallet_plugin_acala/common/components/videoPlayerContainer.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftBurnPage.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftTransferPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
@@ -69,6 +70,8 @@ class _NFTDetailPageState extends State<NFTDetailPage> {
             if (!isMintable) {
               allProps.add('Unmintable');
             }
+
+            final imageUrl = item.metadata!['dwebImage'] as String;
             return Column(
               children: [
                 Expanded(
@@ -81,8 +84,10 @@ class _NFTDetailPageState extends State<NFTDetailPage> {
                           borderRadius: BorderRadius.circular(8.0),
                           child: Column(
                             children: [
-                              Image.network(
-                                  '${item.metadata!['imageServiceUrl']}?imageView2/2/w/500'),
+                              imageUrl.contains('.mp4')
+                                  ? VideoPlayerContainer(imageUrl)
+                                  : Image.network(
+                                      '$imageUrl?imageView2/2/w/800'),
                               Container(
                                 padding: EdgeInsets.all(8),
                                 child: Row(

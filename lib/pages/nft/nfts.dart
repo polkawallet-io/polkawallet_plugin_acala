@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:polkawallet_plugin_acala/common/components/videoPlayerContainer.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftDetailPage.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
@@ -110,67 +112,76 @@ class _NFTsState extends State<NFTs> {
               ),
             ),
             Expanded(
-              child: RefreshIndicator(
-                key: _refreshKey,
-                onRefresh: _queryNFTs,
-                child: GridView.count(
-                  padding: EdgeInsets.all(16),
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 8,
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.72,
-                  children: classKeys.map((id) {
-                    final item = list.firstWhere((e) => e.classId == id);
+              child: Container(
+                margin: EdgeInsets.all(8),
+                child: RefreshIndicator(
+                  key: _refreshKey,
+                  onRefresh: _queryNFTs,
+                  child: MasonryGridView.count(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                      itemCount: classKeys.length,
+                      itemBuilder: (_, i) {
+                        final item =
+                            list.firstWhere((e) => e.classId == classKeys[i]);
 
-                    final isMintable = item.properties!.contains('Mintable');
-                    final allProps = item.properties!.toList();
-                    allProps.remove('ClassPropertiesMutable');
-                    allProps.remove('Mintable');
-                    if (!isMintable) {
-                      allProps.add('Unmintable');
-                    }
-                    return GestureDetector(
-                      child: RoundedCard(
-                        margin: EdgeInsets.only(bottom: 16),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Column(
-                            children: [
-                              Image.network(
-                                  '${item.metadata!['imageServiceUrl']}?imageView2/2/w/400'),
-                              Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        item.metadata!['name'],
-                                        style: TextStyle(fontSize: 10),
-                                      ),
-                                    ),
-                                    Text(
-                                      'x${classes[item.classId]}',
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      onTap: () async {
-                        final res = await Navigator.of(context)
-                            .pushNamed(NFTDetailPage.route, arguments: item);
-                        if (res != null) {
-                          _refreshKey.currentState!.show();
+                        final isMintable =
+                            item.properties!.contains('Mintable');
+                        final allProps = item.properties!.toList();
+                        allProps.remove('ClassPropertiesMutable');
+                        allProps.remove('Mintable');
+                        if (!isMintable) {
+                          allProps.add('Unmintable');
                         }
-                      },
-                    );
-                  }).toList(),
+
+                        final imageUrl = item.metadata!['dwebImage'] as String;
+                        return GestureDetector(
+                          child: RoundedCard(
+                            margin: EdgeInsets.only(bottom: 16),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(16),
+                              child: Column(
+                                children: [
+                                  imageUrl.contains('.mp4')
+                                      ? VideoPlayerContainer(imageUrl)
+                                      : Image.network(
+                                          '$imageUrl?imageView2/2/w/400'),
+                                  Padding(
+                                    padding: EdgeInsets.all(8),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            item.metadata!['name'],
+                                            style: TextStyle(fontSize: 10),
+                                          ),
+                                        ),
+                                        Text(
+                                          'x${classes[item.classId]}',
+                                          style: TextStyle(
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          onTap: () async {
+                            final res = await Navigator.of(context).pushNamed(
+                                NFTDetailPage.route,
+                                arguments: item);
+                            if (res != null) {
+                              _refreshKey.currentState!.show();
+                            }
+                          },
+                        );
+                      }),
                 ),
               ),
             )

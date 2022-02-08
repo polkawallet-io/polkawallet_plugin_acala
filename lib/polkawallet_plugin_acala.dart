@@ -41,7 +41,6 @@ import 'package:polkawallet_plugin_acala/pages/loan/loanPage.dart';
 import 'package:polkawallet_plugin_acala/pages/loan/loanTxDetailPage.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftBurnPage.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftDetailPage.dart';
-import 'package:polkawallet_plugin_acala/pages/nft/nftPage.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nftTransferPage.dart';
 import 'package:polkawallet_plugin_acala/pages/nft/nfts.dart';
 import 'package:polkawallet_plugin_acala/pages/swap/bootstrapPage.dart';
@@ -338,7 +337,6 @@ class PluginAcala extends PolkawalletPlugin {
           ),
       HomaTxDetailPage.route: (_) => HomaTxDetailPage(this, keyring),
       // NFT pages
-      NFTPage.route: (_) => NFTPage(this, keyring),
       NFTDetailPage.route: (_) => NFTDetailPage(this, keyring),
       NFTTransferPage.route: (_) => NFTTransferPage(this, keyring),
       NFTBurnPage.route: (_) => NFTBurnPage(this, keyring),

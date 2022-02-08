@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:polkawallet_plugin_acala/api/types/nftData.dart';
+import 'package:polkawallet_plugin_acala/common/components/videoPlayerContainer.dart';
 import 'package:polkawallet_plugin_acala/polkawallet_plugin_acala.dart';
 import 'package:polkawallet_plugin_acala/utils/i18n/index.dart';
 import 'package:polkawallet_sdk/storage/keyring.dart';
@@ -93,10 +94,10 @@ class _NFTTransferPageState extends State<NFTTransferPage> {
       body: SafeArea(
         child: Observer(
           builder: (_) {
-            final NFTData? item =
-                ModalRoute.of(context)!.settings.arguments as NFTData?;
+            final NFTData item =
+                ModalRoute.of(context)!.settings.arguments as NFTData;
             final list = widget.plugin.store!.assets.nft.toList();
-            list.retainWhere((e) => e.classId == item!.classId);
+            list.retainWhere((e) => e.classId == item.classId);
 
             return Column(
               children: [
@@ -174,7 +175,7 @@ class _NFTTransferPageState extends State<NFTTransferPage> {
                           txDisplay: {
                             'call': 'nft.transfer',
                             'to': Fmt.address(_accountTo!.address),
-                            'classId': item!.classId,
+                            'classId': item.classId,
                             'quantity': _amountCtrl.text.trim(),
                           },
                           params: [],
@@ -201,9 +202,10 @@ class _NFTTransferPageState extends State<NFTTransferPage> {
 
 class NFTFormItem extends StatelessWidget {
   NFTFormItem(this.item);
-  final NFTData? item;
+  final NFTData item;
   @override
   Widget build(BuildContext context) {
+    final imageUrl = item.metadata!['dwebImage'] as String;
     return Container(
       decoration: BoxDecoration(
         border: Border.all(color: Colors.black38),
@@ -216,15 +218,16 @@ class NFTFormItem extends StatelessWidget {
           children: [
             Container(
               height: 64,
-              child: Image.network(
-                  '${item!.metadata!['imageServiceUrl']}?imageView2/2/w/400'),
+              child: imageUrl.contains('.mp4')
+                  ? VideoPlayerContainer(imageUrl)
+                  : Image.network('$imageUrl?imageView2/2/w/400'),
             ),
             Expanded(
               flex: 0,
               child: Container(
                 margin: EdgeInsets.only(right: 8),
                 child: Text(
-                  item!.metadata!['name'],
+                  item.metadata!['name'],
                   style: TextStyle(fontSize: 14),
                 ),
               ),

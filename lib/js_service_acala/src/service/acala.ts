@@ -127,15 +127,14 @@ async function getAllTokens(api: ApiPromise) {
       .toLowerCase()
       .match("mandala")
   ) {
-    const lcDotCurrencyId = {
-      LiquidCrowdloan: "13",
-    };
+    const lcDot = api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, "0x040d000000");
+    const lcDotCurrencyId = lcDot.toJSON();
     return [
       {
-        type: "LiquidCrowdloan",
-        id: "13",
+        type: Object.keys(lcDotCurrencyId)[0],
+        id: Object.values(lcDotCurrencyId)[0].toString(),
         symbol: "lcDOT",
-        tokenNameId: forceToCurrencyName(api.createType("AcalaPrimitivesCurrencyCurrencyId" as any, lcDotCurrencyId)),
+        tokenNameId: forceToCurrencyName(lcDot),
         currencyId: lcDotCurrencyId,
         decimals: DOT_DECIMAL,
         minBalance: existential_deposit["DOT"],

@@ -46,10 +46,10 @@ class _NFTBurnPageState extends State<NFTBurnPage> {
       body: SafeArea(
         child: Observer(
           builder: (_) {
-            final NFTData? item =
-                ModalRoute.of(context)!.settings.arguments as NFTData?;
+            final NFTData item =
+                ModalRoute.of(context)!.settings.arguments as NFTData;
             final list = widget.plugin.store!.assets.nft.toList();
-            list.retainWhere((e) => e.classId == item!.classId);
+            list.retainWhere((e) => e.classId == item.classId);
 
             return Column(
               children: [
@@ -115,7 +115,7 @@ class _NFTBurnPageState extends State<NFTBurnPage> {
                           txTitle: 'NFT ${dic['nft.burn']}',
                           txDisplay: {
                             'call': 'nft.burn',
-                            'classId': item!.classId,
+                            'classId': item.classId,
                             'quantity': _amountCtrl.text.trim(),
                           },
                           params: [],
