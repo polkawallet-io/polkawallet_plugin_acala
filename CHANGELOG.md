@@ -1,3 +1,8 @@
+## [0.4.1] - 20220209
+- bump polkawallet_sdk v0.4.1.
+- merge update from karura.
+- lcDOT currencyId fix.
+
 ## [0.4.0] - 20220104
 - update homa module.
 - ui v3 update.

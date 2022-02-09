@@ -194,7 +194,7 @@ const Map<String, String> zhDex = {
   'cross.warn.info': '不建议修改跨链转账的收款地址。\n该功能仅限高级用户使用。',
   'transfer.exist': '存活余额',
   'transfer.fee': '预估手续费',
-  'warn.fee': '因 KAR 余额不足，交易可能会执行失败。',
+  'warn.fee': '因 ACA 余额不足，交易可能会执行失败。',
   'v3.switchDefi': '切换至Defi',
   'v3.switchBack': '切换回来',
   'v3.totalBalance': '总资产',
